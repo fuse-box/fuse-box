@@ -1,8 +1,8 @@
 async function load() {
   const dynamicFunc = await import('../dynamic/dynamic');
   const dynamicFuncTwo = await import('../dynamic/dynamicTwo');
-  dynamicFunc();
-  dynamicFuncTwo();
+  dynamicFunc.default();
+  dynamicFuncTwo.default();
 }
 
 export const notSoStaticFunc = () => {

@@ -29,11 +29,10 @@ function stripHash(template): string {
 }
 
 export interface IDistWriterInitProps {
-  contents: Buffer | string;
   fileName?: string;
   // will strip out the hash
   forceDisableHash?: boolean;
-  hash?: boolean;
+  hash?: string;
   // app.$name.js
   userString?: string;
 }
@@ -64,8 +63,13 @@ export function distWriter(props: IOuputParserProps): DistWriter {
       let userString = options.userString;
       let hash;
 
-      if (options.hash && !options.forceDisableHash) hash = fastHash(options.contents.toString());
-      if (options.forceDisableHash) userString = stripHash(userString);
+      if (!options.hash) {
+        userString = stripHash(userString);
+      } else {
+        if (options.hash && !options.forceDisableHash) hash = options.hash;
+        if (options.forceDisableHash) userString = stripHash(userString);
+      }
+
       if (hash) userString = userString.replace(/\$hash/g, hash);
       if (userString.indexOf('$name') > -1) userString = userString.replace(/\$name/g, options.fileName);
       const absPath = path.join(root, userString);

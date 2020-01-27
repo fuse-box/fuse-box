@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { bundleRuntimeCore, ICodeSplittingMap } from '../bundleRuntime/bundleRuntimeCore';
 import { Context } from '../core/context';
 import { IModule } from '../moduleResolver/module';
 import { PackageType } from '../moduleResolver/package';
@@ -17,10 +18,6 @@ export interface IBundleRouteProps {
   entries: Array<IModule>;
 }
 
-export type ICodeSplittingMap = {
-  entries: Record<number, { b: string }>;
-};
-
 export function createBundleRouter(props: IBundleRouteProps) {
   const { ctx, entries } = props;
   const ict = ctx.ict;
@@ -29,8 +26,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
   const bundles: Array<Bundle> = [];
   const splitFileNames: Array<string> = [];
   const codeSplittingMap: ICodeSplittingMap = {
-    entries: {},
-    // resolveConfig: {},
+    e: {},
   };
   let mainBundle: Bundle;
   let vendorBundle: Bundle;
@@ -50,20 +46,20 @@ export function createBundleRouter(props: IBundleRouteProps) {
       bundleConfig: outputConfig.app,
       ctx: ctx,
       entries,
-      includeAPI: true,
       priority: 2,
       type: BundleType.JS_APP,
     });
+    bundles.push(mainBundle);
   }
 
   function createVendorBundle() {
     vendorBundle = createBundle({
       bundleConfig: outputConfig.vendor,
       ctx: ctx,
-      includeAPI: false,
       priority: 1,
       type: BundleType.JS_VENDOR,
     });
+    bundles.push(vendorBundle);
   }
 
   function dispatch(bundle: Bundle, module: IModule) {
@@ -71,6 +67,15 @@ export function createBundleRouter(props: IBundleRouteProps) {
       ict.sync('bundle_resolve_module', { module: module });
     }
     bundle.source.modules.push(module);
+  }
+
+  function createRuntimeCore(): string {
+    return bundleRuntimeCore({
+      codeSplittingMap: codeSplittingMap,
+      interopRequireDefault: ctx.compilerOptions.esModuleInterop,
+      isIsolated: false,
+      target: ctx.config.target,
+    });
   }
 
   const self: IBundleRouter = {
@@ -99,35 +104,36 @@ export function createBundleRouter(props: IBundleRouteProps) {
           },
           ctx,
           fileName,
-          includeAPI: false,
           type: BundleType.JS_SPLIT,
           webIndexed: false,
         });
-        for (const module of modules) {
-          dispatch(splitBundle, module);
-        }
+        for (const module of modules) dispatch(splitBundle, module);
+
         const bundleConfig = splitBundle.prepare();
-        codeSplittingMap.entries[entry.id] = {
+        // update a json object with entry for the API
+        codeSplittingMap.e[entry.id] = {
           b: bundleConfig.relativePath,
         };
         bundles.push(splitBundle);
       }
     },
     writeBundles: async () => {
-      let output = [];
-      if (Object.keys(codeSplittingMap.entries).length > 0) {
-        mainBundle.addCodeSplittingMap(codeSplittingMap);
+      const bundleAmount = bundles.length;
+      let index = 0;
+
+      let apiInserted = false;
+
+      const writers = [];
+      while (index < bundleAmount) {
+        const bundle = bundles[index];
+        if (bundle.webIndexed && !apiInserted) {
+          apiInserted = true;
+          writers.push(bundle.generate({ runtimeCore: createRuntimeCore() }));
+        } else writers.push(bundle.generate());
+        index++;
       }
-      await Promise.all([mainBundle.generate(), vendorBundle.generate(), ...bundles.map(bundle => bundle.generate())])
-        .then(bundleResponses => {
-          for (const response of bundleResponses) {
-            output = output.concat(response);
-          }
-        })
-        .catch(e => {
-          console.log('do something with ', e);
-        });
-      return output;
+
+      return await Promise.all(writers);
     },
   };
 

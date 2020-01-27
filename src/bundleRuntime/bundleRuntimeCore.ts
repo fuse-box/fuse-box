@@ -1,4 +1,3 @@
-import { ICodeSplittingMap } from '../bundle/bundleRouter';
 import { ITarget } from '../config/ITarget';
 
 export const BUNDLE_RUNTIME_NAMES = {
@@ -7,6 +6,10 @@ export const BUNDLE_RUNTIME_NAMES = {
   GLOBAL_OBJ: '__fuse',
   INTEROP_REQUIRE_DEFAULT_FUNCTION: 'dt',
   REQUIRE_FUNCTION: 'r',
+};
+
+export type ICodeSplittingMap = {
+  e: Record<number, { b: string }>;
 };
 
 export interface IBundleRuntimeCore {
@@ -63,5 +66,5 @@ export function bundleRuntimeCore(props: IBundleRuntimeCore) {
   }; ${isIsolated ? '\n\treturn f;' : ''}
 })();`;
 
-  return CODE.replace(/(\n|\t)/g, '').replace(/\s+/g, ' ');
+  return CODE; //.replace(/(\n|\t)/g, '').replace(/\s+/g, ' ');
 }

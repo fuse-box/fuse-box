@@ -1,14 +1,19 @@
 import { ICodeSplittingMap } from '../bundle/bundleRouter';
+import { getMTime } from '../cache/cache';
 import { ITarget } from '../config/ITarget';
 import { IModule } from '../moduleResolver/module';
-import { Concat } from '../utils/utils';
-import { BUNDLE_RUNTIME_NAMES, bundleRuntimeCore, IBundleRuntimeCore } from './bundleRuntimeCore';
+import { Concat, fastHash } from '../utils/utils';
+import { BUNDLE_RUNTIME_NAMES } from './bundleRuntimeCore';
 
 export interface IBundleSourceProps {
-  core?: IBundleRuntimeCore;
-  isIsolated?: boolean;
+  isProduction?: boolean;
   target: ITarget;
   withSourcemaps?: boolean;
+}
+
+export interface IBundleGenerateProps {
+  isIsolated?: boolean;
+  runtimeCore: string;
 }
 
 export type BundleSource = {
@@ -18,7 +23,8 @@ export type BundleSource = {
   expose?: Array<{ name: string; moduleId: number }>;
   injection?: string;
   modules: Array<IModule>;
-  generate: () => Concat;
+  generate: (opts: IBundleGenerateProps) => Concat;
+  generateHash: () => string;
 };
 
 const FuseName = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ;
@@ -26,26 +32,21 @@ const BundleFN = FuseName + '.' + BUNDLE_RUNTIME_NAMES.BUNDLE_FUNCTION;
 const ReqFn = FuseName + '.' + BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
 
 export function createBundleSource(props: IBundleSourceProps): BundleSource {
-  const isIsolated = props.target === 'web-worker' || props.isIsolated;
-  const self = {
-    codeSplittingMap: null,
+  const self: BundleSource = {
     containsMaps: false,
     entries: [],
-    expose: null,
     // user injection
     // for example inject some code after the bundle is ready
-    injection: null,
+
     modules: [],
-    generate: () => {
-      const core = props.core;
+    generate: (opts: IBundleGenerateProps) => {
       const concat = new Concat(true, '', '\n');
-      if (core && self.codeSplittingMap) core.codeSplittingMap = self.codeSplittingMap;
 
       // start the wrapper for the entire bundle if required
-      if (isIsolated) concat.add(null, `(function(){`);
+      if (opts.isIsolated) concat.add(null, `(function(){`);
 
       // adding core api if required
-      if (core) concat.add(null, bundleRuntimeCore(core));
+      if (opts.runtimeCore) concat.add(null, opts.runtimeCore);
 
       concat.add(null, BundleFN + '({');
 
@@ -55,7 +56,7 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
         const module = self.modules[index];
         const isLast = index + 1 === totalAmount;
         if (module.contents) {
-          concat.add(null, `\n// ${module.publicPath} @${module.id}`);
+          if (!props.isProduction) concat.add(null, `\n// ${module.publicPath} @${module.id}`);
 
           concat.add(null, module.id + `: function(${BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION}, exports, module){`);
           if (module.isSourceMapRequired && module.sourceMap) {
@@ -96,8 +97,15 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
 
       concat.add(null, '}' + readyFunction + ')');
       // end the isolation
-      if (isIsolated) concat.add(null, `})()`);
+      if (opts.isIsolated) concat.add(null, `})()`);
       return concat;
+    },
+    generateHash: () => {
+      let str;
+      for (const module of self.modules) {
+        str += getMTime(module.absPath).toString();
+      }
+      return fastHash(str);
     },
   };
   return self;

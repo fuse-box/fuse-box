@@ -5,7 +5,6 @@ import { IModule } from '../moduleResolver/module';
 import { IOutputBundleConfigAdvanced } from '../output/OutputConfigInterface';
 import { distWriter, IWriterConfig } from '../output/distWriter';
 import { Concat } from '../utils/utils';
-import { ICodeSplittingMap } from './bundleRouter';
 
 export interface Bundle {
   config: IWriterConfig;
@@ -15,9 +14,8 @@ export interface Bundle {
   source: BundleSource;
   type: BundleType;
   webIndexed: boolean;
-  addCodeSplittingMap?: (map: ICodeSplittingMap) => void;
   createSourceMap: () => Promise<void>;
-  generate: () => Promise<Array<IBundleWriteResponse>>;
+  generate: (opts?: { runtimeCore?: string }) => Promise<IBundleWriteResponse>;
   prepare: () => IWriterConfig;
 }
 
@@ -34,7 +32,6 @@ export interface IBundleProps {
   ctx: Context;
   entries?: Array<IModule>;
   fileName?: string;
-  includeAPI?: boolean;
   priority?: number;
   type?: BundleType;
   webIndexed?: boolean;
@@ -53,12 +50,8 @@ export function createBundle(props: IBundleProps): Bundle {
   const target = ctx.config.target;
 
   const bundleWriter = distWriter({ hashEnabled: isProduction, root: outputConfig.distRoot });
-  const apiCore = props.includeAPI && {
-    interopRequireDefault: ctx.compilerOptions.esModuleInterop,
-    isIsolated: bundleConfig.isolatedApi,
-    target,
-  };
-  const source = createBundleSource({ core: apiCore, isIsolated: bundleConfig.isolatedApi, target });
+
+  const source = createBundleSource({ isProduction: props.ctx.config.isProduction, target });
   source.entries = props.entries;
 
   const self: Bundle = {
@@ -69,9 +62,6 @@ export function createBundle(props: IBundleProps): Bundle {
     source,
     type,
     webIndexed,
-    addCodeSplittingMap: (map: ICodeSplittingMap) => {
-      self.source.codeSplittingMap = map;
-    },
     createSourceMap: async () => {
       const sourceMapName = path.basename(self.config.relativePath) + '.map';
       self.contents += `\n//# sourceMappingURL=${sourceMapName}`;
@@ -79,29 +69,25 @@ export function createBundle(props: IBundleProps): Bundle {
       const sourceMapFile = path.join(targetDir, sourceMapName);
       await bundleWriter.write(sourceMapFile, self.data.sourceMap);
     },
-    generate: async () => {
-      if (!self.config) {
-        self.prepare();
-      }
+    generate: async (opts?: { runtimeCore?: string }) => {
+      opts = opts || {};
+      if (!self.config) self.config = self.prepare();
+      self.data = source.generate({ isIsolated: bundleConfig.isolatedApi, runtimeCore: opts.runtimeCore });
+      self.contents = self.data.content.toString();
       // writing source maps
-      if (source.containsMaps) self.createSourceMap();
+      if (source.containsMaps) await self.createSourceMap();
       // write the bundle to fs
       await bundleWriter.write(self.config.absPath, self.contents);
-      return [
-        {
-          absPath: self.config.absPath,
-          // bundle: self,
-          relativePath: self.config.relativePath,
-        },
-      ];
+      return {
+        absPath: self.config.absPath,
+        bundle: self,
+        relativePath: self.config.relativePath,
+      };
     },
     prepare: (): IWriterConfig => {
-      self.data = source.generate();
-      self.contents = self.data.content.toString();
       self.config = bundleWriter.createWriter({
-        contents: self.contents,
         fileName: props.fileName,
-        hash: isProduction,
+        hash: isProduction && self.source.generateHash(),
         userString: bundleConfig.path,
       });
       return self.config;

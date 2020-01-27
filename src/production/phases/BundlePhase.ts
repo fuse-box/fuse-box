@@ -1,4 +1,5 @@
 import { createBundleRouter } from '../../bundle/bundleRouter';
+import { attachWebIndex } from '../../development/attachWebIndex';
 import { createRuntimeRequireStatement } from '../../moduleResolver/moduleResolver';
 import { IProductionContext } from '../ProductionContext';
 
@@ -24,6 +25,7 @@ export async function BundlePhase(productionContext: IProductionContext) {
       router.generateSplitBundles(productionContext.splitEntries.entries);
     }
     const bundles = await router.writeBundles();
-    console.log(bundles);
+    await attachWebIndex(ctx, bundles);
+    ctx.ict.sync('complete', { bundles, ctx });
   }
 }

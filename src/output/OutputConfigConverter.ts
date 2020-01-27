@@ -25,19 +25,12 @@ export interface IOutputConfigProps {
   publicConfig?: IPublicOutputConfig;
 }
 
-function ensureOutputRoot(distRoot: string): string {
-  if (!existsSync(distRoot)) {
-    distRoot = ensureAbsolutePath(distRoot, env.SCRIPT_PATH);
-  }
-  return distRoot;
-}
-
 export function outputConfigConverter(props: IOutputConfigProps): IOutputConfig {
   const userConfig = props.publicConfig;
   const config: IOutputConfig = {};
 
   if (userConfig) {
-    if (userConfig.distRoot) config.distRoot = ensureOutputRoot(userConfig.distRoot);
+    if (userConfig.distRoot) config.distRoot = userConfig.distRoot;
     config.app = userConfig.app ? ensureBundleConfig(userConfig.app) : { path: DEFAULT_APP_PATH };
 
     if (userConfig.vendor) config.vendor = ensureBundleConfig(userConfig.vendor);
@@ -60,7 +53,9 @@ export function outputConfigConverter(props: IOutputConfigProps): IOutputConfig 
       path: DEFAULT_VENDOR_PATH,
     };
   }
-  if (!config.distRoot) config.distRoot = ensureOutputRoot(props.defaultRoot);
+  if (!config.distRoot) config.distRoot = props.defaultRoot;
+
+  config.distRoot = ensureAbsolutePath(config.distRoot, env.SCRIPT_PATH);
 
   if (!config.codeSplitting) {
     config.codeSplitting = { path: 'chunks/$name.$hash.js' };
