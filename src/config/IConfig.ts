@@ -1,6 +1,7 @@
 import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { Context } from '../core/context';
 import { IDevServerProps } from '../devServer/devServerProps';
+import { ITypescriptTarget } from '../interfaces/TypescriptInterfaces';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IPluginLinkOptions } from '../plugins/core/plugin_link';
 import { IWebIndexConfig } from '../webIndex/webIndex';
@@ -72,9 +73,11 @@ export interface IConfig {
   modules?: Array<string>;
   output?: IRunProps;
   plugins?: Array<(ctx: Context) => void>;
+  productionBuildTarget?: ITypescriptTarget;
   resources?: IResourceConfig;
   stylesheet?: IStyleSheetProps;
   target?: ITarget;
+  tsHelpersPath?: string;
   watcher?: IWatcherProps;
   webIndex?: IWebIndexConfig;
   webWorkers?: IWebWorkerConfig;

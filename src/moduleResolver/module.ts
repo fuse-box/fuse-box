@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as sourceMapModule from 'source-map';
+import * as ts from 'typescript';
 import { getMTime } from '../cache/cache';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
@@ -8,11 +9,12 @@ import { parseJavascript, parseTypeScript } from '../compiler/parser';
 import { transformCommonVisitors } from '../compiler/transformer';
 import { EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, STYLESHEET_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
 import { Context } from '../core/context';
+import { env } from '../env';
+import { ITypescriptTarget } from '../interfaces/TypescriptInterfaces';
 import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { makePublicPath, readFile } from '../utils/utils';
 import { PackageType, IPackage } from './package';
-
 export function Module() {}
 
 export interface IModule {
@@ -36,6 +38,7 @@ export interface IModule {
   isExecutable?: boolean;
   isJavaScript?: boolean;
   isSourceMapRequired?: boolean;
+  isSplit?: boolean;
   isStylesheet?: boolean;
   isTypeScript?: boolean;
   moduleSourceRefs?: Record<string, IModule>;
@@ -54,6 +57,7 @@ export interface IModule {
   parse?: () => ASTNode;
   read?: () => string;
   transpile?: () => ITransformerResult;
+  transpileDown?(buildTarget: ITypescriptTarget): void;
 }
 
 export interface IModuleMeta {
@@ -128,6 +132,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       self.isCommonsEligible = false;
       self.moduleSourceRefs = {};
       self.isEntry = false;
+      self.isSplit = false;
 
       let isCSSSourceMapRequired = true;
       const config = props.ctx.config;
@@ -167,7 +172,9 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
 
       if (JS_EXTENSIONS.includes(self.extension)) {
         try {
+          // @todo: fix jsx properly
           self.ast = parseJavascript(self.contents, {
+            jsx: true,
             locations: self.isSourceMapRequired,
           });
           self.errored = false;
@@ -194,7 +201,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       try {
         self.contents = readFile(self.absPath);
       } catch (e) {
-        if (self.absPath.lastIndexOf(path.join(props.ctx.config.homeDir, 'node_modules'), 0) === 0) {
+        if (self.absPath.lastIndexOf(path.join(env.SCRIPT_PATH, 'node_modules'), 0) === 0) {
           props.ctx.log.warn(`Did you forget to run 'npm install'?`);
         }
         props.ctx.log.error(`Module not found ${self.absPath.replace(props.ctx.config.homeDir, '')}`, e.message);
@@ -203,6 +210,19 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       return self.contents;
     },
     transpile: () => transformCommonVisitors(self, props.ctx.compilerOptions),
+    transpileDown: (buildTarget: ITypescriptTarget) => {
+      // we can't support sourcemaps on downtranspiling
+      self.isSourceMapRequired = false;
+      const config = ts.convertCompilerOptionsFromJson(
+        { importHelpers: false, noEmitHelpers: true, target: buildTarget },
+        env.SCRIPT_PATH,
+      );
+      const data = ts.transpileModule(self.contents, {
+        compilerOptions: config.options,
+        fileName: self.absPath,
+      });
+      self.contents = data.outputText;
+    },
   };
   return self;
 }

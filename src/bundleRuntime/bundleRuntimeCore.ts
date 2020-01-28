@@ -1,4 +1,5 @@
 import { ITarget } from '../config/ITarget';
+import { readFile } from '../utils/utils';
 
 export const BUNDLE_RUNTIME_NAMES = {
   ARG_REQUIRE_FUNCTION: '__fusereq',
@@ -8,13 +9,51 @@ export const BUNDLE_RUNTIME_NAMES = {
   REQUIRE_FUNCTION: 'r',
 };
 
+export type ICodeSplittingMap = {
+  b: Record<number, { p: string }>;
+};
+
 export interface IBundleRuntimeCore {
+  codeSplittingMap?: ICodeSplittingMap;
   interopRequireDefault?: boolean;
   isIsolated?: boolean;
   target: ITarget;
+  typescriptHelpersPath?: string;
 }
 
 const INTEROP_DEFAULT = BUNDLE_RUNTIME_NAMES.INTEROP_REQUIRE_DEFAULT_FUNCTION;
+
+function getCodeSplittingFunction(target: ITarget) {
+  if (target === 'browser') {
+    return `function lb(id, conf) {
+  return new Promise(function(resolve, reject) {
+    if (!conf.fns) {
+      conf.fns = [resolve];
+      var script = document.createElement('script');
+      document.head.appendChild(script);
+      script.onload = function() {
+        if (modules[id]) {
+          conf.fns.map(x => x(f.r(id)));
+        } else reject('Resolve error of module ' + id + ' at path ' + conf.p);
+        conf.fns = void 0;
+      };
+      script.src = conf.p;
+    } else conf.fns.push(resolve);
+  });
+}`;
+  }
+  if (target === 'server') {
+    return `function lb(id, conf) {
+return new Promise(function(resolve, reject) {
+  require(require('path').resolve(__dirname, conf.p));
+if (modules[id]) {
+  return resolve(f.r(id));
+} else reject('Resolve error of module ' + id + ' at path ' + conf.p);
+});
+};`;
+  }
+  return '';
+}
 
 export function bundleRuntimeCore(props: IBundleRuntimeCore) {
   const { target } = props;
@@ -33,10 +72,14 @@ export function bundleRuntimeCore(props: IBundleRuntimeCore) {
 
   let optional = '';
   if (props.interopRequireDefault) {
-    optional += `f.${INTEROP_DEFAULT} = function (x) { return x !== undefined && x.default !== undefined ? x.default : x; };`;
+    optional += `f.${INTEROP_DEFAULT} = function (x) { return x !== undefined && x.default !== undefined ? x.default : x; };\n`;
+  }
+  if (props.codeSplittingMap) {
+    optional += `\nvar cs = ${JSON.stringify(props.codeSplittingMap)};`;
+    optional += '\n' + getCodeSplittingFunction(props.target);
   }
 
-  const CODE = `${isIsolated ? `var ${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} = ` : ''}(function() {
+  let CODE = `${isIsolated ? `var ${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} = ` : ''}(function() {
   ${coreVariable}
   var modules = f.modules = f.modules || {}; ${optional}
   f.${BUNDLE_RUNTIME_NAMES.BUNDLE_FUNCTION} = function(collection, fn) {
@@ -51,7 +94,8 @@ export function bundleRuntimeCore(props: IBundleRuntimeCore) {
     if (cached) return cached.m.exports;
     var module = modules[id];
     if (!module) {
-      return;
+      ${props.codeSplittingMap ? 'var s = cs.b[id]; if (s) return lb(id, s);' : ''}
+      throw new Error('Module ' + id + ' was not found');
     }
     cached = f.c[id] = {};
     cached.exports = {};
@@ -61,5 +105,10 @@ export function bundleRuntimeCore(props: IBundleRuntimeCore) {
   }; ${isIsolated ? '\n\treturn f;' : ''}
 })();`;
 
-  return CODE.replace(/(\n|\t)/g, '').replace(/\s+/g, ' ');
+  if (props.typescriptHelpersPath) {
+    const tsHelperContents = readFile(props.typescriptHelpersPath);
+    CODE += '\n' + tsHelperContents;
+  }
+
+  return CODE;
 }

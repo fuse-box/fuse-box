@@ -1,59 +1,65 @@
+import { getMTime } from '../cache/cache';
 import { ITarget } from '../config/ITarget';
 import { IModule } from '../moduleResolver/module';
-import { Concat } from '../utils/utils';
-import { BUNDLE_RUNTIME_NAMES, bundleRuntimeCore, IBundleRuntimeCore } from './bundleRuntimeCore';
+import { Concat, fastHash } from '../utils/utils';
+import { BUNDLE_RUNTIME_NAMES, ICodeSplittingMap } from './bundleRuntimeCore';
 
 export interface IBundleSourceProps {
-  core?: IBundleRuntimeCore;
-  isIsolated?: boolean;
+  isProduction?: boolean;
   target: ITarget;
-
   withSourcemaps?: boolean;
 }
 
-export type IBundleSource = ReturnType<typeof bundleSource>;
+export interface IBundleGenerateProps {
+  isIsolated?: boolean;
+  runtimeCore: string;
+}
+
+export type BundleSource = {
+  codeSplittingMap?: ICodeSplittingMap;
+  containsMaps: boolean;
+  entries: Array<IModule>;
+  expose?: Array<{ name: string; moduleId: number }>;
+  injection?: string;
+  modules: Array<IModule>;
+  generate: (opts: IBundleGenerateProps) => Concat;
+  generateHash: () => string;
+};
 
 const FuseName = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ;
 const BundleFN = FuseName + '.' + BUNDLE_RUNTIME_NAMES.BUNDLE_FUNCTION;
 const ReqFn = FuseName + '.' + BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
 
-export function bundleSource(props: IBundleSourceProps) {
-  const isIsolated = props.target === 'web-worker' || props.isIsolated;
-
-  const modules: Array<IModule> = [];
-  let entries: Array<IModule> = [];
-  let injection: string;
-  let expose: Array<{ name: string; moduleId: number }>;
-  const scope = {
+export function createBundleSource(props: IBundleSourceProps): BundleSource {
+  const self: BundleSource = {
     containsMaps: false,
-    entries,
-    expose,
-
+    entries: [],
     // user injection
     // for example inject some code after the bundle is ready
-    injection,
-    modules,
-    generate: () => {
+
+    modules: [],
+    generate: (opts: IBundleGenerateProps) => {
       const concat = new Concat(true, '', '\n');
+
       // start the wrapper for the entire bundle if required
-      if (isIsolated) concat.add(null, `(function(){`);
+      if (opts.isIsolated) concat.add(null, `(function(){`);
 
       // adding core api if required
-      if (props.core) concat.add(null, bundleRuntimeCore(props.core));
+      if (opts.runtimeCore) concat.add(null, opts.runtimeCore);
 
       concat.add(null, BundleFN + '({');
 
       let index = 0;
-      const totalAmount = scope.modules.length;
+      const totalAmount = self.modules.length;
       while (index < totalAmount) {
-        const module = scope.modules[index];
+        const module = self.modules[index];
         const isLast = index + 1 === totalAmount;
         if (module.contents) {
-          concat.add(null, `\n// ${module.publicPath} @${module.id}`);
+          if (!props.isProduction) concat.add(null, `\n// ${module.publicPath} @${module.id}`);
 
           concat.add(null, module.id + `: function(${BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION}, exports, module){`);
           if (module.isSourceMapRequired && module.sourceMap) {
-            scope.containsMaps = true;
+            self.containsMaps = true;
           }
 
           concat.add(null, module.contents, module.isSourceMapRequired ? module.sourceMap : undefined);
@@ -65,21 +71,21 @@ export function bundleSource(props: IBundleSourceProps) {
       let injectionCode = [];
       // add entries
       // e.g __fuse.r(1)
-      if (scope.entries) {
-        for (const entry of scope.entries) {
+      if (self.entries) {
+        for (const entry of self.entries) {
           injectionCode.push(ReqFn + '(' + entry.id + ')');
         }
       }
 
       // add exposed variables
       // for example on nodejs that will be "exports" on browser "window"
-      if (scope.expose) {
+      if (self.expose) {
         let exposedGlobal;
         if (props.target === 'browser' || props.target === 'electron') exposedGlobal = 'window';
         else if (props.target === 'server') exposedGlobal = 'exports';
         // we cannot expose on web-worker target
         if (exposedGlobal) {
-          for (const item of scope.expose) {
+          for (const item of self.expose) {
             injectionCode.push(`${exposedGlobal}[${JSON.stringify(item.name)}] = ${ReqFn + '(' + item.moduleId + ')'}`);
           }
         }
@@ -90,9 +96,16 @@ export function bundleSource(props: IBundleSourceProps) {
 
       concat.add(null, '}' + readyFunction + ')');
       // end the isolation
-      if (isIsolated) concat.add(null, `})()`);
+      if (opts.isIsolated) concat.add(null, `})()`);
       return concat;
     },
+    generateHash: () => {
+      let str;
+      for (const module of self.modules) {
+        str += getMTime(module.absPath).toString();
+      }
+      return fastHash(str);
+    },
   };
-  return scope;
+  return self;
 }

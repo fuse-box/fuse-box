@@ -13,7 +13,7 @@ import { FuseBoxLogAdapter, createFuseLogger } from '../fuseLog/FuseBoxLogAdapte
 import { MainInterceptor, createInterceptor } from '../interceptor/interceptor';
 import { outputConfigConverter } from '../output/OutputConfigConverter';
 import { IOutputConfig } from '../output/OutputConfigInterface';
-import { distWriter, IDistWriter } from '../output/distWriter';
+import { DistWriter, distWriter } from '../output/distWriter';
 import { TsConfigAtPath } from '../resolver/fileLookup';
 import { createWebIndex, IWebIndexInterface } from '../webIndex/webIndex';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
@@ -34,7 +34,7 @@ export interface Context {
   userTransformers?: Array<ITransformer>;
   weakReferences?: WeakModuleReferences;
   webIndex?: IWebIndexInterface;
-  writer?: IDistWriter;
+  writer?: DistWriter;
   fatal?: (header: string, messages?: Array<string>) => void;
   registerTransformer?: (transformer: ITransformer) => void;
 }
@@ -56,16 +56,26 @@ export function createContext(props: ICreateContextProps): Context {
   };
 
   const runProps: IRunProps = props.runProps || {};
+  let publicConfig = props.publicConfig;
+
+  let publicPath: string;
+  if (typeof publicConfig.webIndex === 'object' && publicConfig.webIndex.publicPath)
+    publicPath = publicConfig.webIndex.publicPath;
+
   self.outputConfig = outputConfigConverter({
+    defaultPublicPath: publicPath,
     defaultRoot: path.join(props.scriptRoot || env.SCRIPT_PATH, 'dist'),
     publicConfig: runProps.bundles,
   });
-  self.writer = distWriter({ hashEnabled: props.envType === EnvironmentType.PRODUCTION, root: self.outputConfig.root });
+  self.writer = distWriter({
+    hashEnabled: props.envType === EnvironmentType.PRODUCTION,
+    root: self.outputConfig.distRoot,
+  });
   // configuration must be iniialised after the dist writer
   self.config = createConfig({
     ctx: self,
     envType: props.envType,
-    publicConfig: props.publicConfig,
+    publicConfig: publicConfig,
     runProps: props.runProps,
   });
 

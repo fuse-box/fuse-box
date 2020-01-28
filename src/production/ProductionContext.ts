@@ -1,4 +1,5 @@
 import { Context } from '../core/context';
+import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
 import { IModule } from '../moduleResolver/module';
 import { ModuleResolver } from '../moduleResolver/moduleResolver';
 import { ModuleTree } from './module/ModuleTree';
@@ -7,6 +8,7 @@ import { createSplitEntries, ISplitEntries } from './module/SplitEntries';
 export interface IProductionContext {
   ctx: Context;
   entries?: Array<IModule>;
+  log?: FuseBoxLogAdapter;
   modules?: Array<IModule>;
   splitEntries?: ISplitEntries;
 }
@@ -16,6 +18,7 @@ export function createProductionContext(ctx): IProductionContext {
   const productionContext: IProductionContext = {
     ctx,
     entries,
+    log: ctx.log,
     modules,
     splitEntries: createSplitEntries(),
   };

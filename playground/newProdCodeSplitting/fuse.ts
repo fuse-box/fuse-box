@@ -1,36 +1,48 @@
-import * as path from 'path';
-
 import { fusebox, sparky } from '../../src';
 
 class Context {
   isProduction;
   runServer;
-  getConfig() {
-    return fusebox({
+  getFusebox = () =>
+    fusebox({
       cache: false,
-      devServer: { httpServer: { port: 3000 } },
-      entry: 'src/index.js',
-      hmr: true,
+      devServer: true,
+      entry: ['src/index.jsx', 'src/secondEntry.js'],
       logging: {
         level: 'succinct',
       },
       target: 'browser',
-      tsConfig: 'src/tsconfig.json',
-      watch: true,
+      webIndex: true,
     });
-  }
 }
 const { rm, task } = sparky<Context>(Context);
 
-task('default', async ctx => {
+task('dist', ctx => {
   rm('./dist');
   ctx.runServer = false;
   ctx.isProduction = true;
-  const fuse = ctx.getConfig();
-  await fuse.runProd({
+  const fuse = ctx.getFusebox();
+  fuse.runProd({
+    buildTarget: 'ES5',
     bundles: {
-      root: path.join(__dirname, 'dist'),
-      app: 'app.js',
+      app: {
+        path: 'myapp.js',
+      },
+      codeSplitting: {
+        path: 'other/$name.$hash.js',
+      },
+      distRoot: 'dist',
+      vendor: 'vendor.$hash.js',
     },
+  });
+});
+
+task('default', ctx => {
+  rm('./dist');
+  ctx.runServer = true;
+  ctx.isProduction = false;
+  const fuse = ctx.getFusebox();
+  fuse.runDev({
+    bundles: { app: { path: 'app.js', publicPath: './bundles/' } },
   });
 });
