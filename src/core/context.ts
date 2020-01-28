@@ -56,7 +56,14 @@ export function createContext(props: ICreateContextProps): Context {
   };
 
   const runProps: IRunProps = props.runProps || {};
+  let publicConfig = props.publicConfig;
+
+  let publicPath: string;
+  if (typeof publicConfig.webIndex === 'object' && publicConfig.webIndex.publicPath)
+    publicPath = publicConfig.webIndex.publicPath;
+
   self.outputConfig = outputConfigConverter({
+    defaultPublicPath: publicPath,
     defaultRoot: path.join(props.scriptRoot || env.SCRIPT_PATH, 'dist'),
     publicConfig: runProps.bundles,
   });
@@ -68,7 +75,7 @@ export function createContext(props: ICreateContextProps): Context {
   self.config = createConfig({
     ctx: self,
     envType: props.envType,
-    publicConfig: props.publicConfig,
+    publicConfig: publicConfig,
     runProps: props.runProps,
   });
 

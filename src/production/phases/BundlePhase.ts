@@ -10,11 +10,17 @@ export async function BundlePhase(productionContext: IProductionContext) {
 
   for (const module of modules) {
     if (module.isExecutable) {
+      productionContext.log.info('generate', module.publicPath);
       const transformerResult = module.transpile();
       for (const item of transformerResult.requireStatementCollection) {
         item.statement = createRuntimeRequireStatement({ ctx, item, module });
       }
       module.generate();
+      if (ctx.config.productionBuildTarget) {
+        productionContext.log.info('down transpile', module.publicPath);
+        // need to down transpile
+        module.transpileDown(ctx.config.productionBuildTarget);
+      }
     }
   }
 
@@ -29,6 +35,8 @@ export async function BundlePhase(productionContext: IProductionContext) {
     if (ctx.config.webIndex) {
       await attachWebIndex(ctx, bundles);
     }
+
+    ctx.log.stopStreaming();
 
     ctx.ict.sync('complete', { bundles, ctx });
   }

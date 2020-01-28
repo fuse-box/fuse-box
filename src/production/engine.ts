@@ -9,7 +9,10 @@ export function Engine(productionContext: IProductionContext) {
   return {
     start: (phases?: Array<(productionContext: IProductionContext) => void>) => {
       phases = phases || defaultPhases;
+
       for (const phase of phases) {
+        const name = phase.toString().match(/function (\w+)/i)[1];
+        productionContext.log.info('phase', 'Running ' + name);
         phase(productionContext);
       }
     },

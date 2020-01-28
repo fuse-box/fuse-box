@@ -6,7 +6,7 @@ class Context {
   getFusebox = () =>
     fusebox({
       cache: false,
-      devServer: !this.isProduction,
+      devServer: true,
       entry: ['src/index.jsx', 'src/secondEntry.js'],
       logging: {
         level: 'succinct',
@@ -23,8 +23,14 @@ task('dist', ctx => {
   ctx.isProduction = true;
   const fuse = ctx.getFusebox();
   fuse.runProd({
+    buildTarget: 'ES5',
     bundles: {
-      app: 'app.js',
+      app: {
+        path: 'myapp.js',
+      },
+      codeSplitting: {
+        path: 'other/$name.$hash.js',
+      },
       distRoot: 'dist',
       vendor: 'vendor.$hash.js',
     },
@@ -37,10 +43,6 @@ task('default', ctx => {
   ctx.isProduction = false;
   const fuse = ctx.getFusebox();
   fuse.runDev({
-    bundles: {
-      app: 'app.js',
-      distRoot: 'dist',
-      vendor: 'vendor.$hash.js',
-    },
+    bundles: { app: { path: 'app.js', publicPath: './bundles/' } },
   });
 });

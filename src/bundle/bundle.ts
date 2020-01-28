@@ -39,6 +39,7 @@ export interface IBundleProps {
 
 export interface IBundleWriteResponse {
   absPath: string;
+  browserPath: string;
   bundle?: Bundle;
   relativePath: string;
 }
@@ -68,7 +69,7 @@ export function createBundle(props: IBundleProps): Bundle {
       const sourceMapFile = path.join(targetDir, sourceMapName);
       await bundleWriter.write(sourceMapFile, self.data.sourceMap);
     },
-    generate: async (opts?: { runtimeCore?: string }) => {
+    generate: async (opts?: { runtimeCore?: string; uglify?: boolean }) => {
       opts = opts || {};
       if (!self.config) self.prepare();
       if (self.entries) source.entries = self.entries;
@@ -80,6 +81,7 @@ export function createBundle(props: IBundleProps): Bundle {
       await bundleWriter.write(self.config.absPath, self.contents);
       return {
         absPath: self.config.absPath,
+        browserPath: self.config.browserPath,
         bundle: self,
         relativePath: self.config.relativePath,
       };
@@ -88,8 +90,10 @@ export function createBundle(props: IBundleProps): Bundle {
       self.config = bundleWriter.createWriter({
         fileName: props.fileName,
         hash: isProduction && self.source.generateHash(),
+        publicPath: bundleConfig.publicPath,
         userString: bundleConfig.path,
       });
+
       return self.config;
     },
   };

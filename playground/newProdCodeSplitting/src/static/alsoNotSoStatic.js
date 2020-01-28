@@ -1,5 +1,7 @@
 async function load() {
+  console.log('loading ../dynamic/dynamic...');
   const dynamicFunc = await import('../dynamic/dynamic');
+  console.log('loading ../dynamic/dynamic... DONE');
   dynamicFunc.default();
 }
 

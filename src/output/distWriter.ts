@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { ensureDir, ensureFuseBoxPath, fastHash, writeFile } from '../utils/utils';
+import { ensureAbsolutePath, ensureDir, ensureFuseBoxPath, fastHash, writeFile } from '../utils/utils';
 /**
   outputParser is an indepenent enttity that accepts a user string
   e.g "./dist" or "./dist/app.js" or "./dist/app.$hash.js"
@@ -24,8 +24,8 @@ export interface IOuputParserProps {
   root: string;
 }
 
-function stripHash(template): string {
-  return template.replace(/([-_.]+)?\$hash([-_.]+)?/, '');
+export function stripHash(str: string): string {
+  return str.replace(/([-_.]+)?\$hash([-_.]+)?(\.\w+)$/, '$3').replace(/\$hash([-_.]+)?/, '');
 }
 
 export interface IDistWriterInitProps {
@@ -33,6 +33,7 @@ export interface IDistWriterInitProps {
   // will strip out the hash
   forceDisableHash?: boolean;
   hash?: string;
+  publicPath?: string;
   // app.$name.js
   userString?: string;
 }
@@ -50,6 +51,7 @@ export interface DistWriter {
 
 export interface IWriterConfig {
   absPath: string;
+  browserPath: string;
   relativePath: string;
 }
 
@@ -72,11 +74,13 @@ export function distWriter(props: IOuputParserProps): DistWriter {
 
       if (hash) userString = userString.replace(/\$hash/g, hash);
       if (userString.indexOf('$name') > -1) userString = userString.replace(/\$name/g, options.fileName);
-      const absPath = path.join(root, userString);
+      const absPath = ensureAbsolutePath(userString, root);
       const relativePath = ensureFuseBoxPath(path.relative(root, absPath));
+      const browserPath = options.publicPath ? options.publicPath + relativePath : relativePath;
 
       return {
         absPath,
+        browserPath,
         relativePath,
       };
     },

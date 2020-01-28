@@ -31,6 +31,7 @@ export interface IPublicOutputConfig {
    * }
    */
   app?: IOutputBundleConfig;
+  codeSplitting?: ICodeSplittingProps;
   cssSplitting?: boolean;
   /**
    * distRoot is essential when making custom configuration
@@ -77,6 +78,8 @@ export interface IOutputBundleConfigAdvanced {
   isolatedApi?: boolean;
   maxBundleSize?: number;
   path: string;
+  // defaults to "/"
+  publicPath?: string;
 }
 
 /**
@@ -87,6 +90,7 @@ export type IOutputBundleConfig = IOutputBundleConfigAdvanced | string;
 
 export interface ICodeSplittingProps {
   path?: string;
+  publicPath?: string;
 }
 export interface IOutputConfig {
   app?: IOutputBundleConfigAdvanced;

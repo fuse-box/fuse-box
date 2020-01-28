@@ -26,7 +26,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
   const bundles: Array<Bundle> = [];
   const splitFileNames: Array<string> = [];
   const codeSplittingMap: ICodeSplittingMap = {
-    e: {},
+    b: {},
   };
   let mainBundle: Bundle;
   let vendorBundle: Bundle;
@@ -68,12 +68,18 @@ export function createBundleRouter(props: IBundleRouteProps) {
     bundle.source.modules.push(module);
   }
 
+  let codeSplittingIncluded = false;
+
   function createRuntimeCore(): string {
+    let typescriptHelpersPath;
+    if (ctx.config.productionBuildTarget) typescriptHelpersPath = ctx.config.tsHelpersPath;
+
     return bundleRuntimeCore({
-      codeSplittingMap: codeSplittingMap,
+      codeSplittingMap: codeSplittingIncluded ? codeSplittingMap : undefined,
       interopRequireDefault: ctx.compilerOptions.esModuleInterop,
       isIsolated: false,
       target: ctx.config.target,
+      typescriptHelpersPath: typescriptHelpersPath,
     });
   }
 
@@ -100,6 +106,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
         const splitBundle = createBundle({
           bundleConfig: {
             path: outputConfig.codeSplitting.path,
+            publicPath: outputConfig.codeSplitting.publicPath,
           },
           ctx,
           fileName,
@@ -110,9 +117,10 @@ export function createBundleRouter(props: IBundleRouteProps) {
 
         const bundleConfig = splitBundle.prepare();
         // update a json object with entry for the API
-        codeSplittingMap.e[entry.id] = {
-          b: bundleConfig.relativePath,
+        codeSplittingMap.b[entry.id] = {
+          p: bundleConfig.browserPath,
         };
+        codeSplittingIncluded = true;
         bundles.push(splitBundle);
       }
     },

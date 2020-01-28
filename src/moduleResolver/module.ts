@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as sourceMapModule from 'source-map';
+import * as ts from 'typescript';
 import { getMTime } from '../cache/cache';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
@@ -8,12 +9,12 @@ import { parseJavascript, parseTypeScript } from '../compiler/parser';
 import { transformCommonVisitors } from '../compiler/transformer';
 import { EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, STYLESHEET_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
 import { Context } from '../core/context';
+import { env } from '../env';
+import { ITypescriptTarget } from '../interfaces/TypescriptInterfaces';
 import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { makePublicPath, readFile } from '../utils/utils';
 import { PackageType, IPackage } from './package';
-import { env } from '../env';
-
 export function Module() {}
 
 export interface IModule {
@@ -56,6 +57,7 @@ export interface IModule {
   parse?: () => ASTNode;
   read?: () => string;
   transpile?: () => ITransformerResult;
+  transpileDown?(buildTarget: ITypescriptTarget): void;
 }
 
 export interface IModuleMeta {
@@ -208,6 +210,19 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       return self.contents;
     },
     transpile: () => transformCommonVisitors(self, props.ctx.compilerOptions),
+    transpileDown: (buildTarget: ITypescriptTarget) => {
+      // we can't support sourcemaps on downtranspiling
+      self.isSourceMapRequired = false;
+      const config = ts.convertCompilerOptionsFromJson(
+        { importHelpers: false, noEmitHelpers: true, target: buildTarget },
+        env.SCRIPT_PATH,
+      );
+      const data = ts.transpileModule(self.contents, {
+        compilerOptions: config.options,
+        fileName: self.absPath,
+      });
+      self.contents = data.outputText;
+    },
   };
   return self;
 }

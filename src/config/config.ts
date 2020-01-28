@@ -54,8 +54,14 @@ export function createConfig(props: {
   publicConfig: IPublicConfig;
   runProps: IRunProps;
 }): IConfig {
-  const { publicConfig } = props;
+  let { publicConfig, runProps } = props;
+  runProps = runProps || {};
   const config = Configuration(props.ctx);
+  if (runProps.buildTarget) {
+    config.productionBuildTarget = runProps.buildTarget;
+    config.tsHelpersPath = runProps.tsHelpersPath;
+    if (!config.tsHelpersPath) config.tsHelpersPath = path.join(env.FUSE_MODULES, 'ts_config_helpers/tslib.js');
+  }
 
   if (publicConfig.homeDir) config.homeDir = publicConfig.homeDir || env.APP_ROOT;
 
