@@ -1,5 +1,5 @@
 import { BUNDLE_RUNTIME_NAMES, bundleRuntimeCore, IBundleRuntimeCore } from '../bundleRuntimeCore';
-import { bundleSource } from '../bundleSource';
+import { createBundleSource } from '../bundleSource';
 
 const Fuse = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ;
 const RequireFunc = BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
@@ -30,27 +30,27 @@ describe('Bundle source test', () => {
 
   describe('Generic require', () => {
     it('should execute 1 file', () => {
-      const source = bundleSource({ target: 'browser' });
+      const source = createBundleSource({ target: 'browser' });
       source.modules = [{ contents: 'exports.Foo = "bar"', id: 1 }];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
       const { req } = runWithoutApi(result.content.toString());
       expect(req(1)).toEqual({ Foo: 'bar' });
     });
 
     it('should execute first file having 2 files', () => {
-      const source = bundleSource({ target: 'browser' });
+      const source = createBundleSource({ target: 'browser' });
       source.modules = [
         { contents: 'exports.Foo = "bar"', id: 1 },
         { contents: 'exports.Second = true', id: 2 },
       ];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
       const { req } = runWithoutApi(result.content.toString());
       expect(req(1)).toEqual({ Foo: 'bar' });
       expect(req(2)).toEqual({ Second: true });
     });
 
     it('should execute 1 file only once', () => {
-      const source = bundleSource({ target: 'browser' });
+      const source = createBundleSource({ target: 'browser' });
       source.modules = [
         {
           contents: `
@@ -59,7 +59,7 @@ describe('Bundle source test', () => {
           id: 1,
         },
       ];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
       const { req } = runWithoutApi(result.content.toString());
       expect(req(1)).toEqual({ counter: 1 });
       expect(req(1)).toEqual({ counter: 1 });
@@ -68,7 +68,7 @@ describe('Bundle source test', () => {
 
   describe('Bundle entries', () => {
     it('should call entry 1', () => {
-      const source = bundleSource({ target: 'browser' });
+      const source = createBundleSource({ target: 'browser' });
 
       source.modules = [
         {
@@ -77,13 +77,13 @@ describe('Bundle source test', () => {
         },
       ];
       source.entries = [{ id: 1 }];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
       const { obj } = runWithoutApi(result.content.toString());
       expect(obj.wasCalled).toEqual(true);
     });
 
     it('should call 2 entries', () => {
-      const source = bundleSource({ target: 'browser' });
+      const source = createBundleSource({ target: 'browser' });
 
       source.modules = [
         {
@@ -96,14 +96,14 @@ describe('Bundle source test', () => {
         },
       ];
       source.entries = [{ id: 1 }, { id: 2 }];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
       const { obj } = runWithoutApi(result.content.toString());
       expect(obj.FirstCalled).toEqual(true);
       expect(obj.SecondCalled).toEqual(true);
     });
 
     it('should polyfil default', () => {
-      const source = bundleSource({ target: 'browser' });
+      const source = createBundleSource({ target: 'browser' });
 
       source.modules = [
         {
@@ -112,13 +112,13 @@ describe('Bundle source test', () => {
         },
       ];
       source.entries = [{ id: 1 }];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
       const { obj } = runWithoutApi(result.content.toString(), { interopRequireDefault: true, target: 'browser' });
       expect(obj.FirstCalled).toEqual({ foo: 'bar' });
     });
 
     it('should take the existing default (obj)', () => {
-      const source = bundleSource({ target: 'browser' });
+      const source = createBundleSource({ target: 'browser' });
 
       source.modules = [
         {
@@ -127,13 +127,13 @@ describe('Bundle source test', () => {
         },
       ];
       source.entries = [{ id: 1 }];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
       const { obj } = runWithoutApi(result.content.toString(), { interopRequireDefault: true, target: 'browser' });
       expect(obj.FirstCalled).toEqual('bar');
     });
 
     it('should take  default (number)', () => {
-      const source = bundleSource({ target: 'browser' });
+      const source = createBundleSource({ target: 'browser' });
 
       source.modules = [
         {
@@ -142,7 +142,7 @@ describe('Bundle source test', () => {
         },
       ];
       source.entries = [{ id: 1 }];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
       const { obj } = runWithoutApi(result.content.toString(), { interopRequireDefault: true, target: 'browser' });
       expect(obj.FirstCalled).toEqual(1);
     });
@@ -150,7 +150,7 @@ describe('Bundle source test', () => {
 
   describe('Bundle expose', () => {
     it('should expose on window with target browser', () => {
-      const source = bundleSource({ target: 'browser' });
+      const source = createBundleSource({ target: 'browser' });
 
       source.modules = [
         {
@@ -159,7 +159,7 @@ describe('Bundle source test', () => {
         },
       ];
       source.expose = [{ moduleId: 1, name: 'FooLib' }];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
 
       const { obj } = runWithoutApi(result.content.toString());
       expect(obj['FooLib']).toEqual({ Foo: 'bar' });
@@ -167,7 +167,7 @@ describe('Bundle source test', () => {
 
     it('should expose on window with target electron', () => {
       const target = 'electron';
-      const source = bundleSource({ target: target });
+      const source = createBundleSource({ target: target });
 
       source.modules = [
         {
@@ -176,7 +176,7 @@ describe('Bundle source test', () => {
         },
       ];
       source.expose = [{ moduleId: 1, name: 'FooLib' }];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
 
       const { obj } = runWithoutApi(result.content.toString(), { target });
       expect(obj['FooLib']).toEqual({ Foo: 'bar' });
@@ -184,7 +184,7 @@ describe('Bundle source test', () => {
 
     it('should expose using "exports" for server', () => {
       const target = 'server';
-      const source = bundleSource({ target: target });
+      const source = createBundleSource({ target: target });
 
       source.modules = [
         {
@@ -193,7 +193,7 @@ describe('Bundle source test', () => {
         },
       ];
       source.expose = [{ moduleId: 1, name: 'FooLib' }];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
       const { serverExports } = runWithoutApi(result.content.toString(), { target });
       expect(serverExports['FooLib']).toEqual({ Foo: 'bar' });
     });
@@ -202,7 +202,7 @@ describe('Bundle source test', () => {
   describe('Source maps', () => {
     it('should write source maps', () => {
       const target = 'server';
-      const source = bundleSource({ target: target });
+      const source = createBundleSource({ target: target });
 
       const sourceMapObject = {
         mappings: ';;;AAEAA,QAAQC,IAAIC,WAAKC;AAEjBH,QAAQC,IAAI;;AAEZD,QAAQC,IAAI',
@@ -233,7 +233,7 @@ describe('Bundle source test', () => {
         },
       ];
       source.expose = [{ moduleId: 1, name: 'FooLib' }];
-      const result = source.generate();
+      const result = source.generate({ runtimeCore: null });
 
       expect(result.sourceMap).toMatchSnapshot();
     });

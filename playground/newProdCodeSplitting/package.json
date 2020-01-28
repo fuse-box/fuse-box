@@ -1,0 +1,13 @@
+{
+  "author": "",
+  "dependencies": {
+    "react": "^16.12.0"
+  },
+  "description": "",
+  "main": "dist/app.js",
+  "name": "newprodcodesplitting",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0"
+}

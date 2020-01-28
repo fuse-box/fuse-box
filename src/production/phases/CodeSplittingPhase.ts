@@ -38,6 +38,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
   const traversed: Record<number, boolean> = {
     [entryModuleId]: true,
   };
+  target.isSplit = true;
 
   const splitEntry = {
     circularModules,
@@ -111,8 +112,12 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
         } else if (!!productionContext.splitEntries.ids[module.id]) {
           // the module is a dynamic module and not the entry, so false!
           // we flagAsCommonsEligible here!
-          target.isCommonsEligible = true;
+          // target.isCommonsEligible = true;
+
+          // if we return false, it will be excluded and added to the mainBundle
           traced = false;
+          // if we return true, it will be included in every splitBundle
+          // traced = true;
         } else {
           traced = this.traceOrigin(module, id);
         }
@@ -153,6 +158,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
         for (const { target: reference } of references) {
           if (this.traceOrigin(reference, id)) {
             const exclude = this.traverseDependencies(reference, false);
+            reference.isSplit = true;
             if (!exclude) this.subModules.push(reference);
           }
         }

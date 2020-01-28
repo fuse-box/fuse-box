@@ -355,27 +355,33 @@ describe('Code Splitting test', () => {
     expect(modules).toHaveLength(8);
     expect(entries).toHaveLength(3);
 
+    // we're not splitting commons atm
     const oneModule = getSplitEntry('one.ts', entries);
     expect(oneModule.entry.publicPath).toContain('src/one.ts');
+    // expect(oneModule.modules).toHaveLength(3);
     expect(oneModule.modules).toHaveLength(2);
 
     const twoModule = getSplitEntry('two.ts', entries);
     expect(twoModule.entry.publicPath).toContain('src/two.ts');
+    // expect(twoModule.modules).toHaveLength(2);
     expect(twoModule.modules).toHaveLength(1);
 
     const threeModule = getSplitEntry('three.ts', entries);
     expect(threeModule.entry.publicPath).toContain('src/three.ts');
     expect(threeModule.modules).toHaveLength(2);
 
-    expect(modules[7].isCommonsEligible).toBe(true);
+    expect(modules[7].isCommonsEligible).toBe(false);
+    // expect(modules[7].isCommonsEligible).toBe(true);
   });
 
   /**
    * If a module is required from within different splitEntries and not outside
    * of splittedModules it should be flagged as commons, so we can create
    * another isolated splitted module
+   *
+   * This feature is disabled until further notice
    */
-  it('should have flag commons correctly', () => {
+  it('should NOT flag commons', () => {
     const context = getProductionContext({
       'bar.ts': `
         import './utils';
@@ -406,7 +412,8 @@ describe('Code Splitting test', () => {
     expect(modules).toHaveLength(5);
     expect(entries).toHaveLength(2);
     // utils.ts
-    expect(modules[2].isCommonsEligible).toBe(true);
+    expect(modules[2].isCommonsEligible).toBe(false);
+    // expect(modules[2].isCommonsEligible).toBe(true);
     // foo.ts
     expect(modules[4].isCommonsEligible).toBe(false);
   });

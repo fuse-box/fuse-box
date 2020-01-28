@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { outputConfigConverter } from '../OutputConfigConverter';
 
 describe('Output Config converter', () => {
@@ -8,7 +9,7 @@ describe('Output Config converter', () => {
     const res = outputConfigConverter({
       defaultRoot: 'dist',
     });
-    expect(res.root).toEqual('dist');
+    expect(res.distRoot).toEqual(path.join(__dirname, 'dist'));
     expect(res.app).toBeTruthy();
     expect(res.vendor).toBeTruthy();
     expect(res.codeSplitting).toBeTruthy();
@@ -18,20 +19,20 @@ describe('Output Config converter', () => {
     const res = outputConfigConverter({
       defaultRoot: __dirname,
       publicConfig: {
-        root: 'build',
+        distRoot: 'build',
       },
     });
-    expect(res.root).toEqual('build');
+    expect(res.distRoot).toEqual(path.join(__dirname, 'build'));
   });
 
   it('should give default app if non specified ', () => {
     const res = outputConfigConverter({
       defaultRoot: __dirname,
       publicConfig: {
-        root: 'build',
+        distRoot: 'build',
       },
     });
-    expect(res.root).toEqual('build');
+    expect(res.distRoot).toEqual(path.join(__dirname, 'build'));
     expect(res.app).toBeTruthy();
   });
 
@@ -39,11 +40,11 @@ describe('Output Config converter', () => {
     const res = outputConfigConverter({
       defaultRoot: __dirname,
       publicConfig: {
-        root: 'build',
+        distRoot: 'build',
         vendor: 'external.$hash.js',
       },
     });
-    expect(res.root).toEqual('build');
+    expect(res.distRoot).toEqual(path.join(__dirname, 'build'));
     expect(res.app).toBeTruthy();
     expect(res.vendor.path).toEqual('external.$hash.js');
   });
@@ -53,11 +54,11 @@ describe('Output Config converter', () => {
       defaultRoot: __dirname,
       publicConfig: {
         app: 'myapp.$hash.js',
-        root: 'build',
+        distRoot: 'build',
         vendor: 'external.$hash.js',
       },
     });
-    expect(res.root).toEqual('build');
+    expect(res.distRoot).toEqual(path.join(__dirname, 'build'));
     expect(res.app.path).toEqual('myapp.$hash.js');
     expect(res.vendor.path).toEqual('external.$hash.js');
   });
@@ -67,11 +68,11 @@ describe('Output Config converter', () => {
       defaultRoot: __dirname,
       publicConfig: {
         app: { maxBundleSize: 10, path: 'foo.js' },
-        root: 'build',
+        distRoot: 'build',
         vendor: { maxBundleSize: 20, path: 'bar.js' },
       },
     });
-    expect(res.root).toEqual('build');
+    expect(res.distRoot).toEqual(path.join(__dirname, 'build'));
 
     expect(res.app.path).toEqual('foo.js');
     expect(res.app.maxBundleSize).toEqual(10);

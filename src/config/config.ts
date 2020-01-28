@@ -54,8 +54,14 @@ export function createConfig(props: {
   publicConfig: IPublicConfig;
   runProps: IRunProps;
 }): IConfig {
-  const { publicConfig } = props;
+  let { publicConfig, runProps } = props;
+  runProps = runProps || {};
   const config = Configuration(props.ctx);
+  if (runProps.buildTarget) {
+    config.productionBuildTarget = runProps.buildTarget;
+    config.tsHelpersPath = runProps.tsHelpersPath;
+    if (!config.tsHelpersPath) config.tsHelpersPath = path.join(env.FUSE_MODULES, 'ts_config_helpers/tslib.js');
+  }
 
   if (publicConfig.homeDir) config.homeDir = publicConfig.homeDir || env.APP_ROOT;
 
@@ -148,12 +154,12 @@ export function createConfig(props: {
 
   // entry scripts ****************************************************************************************
   if (publicConfig.entry) {
-    config.entries = [].concat(publicConfig.entry);
-    config.entries.map(entry => {
+    config.entries = [].concat(publicConfig.entry).map(entry => {
       const entryPath = ensureAbsolutePath(entry, env.SCRIPT_PATH);
       if (!existsSync(entryPath)) {
         throw new Error(`Failed to resolve entry point ${entryPath}`);
       }
+      return entryPath;
     });
   }
 
