@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { ensureAbsolutePath, ensureDir, ensureFuseBoxPath, fastHash, writeFile } from '../utils/utils';
+import { ensureAbsolutePath, ensureDir, ensureFuseBoxPath, writeFile } from '../utils/utils';
 /**
   outputParser is an indepenent enttity that accepts a user string
   e.g "./dist" or "./dist/app.js" or "./dist/app.$hash.js"
