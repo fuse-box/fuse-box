@@ -15,7 +15,7 @@ class Context {
       sourceMap: true,
       watcher: true,
       webIndex: {
-        publicPath: '.',
+        publicPath: '/',
         template: 'src/index.html',
       },
 
@@ -35,7 +35,7 @@ task('default', async ctx => {
 
   await fuse.runDev({
     bundles: {
-      root: path.join(__dirname, 'dist'),
+      distRoot: path.join(__dirname, 'dist'),
       app: 'app.js',
     },
   });

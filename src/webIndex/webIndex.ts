@@ -68,56 +68,23 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
   if (isDisabled) {
     return { isDisabled };
   }
-  const opts = getEssentialWebIndexParams(config, ctx.log);
 
-  return {
+  let lateBundles;
+  let opts;
+  const self = {
     generate: async (bundles: Array<IBundleWriteResponse>) => {
+      opts = getEssentialWebIndexParams(config, ctx.log);
+      // memorize those to re-generate webIndex is needed
+      lateBundles = bundles;
       const scriptTags = [];
       const cssTags = [];
-      // let ftlEnabled = false;
-      // if (ctx.cache && ctx.config.cache.FTL && ctx.devServer && !ctx.config.production) {
-      //   ftlEnabled = true;
-      // }
-      //const sorted = bundles.sort((a, b) => a.bundle.props.priority - b.bundle.props.priority);
 
       bundles.forEach(item => {
         if (item.bundle.webIndexed) {
           scriptTags.push(htmlStrings.scriptTag(item.browserPath));
         }
-        // if (item.bundle.props.webIndexed) {
-        //   if (ftlEnabled && item.bundle.props.type == BundleType.PROJECT_ENTRY) {
-        //     scriptTags.push(htmlStrings.scriptTag('/__ftl'));
-        //   }
-        //   if (item.bundle.props.type !== BundleType.CSS) {
-        //     if (config.embedIndexedBundles && ctx.config.production) {
-        //       scriptTags.push(htmlStrings.embedScriptTag(item.bundle.contents.content.toString()));
-        //     } else {
-        //       scriptTags.push(htmlStrings.scriptTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
-        //     }
-        //   } else {
-        //     if (config.embedIndexedBundles && ctx.config.production) {
-        //       cssTags.push(htmlStrings.cssTagScript(item.bundle.contents.content.toString()));
-        //     } else {
-        //       cssTags.push(htmlStrings.cssTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
-        //     }
-        //   }
-        // }
       });
-
       let fileContents = opts.templateContent;
-
-      // const pluginResponse = await ctx.ict.send('before_webindex_write', {
-      //   filePath: opts.templatePath,
-      //   fileContents,
-      //   bundles,
-      //   scriptTags,
-      //   cssTags,
-      // });
-
-      // if (pluginResponse && pluginResponse.fileContents) {
-      //   fileContents = pluginResponse.fileContents;
-      // }
-
       fileContents = fileContents.replace(/\$import\('(.+?)'\)/g, (_, relPath: string) => {
         const result = resolveCSSResource(relPath, {
           contents: '',
@@ -139,7 +106,7 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
       };
       fileContents = replaceWebIndexStrings(fileContents, scriptOpts);
 
-      logger.info('webindex', 'writing to $name</yellow></bold></dim>', {
+      logger.info('webindex', '<dim>writing to $name</dim>', {
         name: opts.distFileName,
       });
       await ctx.writer.write(opts.distFileName, fileContents);
@@ -148,4 +115,21 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
       return joinFuseBoxPath(opts.publicPath, userPath);
     },
   };
+
+  ctx.ict.on('watcher_reaction', ({ reactionStack }) => {
+    for (const item of reactionStack) {
+      if (opts && item.absPath === opts.templatePath && lateBundles) {
+        logger.info(
+          'webindex',
+          '<magenta><bold>Detected changes to webIndex source. Will regenerate now</bold></magenta>',
+          {
+            name: opts.distFileName,
+          },
+        );
+        self.generate(lateBundles);
+      }
+    }
+  });
+  ctx.ict.on('complete', ({ bundles }) => self.generate(bundles));
+  return self;
 }

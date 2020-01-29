@@ -1,5 +1,5 @@
-import * as appRoot from 'app-root-path';
 import * as path from 'path';
+import { env } from '../env';
 import { findUp } from '../utils/findUp';
 import { fileExists, makeFuseBoxPath } from '../utils/utils';
 import { handleBrowserField } from './browserField';
@@ -7,7 +7,7 @@ import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
 import { getFolderEntryPointFromPackageJSON } from './shared';
 
-const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
+const PROJECT_NODE_MODULES = path.join(env.APP_ROOT, 'node_modules');
 
 const NODE_MODULE_REGEX = /^(([^\.][\.a-z0-9@\-_]*)(\/)?([_a-z0-9.@-]+)?(\/)?(.*))$/i;
 

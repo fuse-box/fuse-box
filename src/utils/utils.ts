@@ -33,6 +33,9 @@ export function removeFolder(userPath) {
   fsExtra.removeSync(userPath);
 }
 
+export function getPublicPath(x: string) {
+  return path.relative(env.APP_ROOT, x);
+}
 export function beautifyBundleName(absPath: string, maxLength?: number) {
   return absPath
     .replace(/(\.\w+)$/g, '')

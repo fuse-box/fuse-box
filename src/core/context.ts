@@ -15,6 +15,7 @@ import { outputConfigConverter } from '../output/OutputConfigConverter';
 import { IOutputConfig } from '../output/OutputConfigInterface';
 import { DistWriter, distWriter } from '../output/distWriter';
 import { TsConfigAtPath } from '../resolver/fileLookup';
+import { createWatcher } from '../watcher/watcher';
 import { createWebIndex, IWebIndexInterface } from '../webIndex/webIndex';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
 import { WeakModuleReferences } from './WeakModuleReferences';
@@ -27,6 +28,7 @@ export interface Context {
   devServer?: IDevServerActions;
   ict?: MainInterceptor;
   interceptor?: MainInterceptor;
+  isWorking?: boolean;
   log?: FuseBoxLogAdapter;
   outputConfig?: IOutputConfig;
   taskManager?: ContextTaskManager;
@@ -96,6 +98,7 @@ export function createContext(props: ICreateContextProps): Context {
     self.devServer = createDevServer(self);
   }
 
+  createWatcher(self);
   // custom ts configs at path
   self.tsConfigAtPaths = [];
   return self;

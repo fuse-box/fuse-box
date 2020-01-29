@@ -121,6 +121,14 @@ export function createConfig(props: {
     }
   }
 
+  config.watcher = {};
+  if (publicConfig.watcher !== undefined) {
+    if (typeof publicConfig.watcher === 'boolean') config.watcher.enabled = publicConfig.watcher;
+    else if (typeof publicConfig.watcher === 'object') config.watcher = publicConfig.watcher;
+  }
+  if (config.watcher.enabled === undefined) {
+    if (config.isDevelopment) config.watcher.enabled = true;
+  }
   config.plugins = publicConfig.plugins ? publicConfig.plugins : [];
 
   if (publicConfig.logging) {

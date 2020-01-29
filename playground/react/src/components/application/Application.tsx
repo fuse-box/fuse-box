@@ -14,7 +14,7 @@ export function Application() {
         <div className="logo" />
       </div>
       <div className="welcome" onClick={click}>
-        FuseBox ❤️ JSX/TSX
+        FuseBox ❤️ JSX/TSX!!!
       </div>
 
       <Details />

@@ -32,6 +32,7 @@ export function createBundleContext(ctx: Context) {
       const name = pkg.meta ? pkg.meta.name + '@' + pkg.meta.version : 'default';
       packages[name] = pkg;
     },
+
     tryCache: absPath => {
       if (!scope.cache) return;
       const data = scope.cache.restore(absPath);
