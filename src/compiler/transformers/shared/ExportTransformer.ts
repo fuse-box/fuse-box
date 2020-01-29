@@ -5,7 +5,6 @@ import {
   createVariableDeclaration,
   isDefinedLocally,
 } from '../../Visitor/helpers';
-import { generateVariableFromSource } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
@@ -115,7 +114,7 @@ export function ExportTransformer(): ITransformer {
            * Needs to be simply replaced, no tracking involved
            */
           if (node.source) {
-            const sourceVariable = generateVariableFromSource(node.source.value, global.getNextIndex());
+            const sourceVariable = global.getModuleName(node.source.value);
 
             // export * from "a"
             if (node.type === 'ExportAllDeclaration') {

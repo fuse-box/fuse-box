@@ -109,8 +109,8 @@ exports.default = {
 
 exports[`Es exports tests Export var with value should export a variable 1 1`] = `
 "var Observable_1 = require(\\"../Observable\\");
-var noop_2 = require(\\"../util/noop\\");
-exports.NEVER = new Observable_1.Observable(noop_2.noop);
+var noop_1 = require(\\"../util/noop\\");
+exports.NEVER = new Observable_1.Observable(noop_1.noop);
 console.log(exports.NEVER);
 "
 `;
