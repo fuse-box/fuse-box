@@ -5,7 +5,8 @@ import { IBundleContext } from '../moduleResolver/bundleContext';
 import { createModule, IModule, IModuleMeta } from '../moduleResolver/module';
 // import { Package, createPackage, IPackage } from '../moduleResolver/Package';
 import { Package, IPackage } from '../moduleResolver/package';
-import { ensureDir, writeFile } from '../utils/utils';
+import { ensureDir, fastHash, removeFolder, writeFile } from '../utils/utils';
+import { WatcherReaction } from '../watcher/watcher';
 
 export interface ICachePublicProps {
   FTL?: boolean;
@@ -13,6 +14,7 @@ export interface ICachePublicProps {
   root?: string;
 }
 export interface ICache {
+  nuke: () => void;
   restore: (absPath: string) => { module: IModule; mrc: IModuleResolutionContext };
   write: () => void;
 }
@@ -34,7 +36,8 @@ export function getMTime(absPath): number {
 }
 
 export function createCache(ctx: Context, bundleContext: IBundleContext): ICache {
-  let cacheRoot = ctx.config.cache.root;
+  const prefix = fastHash(ctx.config.entries.toString());
+  let cacheRoot = path.join(ctx.config.cache.root, prefix);
 
   const metaFile = path.join(cacheRoot, 'meta.json');
   const modulesFolder = path.join(cacheRoot, 'files');
@@ -115,7 +118,10 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     if (recordId) return verifyRecord(recordId, mrc);
   }
 
-  return {
+  const self = {
+    nuke: () => {
+      removeFolder(cacheRoot);
+    },
     restore: (absPath: string) => {
       const mrc: IModuleResolutionContext = {
         modulesCached: [],
@@ -157,4 +163,15 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       if (shouldWriteMeta) await writeFile(metaFile, JSON.stringify(meta, null, 2));
     },
   };
+
+  const nukableReactions = [WatcherReaction.TS_CONFIG_CHANGED, WatcherReaction.FUSE_CONFIG_CHANGED];
+  ctx.ict.on('watcher_reaction', ({ reactionStack }) => {
+    for (const item of reactionStack) {
+      if (nukableReactions.includes(item.reaction)) {
+        self.nuke();
+        break;
+      }
+    }
+  });
+  return self;
 }

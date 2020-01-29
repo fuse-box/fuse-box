@@ -2,7 +2,7 @@ import { InterceptorEvents } from './events';
 
 interface TypedInterceptor<T> {
   getPromises: () => Array<any>;
-  on<K extends keyof T>(key: K, fn: (props: T[K]) => T[K]);
+  on<K extends keyof T>(key: K, fn: (props: T[K]) => any);
   promise: (fn: () => Promise<any>) => void;
   resolve: () => Promise<any>;
   send<K extends keyof T>(key: K, props: T[K]): Promise<T[K]>;

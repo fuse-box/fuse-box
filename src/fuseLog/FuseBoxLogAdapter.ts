@@ -79,6 +79,7 @@ export class FuseBoxLogAdapter extends FuseLog {
 
   log(type: string, message: string) {
     const level = this.props.level;
+    //console.log(message);
 
     if (level === 'disabled') return;
 
@@ -186,9 +187,9 @@ export class FuseBoxLogAdapter extends FuseLog {
     const hasErrors = this._errors.length > 0;
     const hasWarnings = this._warnings.length > 0;
     this.printBottomMessages();
-    if (hasErrors || hasWarnings) {
-      this.echo('\n');
-    }
+
+    this.line();
+
     const time = this.getTime();
 
     const genericError = '<white><bold><bgRed> ERROR </bgRed></bold></white>';

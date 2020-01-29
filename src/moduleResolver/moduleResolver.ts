@@ -4,6 +4,7 @@ import { ITransformerRequireStatement } from '../compiler/interfaces/ITransforme
 import { ImportType } from '../compiler/interfaces/ImportType';
 import { Context } from '../core/context';
 import { resolveModule, ITypescriptPathsConfig } from '../resolver/resolver';
+import { getPublicPath } from '../utils/utils';
 import { createBundleContext, IBundleContext } from './bundleContext';
 import { createModule, IModule } from './module';
 import { PackageType, createPackage, IPackage } from './package';
@@ -114,7 +115,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
   function init(pkg, absPath, reUseId?: number) {
     if (bundleContext.modules[absPath]) return bundleContext.modules[absPath];
 
-    ctx.log.verbose('init', '<dim>$absPath</dim>', { absPath });
+    ctx.log.info('init', '<dim>$absPath</dim>', { absPath: getPublicPath(absPath) });
 
     const module = createModule({ absPath, ctx, pkg });
     module.init();

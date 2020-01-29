@@ -12,7 +12,8 @@ import { IResourceConfig } from './IResourceConfig';
 import { IRunProps } from './IRunProps';
 import { IStyleSheetProps } from './IStylesheetProps';
 import { ITarget } from './ITarget';
-import { IWatcherProps } from './IWatcherProps';
+
+import { IWatcherPublicConfig } from './IWatcher';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 
 export interface IPublicConfig {
@@ -30,16 +31,13 @@ export interface IPublicConfig {
     include?: Array<string>;
   };
 
-  watcher?: IWatcherProps | boolean;
-
-  resources?: IResourceConfig;
-
   cache?: ICacheProps | boolean;
   entry?: Array<string> | string;
   hmr?: IHMRProps | boolean;
   json?: IJSONPluginProps;
   link?: IPluginLinkOptions;
   plugins?: Array<(ctx: Context) => void>;
+  resources?: IResourceConfig;
   sourceMap?:
     | boolean
     | {
@@ -49,6 +47,7 @@ export interface IPublicConfig {
         vendor?: boolean;
       };
   stylesheet?: IStyleSheetProps;
+  watcher?: IWatcherPublicConfig | boolean;
   env?: { [key: string]: string };
 
   webIndex?: IWebIndexConfig | boolean;
@@ -78,7 +77,7 @@ export interface IConfig {
   stylesheet?: IStyleSheetProps;
   target?: ITarget;
   tsHelpersPath?: string;
-  watcher?: IWatcherProps;
+  watcher?: IWatcherPublicConfig;
   webIndex?: IWebIndexConfig;
   webWorkers?: IWebWorkerConfig;
   alias?: { [key: string]: string };

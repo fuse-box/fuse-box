@@ -1,5 +1,4 @@
 import { createBundleRouter } from '../../bundle/bundleRouter';
-import { attachWebIndex } from '../../development/attachWebIndex';
 import { createRuntimeRequireStatement } from '../../moduleResolver/moduleResolver';
 import { IProductionContext } from '../ProductionContext';
 
@@ -32,12 +31,8 @@ export async function BundlePhase(productionContext: IProductionContext) {
     }
     const bundles = await router.writeBundles();
 
-    if (ctx.config.webIndex) {
-      await attachWebIndex(ctx, bundles);
-    }
-
     ctx.log.stopStreaming();
 
-    ctx.ict.sync('complete', { bundles, ctx });
+    ctx.ict.sync('complete', { bundles });
   }
 }
