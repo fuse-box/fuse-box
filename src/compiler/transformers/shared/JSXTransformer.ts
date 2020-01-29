@@ -81,26 +81,32 @@ function parseFactory(factory: string) {
   return { JSXFragment, createElement };
 }
 
-const FACTORIES = {};
-
 export function JSXTransformer(): ITransformer {
   return {
     commonVisitors: props => {
-      if (props.module.extension === '.ts') return;
-      const compilerOptions = props.compilerOptions;
+      const {
+        compilerOptions: { jsxFactory },
+        module: { extension },
+      } = props;
+      // we don't need this for normal TypeScript files
+      if (extension === '.ts') return;
 
-      const jsxFactory = compilerOptions.jsxFactory;
-      // we don't need that for normal TypeScript files
+      // prepare for setting up the jsxFactory
+      let initJsxFactory = false;
+      let JSXFragment;
+      let createElement;
+
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
           const node = visit.node;
           const name = node.name as string;
-          const globalContext = visit.globalContext as GlobalContext;
 
-          const factory = globalContext.jsxFactory || jsxFactory;
-          if (!FACTORIES[factory]) FACTORIES[factory] = parseFactory(factory);
-
-          const { JSXFragment, createElement } = FACTORIES[factory];
+          // We only want to setup the jsxFacory once for this module
+          if (!initJsxFactory) {
+            const { jsxFactory: factory } = visit.globalContext as GlobalContext;
+            ({ JSXFragment, createElement } = parseFactory(factory || jsxFactory));
+            initJsxFactory = true;
+          }
 
           switch (node.type) {
             case 'JSXElement':
