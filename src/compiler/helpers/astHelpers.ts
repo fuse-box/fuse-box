@@ -2,10 +2,7 @@ import * as path from 'path';
 import { IASTScope } from '../Visitor/Visitor';
 
 export function generateModuleNameFromSource(source: string, sourceReferences) {
-  let variable = path
-    .basename(source)
-    .replace(/\.|-/g, '_')
-    .toLowerCase();
+  let variable = path.basename(source).replace(/\.|-/g, '_');
   let index: number = 1;
   if (!/^[a-z]/i.test(variable)) variable = 'a' + variable;
 

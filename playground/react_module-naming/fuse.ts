@@ -6,7 +6,7 @@ class Context {
   getFusebox = () =>
     fusebox({
       cache: false,
-      devServer: !this.isProduction,
+      devServer: false,
       entry: ['src/index.tsx'],
       logging: {
         level: 'succinct',

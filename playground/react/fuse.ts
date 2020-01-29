@@ -5,7 +5,7 @@ class Context {
   runServer;
   getConfig() {
     return fusebox({
-      cache: { enabled: false, root: './.cache' },
+      cache: { enabled: true, root: './.cache' },
       devServer: { httpServer: { port: 3000 } },
       entry: 'src/index.tsx',
       hmr: true,
