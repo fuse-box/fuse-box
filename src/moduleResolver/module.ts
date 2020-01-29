@@ -168,7 +168,28 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
     },
     // parse using javascript or typescript
     parse: () => {
-      if (!self.contents) throw new Error('Cannot parse without content');
+      if (!self.contents) {
+        // we're parsing an empty node_modules module.. we can't fix that, so we're giving it an empty ast.
+        if (self.absPath.lastIndexOf(path.join(env.SCRIPT_PATH, 'node_modules'), 0) === 0) {
+          props.ctx.log.warn(`One of your npm packages contains an empty module:\n\t ${self.publicPath}`);
+          self.ast = {
+            body: [
+              {
+                declaration: {
+                  type: 'Literal',
+                  value: '',
+                },
+                type: 'ExportDefaultDeclaration',
+              },
+            ],
+            sourceType: 'module',
+            type: 'Program',
+          };
+          return self.ast;
+        } else {
+          throw new Error('Cannot parse without content');
+        }
+      }
 
       if (JS_EXTENSIONS.includes(self.extension)) {
         try {
