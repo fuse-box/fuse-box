@@ -42,6 +42,7 @@ export function outputConfigConverter(props: IOutputConfigProps): IOutputConfig 
 
     if (userConfig.vendor) config.vendor = ensureBundleConfig(userConfig.vendor, defaultPublicPath);
     if (userConfig.codeSplitting) config.codeSplitting = userConfig.codeSplitting;
+    if (userConfig.serverEntry) config.serverEntry = userConfig.serverEntry;
     if (userConfig.mapping) {
       config.mapping = [];
       for (const item of userConfig.mapping) {
