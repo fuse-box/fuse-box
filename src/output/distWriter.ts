@@ -46,7 +46,7 @@ export interface IDistWriteResponse {
 export interface DistWriter {
   outputDirectory: string;
   createWriter: (options: IDistWriterInitProps) => IWriterConfig;
-  write: (target: string, contents: Buffer | string) => void;
+  write: (target: string, contents: Buffer | string) => Promise<string>;
 }
 
 export interface IWriterConfig {
@@ -85,10 +85,11 @@ export function distWriter(props: IOuputParserProps): DistWriter {
       };
     },
     // the actual write function
-    write: async (target: string, contents: Buffer | string) => {
+    write: async (target: string, contents: Buffer | string): Promise<string> => {
       if (!path.isAbsolute(target)) target = path.join(self.outputDirectory, target);
       ensureDir(path.dirname(target));
-      writeFile(target, contents);
+      await writeFile(target, contents);
+      return target;
     },
   };
   return self;

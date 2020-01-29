@@ -1,4 +1,3 @@
-import * as appRoot from 'app-root-path';
 import * as path from 'path';
 import * as ts from 'typescript';
 import { Context } from '../core/context';
@@ -25,7 +24,7 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
     tsConfigPath = ensureAbsolutePath(options.tsConfig, env.SCRIPT_PATH);
   } else {
     const fileName = ctx.config.entries[0];
-    tsConfigPath = findTsConfig({ fileName: fileName, root: appRoot.path });
+    tsConfigPath = findTsConfig({ fileName: fileName, root: env.APP_ROOT });
   }
 
   let baseURL = options.baseUrl;

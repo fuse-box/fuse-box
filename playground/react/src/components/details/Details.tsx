@@ -1,6 +1,6 @@
-import * as React from "react";
+import * as React from 'react';
 
-import "./Details.scss";
+import './Details.scss';
 
 export function Details() {
   return (
@@ -12,22 +12,17 @@ export function Details() {
       </div>
 
       <div className="try-updating">
-        Try changing any of the components, You will get an isntant update
-        without a page refresh
+        Try changing any of the components, You will get an isntant update without a page refresh
       </div>
 
       <div className="hint">
-        Did you know that it doesn't matter how many components you have 5 or
-        5000, FuseBox is smart at detecting the changes you make. You will get
-        an instant update guaranteed!
+        Did you know that it doesn't matter how many components you have 5 or 5000, FuseBox is smart at detecting the
+        changes you make. You will get an instant update guaranteed!
       </div>
 
       <div className="fork">
-        Fork this{" "}
-        <a href="https://codesandbox.io/s/github/fuse-box/react-example">
-          sandbox
-        </a>{" "}
-        and share the link with your friends and watch you code live!
+        Fork this <a href="https://codesandbox.io/s/github/fuse-box/react-example">sandbox</a> and share the link with
+        your friends and watch you code live!
       </div>
     </div>
   );
