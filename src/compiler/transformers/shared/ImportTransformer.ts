@@ -1,7 +1,6 @@
 import { BUNDLE_RUNTIME_NAMES } from '../../../bundleRuntime/bundleRuntimeCore';
 import { IVisit } from '../../Visitor/Visitor';
 import { ES_MODULE_EXPRESSION, createEsModuleDefaultInterop, createRequireStatement } from '../../Visitor/helpers';
-import { generateVariableFromSource } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
@@ -34,7 +33,7 @@ export function ImportTransformer(): ITransformer {
           let injectDefaultInterop;
           if (node.type === ASTType.ImportDeclaration) {
             // converts "./foo/bar.hello.js" to foo_bar_hello_js_1 (1:1 like typescript does)
-            const variable = generateVariableFromSource(node.source.value, global.getNextIndex());
+            const variable = global.getModuleName(node.source.value);
 
             node.specifiers.forEach(specifier => {
               if (specifier.type === ASTType.ImportSpecifier) {
@@ -45,7 +44,7 @@ export function ImportTransformer(): ITransformer {
               } else if (specifier.type === ASTType.ImportDefaultSpecifier) {
                 let replacement;
                 if (esModuleInterop) {
-                  injectDefaultInterop = `default_${global.getNextIndex()}`;
+                  injectDefaultInterop = variable + 'd';
                   replacement = {
                     first: injectDefaultInterop,
                   };
