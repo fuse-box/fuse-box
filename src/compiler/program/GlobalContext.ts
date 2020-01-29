@@ -1,17 +1,25 @@
+import { generateModuleNameFromSource } from '../helpers/astHelpers';
 import { ASTNode } from '../interfaces/AST';
 import { IProgramProps } from './transpileModule';
 
 export interface GlobalContext {
-  getNextIndex: () => number;
-  getNextSystemVariable: () => string;
-  hoisted: { [key: string]: number };
+  completeCallbacks?: Array<() => void>;
+  jsxFactory?: string;
+  namespace?: string;
+  programProps?: IProgramProps;
+  sourceReferences: Record<
+    string,
+    {
+      current: number;
+      sources: Record<string, number>;
+    }
+  >;
   exportAfterDeclaration?: {
     [key: string]: {
       targets?: Array<string>;
     };
   };
-  jsxFactory?: string;
-  programProps?: IProgramProps;
+  hoisted: { [key: string]: number };
   identifierReplacement: {
     [key: string]: {
       first?: string;
@@ -20,19 +28,19 @@ export interface GlobalContext {
       inUse?: boolean;
     };
   };
-  namespace?: string;
-  completeCallbacks?: Array<() => void>;
+  getModuleName: (source: string) => string;
+  getNextSystemVariable: () => string;
 }
 
 export function createGlobalContext(userContext?: { [key: string]: any }): GlobalContext {
   let VARIABLE_COUNTER = 0;
-  let index = 1;
   let essentialContext = {
     completeCallbacks: [],
     hoisted: {},
-    getNextIndex: () => index++,
     identifierReplacement: {},
     namespace: 'exports',
+    sourceReferences: {},
+    getModuleName: source => generateModuleNameFromSource(source, essentialContext.sourceReferences),
     getNextSystemVariable: () => {
       return `_${++VARIABLE_COUNTER}_`;
     },

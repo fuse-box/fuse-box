@@ -171,8 +171,8 @@ function three() {}
 
 exports[`scope test should handle multiple scenarious at one 1`] = `
 "var shit_1 = require(\\"shit\\");
-var oi_2 = require(\\"oi\\");
-var hey_3 = require(\\"hey\\");
+var oi_1 = require(\\"oi\\");
+var hey_1 = require(\\"hey\\");
 function hello() {}
 function some() {
   const execute = {};
@@ -182,8 +182,8 @@ function one(props) {
   const {foo, ...rest} = props;
   console.log(foo);
 }
-console.log(oi_2.default);
-console.log(hey_3.Hey);
+console.log(oi_1.default);
+console.log(hey_1.Hey);
 class Hey {
   foo(hey) {
     console.log(hey);

@@ -5,31 +5,29 @@ class Context {
   runServer;
   getConfig() {
     return fusebox({
-      entry: 'src/index.tsx',
-      target: 'browser',
-      webIndex: {
-        template: 'src/index.html',
-      },
-
       cache: { enabled: true, root: './.cache' },
       devServer: { httpServer: { port: 3000 } },
+      entry: 'src/index.tsx',
       hmr: true,
       logging: {
         level: 'succinct',
       },
       stylesheet: { paths: [path.join(__dirname, 'src/config')] },
-      watch: true,
+      target: 'browser',
+      webIndex: {
+        template: 'src/index.html',
+      },
     });
   }
 }
-const { exec, rm, task } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;
   const fuse = ctx.getConfig();
   await fuse.runDev({
     bundles: {
-      root: path.join(__dirname, 'dist'),
+      distRoot: path.join(__dirname, 'dist'),
       app: 'app.js',
     },
   });

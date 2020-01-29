@@ -2,9 +2,9 @@
 
 exports[`Es imports tests Edge cases should handle lodash edge case 1 1`] = `
 "var toString_js_1 = require(\\"./toString.js\\");
-var upperFirst_js_2 = require(\\"./upperFirst.js\\");
+var upperFirst_js_1 = require(\\"./upperFirst.js\\");
 function capitalize(string) {
-  return upperFirst_js_2.default(toString_js_1.default(string).toLowerCase());
+  return upperFirst_js_1.default(toString_js_1.default(string).toLowerCase());
 }
 exports.default = capitalize;
 "
@@ -157,6 +157,17 @@ exports[`Es imports tests Local variable replacement should not mess with the sc
 "var mixin = function (func) {
   console.log(func);
 };
+"
+`;
+
+exports[`Es imports tests Naming should always be correct should start every unique module with 1 1`] = `
+"var react_1 = require(\\"react\\");
+var react_2 = require(\\"react\\");
+var someOther_1 = require(\\"./someOther\\");
+react_2.useEffect(() => {
+  console.log(react_1.test);
+  console.log(someOther_1.someOther);
+});
 "
 `;
 
