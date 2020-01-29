@@ -169,26 +169,21 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
     // parse using javascript or typescript
     parse: () => {
       if (!self.contents) {
-        // we're parsing an empty node_modules module.. we can't fix that, so we're giving it an empty ast.
-        if (self.absPath.lastIndexOf(path.join(env.SCRIPT_PATH, 'node_modules'), 0) === 0) {
-          props.ctx.log.warn(`One of your npm packages contains an empty module:\n\t ${self.publicPath}`);
-          self.ast = {
-            body: [
-              {
-                declaration: {
-                  type: 'Literal',
-                  value: '',
-                },
-                type: 'ExportDefaultDeclaration',
+        props.ctx.log.warn(`One of your dependencies contains an empty module:\n\t ${self.publicPath}`);
+        self.ast = {
+          body: [
+            {
+              declaration: {
+                type: 'Literal',
+                value: '',
               },
-            ],
-            sourceType: 'module',
-            type: 'Program',
-          };
-          return self.ast;
-        } else {
-          throw new Error('Cannot parse without content');
-        }
+              type: 'ExportDefaultDeclaration',
+            },
+          ],
+          sourceType: 'module',
+          type: 'Program',
+        };
+        return self.ast;
       }
 
       if (JS_EXTENSIONS.includes(self.extension)) {
@@ -222,10 +217,10 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       try {
         self.contents = readFile(self.absPath);
       } catch (e) {
-        if (self.absPath.lastIndexOf(path.join(env.SCRIPT_PATH, 'node_modules'), 0) === 0) {
+        if (self.absPath.includes('node_modules')) {
           props.ctx.log.warn(`Did you forget to run 'npm install'?`);
         }
-        props.ctx.log.error(`Module not found ${self.absPath.replace(props.ctx.config.homeDir, '')}`, e.message);
+        props.ctx.log.error(`Module not found at\n\t${self.publicPath}`, e.message);
         throw e;
       }
       return self.contents;

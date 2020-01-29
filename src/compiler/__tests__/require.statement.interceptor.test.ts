@@ -59,4 +59,17 @@ describe('Require statement intercepto', () => {
       },
     ]);
   });
+
+  it('it should honor custom require', () => {
+    const result = testTranspile({
+      code: `
+      function foo(require) {
+        const b = require("./a");
+        console.log(b);
+      }
+      console.log(foo);
+    `,
+    });
+    expect(result.requireStatementCollection).toHaveLength(0);
+  });
 });
