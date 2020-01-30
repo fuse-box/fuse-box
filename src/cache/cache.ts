@@ -3,7 +3,6 @@ import * as path from 'path';
 import { Context } from '../core/context';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { createModule, IModule, IModuleMeta } from '../moduleResolver/module';
-// import { Package, createPackage, IPackage } from '../moduleResolver/Package';
 import { Package, IPackage } from '../moduleResolver/package';
 import { ensureDir, fastHash, removeFolder, writeFile } from '../utils/utils';
 import { WatcherReaction } from '../watcher/watcher';
@@ -21,11 +20,12 @@ export interface ICache {
 
 export interface IModuleResolutionContext {
   modulesCached: Array<IModule>;
-  modulesRequireResolution: Array<{ id: number; absPath: string; pkg?: IPackage }>;
+  modulesRequireResolution: Array<{ id: any; absPath: string; pkg?: IPackage }>;
   processed: Record<number, number>;
 }
 
 export interface ICacheMeta {
+  ctx?: Record<string, any>;
   currentId?: number;
   modules: Record<number, IModuleMeta>;
   packages: Record<string, IPackage>;
@@ -54,6 +54,13 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     };
   }
 
+  // restore context cachable
+  if (meta.ctx) {
+    for (const key in meta.ctx) {
+      ctx[key] = meta.ctx[key];
+    }
+  }
+
   function flushRecord(absPath: string, id: number, mrc: IModuleResolutionContext) {
     const cachedModule = meta.modules[id];
 
@@ -62,8 +69,16 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       pkg = meta.packages[cachedModule.packageId];
       delete meta.modules[id];
     }
-
     mrc.modulesRequireResolution.push({ absPath, id, pkg });
+  }
+
+  function flushDependantsOfModule(record: IModuleMeta, mrc: IModuleResolutionContext) {
+    for (const id in meta.modules) {
+      const r = meta.modules[id];
+      if (r.dependencies.includes(record.id))
+        mrc.modulesRequireResolution.push({ absPath: r.absPath, id: id, pkg: meta.packages[r.packageId] });
+    }
+    return;
   }
 
   function verifyRecord(id: number, mrc: IModuleResolutionContext): IModule {
@@ -72,9 +87,19 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     mrc.processed[id] = 1;
 
     const record = meta.modules[id];
+    if (!record) return;
     let target: IModule;
-    if (existsSync(record.absPath) && getMTime(record.absPath) === record.mtime) {
+
+    // if a file was present in the cache but removed by user
+    // we need to veriry the files that depenentant on it and re-resolve them
+    if (!existsSync(record.absPath)) {
+      flushDependantsOfModule(record, mrc);
+      return;
+    }
+
+    if (getMTime(record.absPath) === record.mtime) {
       const cacheFile = path.join(modulesFolder, record.id + '.json');
+
       if (existsSync(cacheFile)) {
         const moduleCacheData = require(cacheFile);
         const module = (target = createModule({ absPath: record.absPath, ctx: ctx }));
@@ -158,8 +183,14 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         }
       }
 
-      await Promise.all(cacheWriters);
+      // fast and ugly check if cache context needs to be written
+      const cachable = ctx.getCachable();
 
+      if (JSON.stringify(meta.ctx) !== JSON.stringify(cachable)) {
+        shouldWriteMeta = true;
+        meta.ctx = cachable;
+      }
+      await Promise.all(cacheWriters);
       if (shouldWriteMeta) await writeFile(metaFile, JSON.stringify(meta, null, 2));
     },
   };
@@ -167,6 +198,18 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
   const nukableReactions = [WatcherReaction.TS_CONFIG_CHANGED, WatcherReaction.FUSE_CONFIG_CHANGED];
   ctx.ict.on('watcher_reaction', ({ reactionStack }) => {
     for (const item of reactionStack) {
+      // reacting to unlink
+
+      // if (item.event === 'unlink') {
+      //   for (const id in meta.modules) {
+      //     console.log(meta.modules[id].absPath);
+      //     if (meta.modules[id].absPath === item.absPath) {
+      //       console.log('removing from cache', item.absPath);
+      //       meta.modules[id] = undefined;
+      //     }
+      //   }
+      //   // reacting to file deletion
+      // }
       if (nukableReactions.includes(item.reaction)) {
         self.nuke();
         break;

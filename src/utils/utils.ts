@@ -33,6 +33,16 @@ export function removeFolder(userPath) {
   fsExtra.removeSync(userPath);
 }
 
+export function isPathRelative(from: string, to: string) {
+  const relativePath = path.relative(from, to);
+  return !relativePath.startsWith('..');
+}
+
+export function isDirectoryEmpty(directory: string) {
+  const files = fs.readdirSync(directory);
+  return files.length === 0;
+}
+
 export function getPublicPath(x: string) {
   return path.relative(env.APP_ROOT, x);
 }

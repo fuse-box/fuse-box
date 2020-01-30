@@ -14,11 +14,12 @@ export enum ImportType {
 
 export interface ITypescriptPathsConfig {
   baseURL: string;
+  tsconfigPath?: string;
   paths?: { [key: string]: Array<string> };
 }
 export interface IResolverProps {
   buildTarget?: ITarget;
-  cache?: boolean;
+  cachePaths?: boolean;
   filePath?: string;
   homeDir?: string;
   importType?: ImportType;
@@ -124,7 +125,8 @@ export function resolveModule(props: IResolverProps): IResolver {
   if (props.typescriptPaths) {
     lookupResult = pathsLookup({
       baseURL: props.typescriptPaths.baseURL,
-      cachePaths: props.cache,
+      cachePaths: props.cachePaths,
+      configLocation: props.typescriptPaths.tsconfigPath,
       homeDir: props.homeDir,
       isDev: props.isDev,
       paths: props.typescriptPaths.paths,

@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
+import { IRawCompilerOptions } from '../compilerOptions/interfaces';
+import { parseTypescriptConfig } from '../compilerOptions/parseTypescriptConfig';
 // import { initTypescriptConfig } from '../tsconfig/configParser';
 import { fileExists } from '../utils/utils';
 import { getFolderEntryPointFromPackageJSON } from './shared';
@@ -16,7 +17,8 @@ export interface ILookupProps {
 
 export interface TsConfigAtPath {
   absPath: string;
-  tsConfig: TypescriptConfig;
+  compilerOptions: IRawCompilerOptions;
+  tsconfigPath: string;
 }
 
 export interface ILookupResult {
@@ -119,12 +121,16 @@ export function fileLookup(props: ILookupProps): ILookupResult {
             monorepoModulesPaths = _monoModules;
           }
 
-          // const _tsConfig = path.resolve(resolved, 'tsconfig.json');
-          // if (fileExists(_tsConfig)) {
-          //   const props: any = { tsConfig: _tsConfig };
-          //   const _tsConfigObject = initTypescriptConfig(props);
-          //   tsConfigAtPath = { absPath: resolved, tsConfig: _tsConfigObject };
-          // }
+          const _tsConfig = path.resolve(resolved, 'tsconfig.json');
+          if (fileExists(_tsConfig)) {
+            const tsConfigParsed = parseTypescriptConfig(_tsConfig);
+            if (!tsConfigParsed.error)
+              tsConfigAtPath = {
+                absPath: resolved,
+                compilerOptions: tsConfigParsed.config.compilerOptions,
+                tsconfigPath: _tsConfig,
+              };
+          }
         }
 
         const entryFile = path.join(resolved, entry);
