@@ -33,8 +33,7 @@ export async function BundlePhase(productionContext: IProductionContext) {
     const bundles = await router.writeBundles();
 
     // create a server bundle if we have more than 1 bundle in a server setup
-    // if (ctx.config.target === 'server' && bundles.length > 1) bundles.push(await createServerEntry(ctx, bundles));
-    if (ctx.config.target === 'server') bundles.push(await createServerEntry(ctx, bundles));
+    if (ctx.config.target === 'server' && bundles.length > 1) bundles.push(await createServerEntry(ctx, bundles));
 
     ctx.log.stopStreaming();
     ctx.ict.sync('complete', { bundles });
