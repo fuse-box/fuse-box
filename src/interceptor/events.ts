@@ -20,14 +20,18 @@ export interface InterceptorEvents {
   watcher_reaction: { reactionStack: ReactionStack };
 
   complete: {
+    bundleContext?: IBundleContext;
     bundles: Array<IBundleWriteResponse>;
+    entries?: Array<IModule>;
+    modules?: Array<IModule>;
   };
   rebundle: {
     bundles: Array<IBundleWriteResponse>;
   };
   rebundle_complete: {
     bundles: Array<IBundleWriteResponse>;
-    ctx: Context;
     file: string;
+    entries?: Array<IModule>;
+    modules?: Array<IModule>;
   };
 }

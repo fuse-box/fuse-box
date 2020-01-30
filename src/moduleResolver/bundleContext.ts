@@ -35,6 +35,7 @@ export function createBundleContext(ctx: Context) {
 
     tryCache: absPath => {
       if (!scope.cache) return;
+
       const data = scope.cache.restore(absPath);
       return data;
     },

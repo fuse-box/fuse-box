@@ -35,7 +35,7 @@ export function preflightFusebox(ctx: Context) {
       for (const item of reactionStack) {
         if (ExitableReactions.includes(item.reaction)) {
           log.stopStreaming();
-          log.clearConsole();
+          //log.clearConsole();
           log.line();
           log.echo(' <yellow><bold> @warning Your configuration has changed.</bold> </yellow>');
           log.echo(' <yellow><bold> @warning Cache has been cleared</bold> </yellow>');

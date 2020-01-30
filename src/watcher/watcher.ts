@@ -20,8 +20,11 @@ const Reactions = [
   { clearCache: true, reaction: WatcherReaction.FUSE_CONFIG_CHANGED, test: /fuse\.(js|ts)$/ },
 ];
 
+export type ChokidarChangeEvent = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
+
 export interface Reaction {
   absPath: string;
+  event?: ChokidarChangeEvent;
   reaction: WatcherReaction;
 }
 
@@ -81,7 +84,7 @@ export function createWatcher(ctx: Context) {
   }
 
   let tm;
-  function dispatchEvent(event: string, absPath: string) {
+  function dispatchEvent(event: ChokidarChangeEvent, absPath: string) {
     clearTimeout(tm);
 
     let projectFilesChanged = false;
@@ -92,7 +95,7 @@ export function createWatcher(ctx: Context) {
       }
     }
 
-    if (projectFilesChanged) reactionStack.push({ absPath, reaction: WatcherReaction.PROJECT_FILE_CHANGED });
+    if (projectFilesChanged) reactionStack.push({ absPath, event, reaction: WatcherReaction.PROJECT_FILE_CHANGED });
     for (const x of Reactions) {
       if (x.test.test(absPath)) reactionStack.push({ absPath, reaction: x.reaction });
     }

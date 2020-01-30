@@ -1,11 +1,21 @@
+import { IBundleWriteResponse } from '../bundle/bundle';
 import { createBundleRouter } from '../bundle/bundleRouter';
 import { Context } from '../core/context';
+import { IBundleContext } from '../moduleResolver/bundleContext';
+import { IModule } from '../moduleResolver/module';
 import { ModuleResolver } from '../moduleResolver/moduleResolver';
 
-export async function bundleDev(props: { ctx: Context; rebundle?: boolean }) {
+export interface IBundleDevResponse {
+  bundleContext?: IBundleContext;
+  bundles: Array<IBundleWriteResponse>;
+  entries?: Array<IModule>;
+  modules?: Array<IModule>;
+}
+export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Promise<IBundleDevResponse> {
   const { ctx, rebundle } = props;
   ctx.log.startStreaming();
   ctx.log.startTimeMeasure();
+  ctx.log.flush();
   ctx.isWorking = true;
   const ict = ctx.ict;
 
@@ -17,8 +27,9 @@ export async function bundleDev(props: { ctx: Context; rebundle?: boolean }) {
     const bundles = await router.writeBundles();
 
     if (bundleContext.cache) bundleContext.cache.write();
-
-    ict.sync(rebundle ? 'rebundle' : 'complete', { bundles });
     ctx.isWorking = false;
+    const response = { bundleContext, bundles, entries, modules };
+    ict.sync(rebundle ? 'rebundle' : 'complete', response);
+    return response;
   }
 }

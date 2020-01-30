@@ -1,10 +1,10 @@
 import * as path from 'path';
-import * as ts from 'typescript';
 import { Context } from '../core/context';
 import { env } from '../env';
 import { ensureAbsolutePath } from '../utils/utils';
 import { findTsConfig } from './findTSConfig';
-import { ICompilerOptions, IRawCompilerOptions, IRawTypescriptConfig } from './interfaces';
+import { ICompilerOptions, IRawCompilerOptions } from './interfaces';
+import { parseTypescriptConfig } from './parseTypescriptConfig';
 export function createCompilerOptions(ctx: Context): ICompilerOptions {
   let options = ctx.config.compilerOptions || {};
 
@@ -30,7 +30,8 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
   let baseURL = options.baseUrl;
   let tsConfigDirectory;
   if (tsConfigPath) {
-    const data: IRawTypescriptConfig = ts.readConfigFile(tsConfigPath, ts.sys.readFile);
+    const data = parseTypescriptConfig(tsConfigPath);
+
     tsConfigDirectory = path.dirname(tsConfigPath);
     const tsConfig = data.config;
 
@@ -50,7 +51,8 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
       }
       if (tsConfig.extends) {
         const targetExtendedFile = path.join(tsConfigDirectory, tsConfig.extends);
-        const extendedData: IRawTypescriptConfig = ts.readConfigFile(targetExtendedFile, ts.sys.readFile);
+
+        const extendedData = parseTypescriptConfig(targetExtendedFile);
 
         if (extendedData.error) {
           let message = 'Error while initializing tsconfig';
@@ -68,8 +70,11 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
           }
         }
       }
+
       if (tsConfig.compilerOptions) {
         const tsConfigCompilerOptions = tsConfig.compilerOptions;
+
+        if (tsConfigCompilerOptions.paths) options.paths = tsConfigCompilerOptions.paths;
 
         // to keep it compatible with the old versions
         if (tsConfigCompilerOptions.allowSyntheticDefaultImports) options.esModuleInterop = true;
