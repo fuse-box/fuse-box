@@ -38,6 +38,7 @@ export interface Context {
   webIndex?: IWebIndexInterface;
   writer?: DistWriter;
   fatal?: (header: string, messages?: Array<string>) => void;
+  getCachable?: () => any;
   registerTransformer?: (transformer: ITransformer) => void;
 }
 
@@ -54,6 +55,12 @@ export function createContext(props: ICreateContextProps): Context {
       self.log.clearConsole();
       self.log.fuseFatal(header, messages);
       process.exit(1);
+    },
+    getCachable: () => {
+      const cachable = {
+        tsConfigAtPaths: self.tsConfigAtPaths,
+      };
+      return cachable;
     },
   };
 

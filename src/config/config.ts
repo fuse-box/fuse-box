@@ -136,6 +136,7 @@ export function createConfig(props: {
   } else {
     config.logging = { level: 'succinct' };
   }
+  if (process.argv.includes('--verbose')) config.logging.level = 'verbose';
 
   if (publicConfig.compilerOptions) {
     config.compilerOptions = publicConfig.compilerOptions;

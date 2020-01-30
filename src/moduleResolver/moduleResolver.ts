@@ -3,10 +3,12 @@ import { ASTNode } from '../compiler/interfaces/AST';
 import { ITransformerRequireStatement } from '../compiler/interfaces/ITransformerRequireStatements';
 import { ImportType } from '../compiler/interfaces/ImportType';
 import { Context } from '../core/context';
-import { resolveModule, ITypescriptPathsConfig } from '../resolver/resolver';
+import { env } from '../env';
+import { resolveModule } from '../resolver/resolver';
 import { getPublicPath } from '../utils/utils';
 import { createBundleContext, IBundleContext } from './bundleContext';
 import { createModule, IModule } from './module';
+import { getModuleResolutionPaths } from './moduleResolutionPaths';
 import { PackageType, createPackage, IPackage } from './package';
 
 export function createRuntimeRequireStatement(props: {
@@ -69,14 +71,10 @@ export function resolve(props: {
   const config = props.ctx.config;
 
   const { bundleContext, ctx, parent } = props;
-  let typescriptPaths: ITypescriptPathsConfig;
-  const compilerOptions = props.ctx.compilerOptions;
-  if (parent.pkg && parent.pkg.type === PackageType.USER_PACKAGE) {
-    if (compilerOptions.baseUrl) typescriptPaths = { baseURL: compilerOptions.baseUrl, paths: compilerOptions.paths };
-  }
   const resolved = resolveModule({
     alias: config.alias,
     buildTarget: config.target,
+    cachePaths: !env.isTest, // should be always on, since that's the internal caching
     filePath: props.parent.absPath,
     homeDir: config.homeDir,
     importType: props.importType,
@@ -85,10 +83,12 @@ export function resolve(props: {
     modules: config.modules,
     packageMeta: parent.pkg && parent.pkg.meta,
     target: props.statement,
-    typescriptPaths: typescriptPaths,
+    typescriptPaths: getModuleResolutionPaths({ module: parent }),
   });
+
   if (!resolved || (resolved && resolved.error)) return;
   if (resolved.skip || resolved.isExternal) return;
+  if (resolved.tsConfigAtPath) ctx.tsConfigAtPaths.push(resolved.tsConfigAtPath);
 
   let absPath;
   let module: IModule;
@@ -165,6 +165,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
     if (cached) {
       const module = cached.module;
       const mrc = cached.mrc;
+
       // letting the bundle context know of the dependencies
       for (const cached of mrc.modulesCached) bundleContext.setModule(cached);
 
