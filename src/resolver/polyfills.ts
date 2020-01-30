@@ -3,7 +3,10 @@ const SERVER_POLYFILL = new Set<string>([
   'buffer',
   'child_process',
   'cluster',
+  'constants',
   'crypto',
+  'dgram',
+  'dns',
   'events',
   'fs',
   'http',
@@ -16,22 +19,20 @@ const SERVER_POLYFILL = new Set<string>([
   'process',
   'querystring',
   'stream',
+  'string_decoder',
   'timers',
   'tls',
   'tty',
   'url',
   'util',
-  'zlib',
-  'constants',
-  'worker_threads',
   'v8',
   'vm',
-  'dgram',
-  'dns',
-  'string_decoder',
+  'worker_threads',
+  'zlib',
 ]);
 
-const ELECTRON_POLYFILL = new Set<string>(['electron', ...SERVER_POLYFILL]);
+const ELECTRON_POLYFILL = new Set<string>([...SERVER_POLYFILL, 'electron']);
+
 export function isServerPolyfill(name: string) {
   return SERVER_POLYFILL.has(name);
 }

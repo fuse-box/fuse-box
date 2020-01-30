@@ -100,7 +100,7 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
       return concat;
     },
     generateHash: () => {
-      let str;
+      let str = '';
       for (const module of self.modules) {
         str += getMTime(module.absPath).toString();
       }

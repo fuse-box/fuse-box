@@ -42,6 +42,7 @@ export interface IPublicOutputConfig {
     matching: string;
     target: IOutputBundleConfig;
   }>;
+  serverEntry?: string;
   vendor?: IOutputBundleConfig;
 }
 
@@ -92,6 +93,7 @@ export interface ICodeSplittingProps {
   path?: string;
   publicPath?: string;
 }
+
 export interface IOutputConfig {
   app?: IOutputBundleConfigAdvanced;
   codeSplitting?: ICodeSplittingProps;
@@ -101,5 +103,6 @@ export interface IOutputConfig {
     matching: string;
     target: IOutputBundleConfigAdvanced;
   }>;
+  serverEntry?: string;
   vendor?: IOutputBundleConfigAdvanced;
 }

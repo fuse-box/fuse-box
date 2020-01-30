@@ -18,6 +18,7 @@ export interface Bundle {
   createSourceMap: () => Promise<void>;
   generate: (opts?: { runtimeCore?: string }) => Promise<IBundleWriteResponse>;
   prepare: () => IWriterConfig;
+  write: () => Promise<IBundleWriteResponse>;
 }
 
 export enum BundleType {
@@ -78,13 +79,7 @@ export function createBundle(props: IBundleProps): Bundle {
       // writing source maps
       if (source.containsMaps) await self.createSourceMap();
       // write the bundle to fs
-      await bundleWriter.write(self.config.absPath, self.contents);
-      return {
-        absPath: self.config.absPath,
-        browserPath: self.config.browserPath,
-        bundle: self,
-        relativePath: self.config.relativePath,
-      };
+      return await self.write();
     },
     prepare: (): IWriterConfig => {
       self.config = bundleWriter.createWriter({
@@ -93,8 +88,16 @@ export function createBundle(props: IBundleProps): Bundle {
         publicPath: bundleConfig.publicPath,
         userString: bundleConfig.path,
       });
-
       return self.config;
+    },
+    write: async () => {
+      await bundleWriter.write(self.config.absPath, self.contents);
+      return {
+        absPath: self.config.absPath,
+        browserPath: self.config.browserPath,
+        bundle: self,
+        relativePath: self.config.relativePath,
+      };
     },
   };
   return self;
