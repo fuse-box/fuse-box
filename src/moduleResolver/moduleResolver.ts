@@ -31,14 +31,15 @@ export function createRuntimeRequireStatement(props: {
      * require('./x');
      */
     const source = item.statement.arguments[0].value;
-    // we're importing some weird stuff... require(1) ie.
-    if (typeof source !== 'string') {
-      log.warn(`Invalid require detected in ${module.publicPath}`, item.statement);
-    } else if (module.moduleSourceRefs[source]) {
+    if (module.moduleSourceRefs[source]) {
       requireModuleId = module.moduleSourceRefs[source].id;
     } else {
-      module.errored = true;
-      log.warn(`Unresolved require detected in ${module.publicPath}`, item.statement);
+      // we're importing some weird stuff... require(1) ie.
+      if (typeof source !== 'string') {
+        log.warn(`Invalid import "${source}" in ${module.publicPath}`, { statement: item.statement });
+      }
+      // don't convert it and let the user figure it out
+      requireModuleId = source;
     }
   } else {
     /**
@@ -86,10 +87,9 @@ export function resolve(props: {
   });
 
   if (!resolved || (resolved && resolved.error)) return;
-  if (resolved.skip || resolved.isExternal) {
-    return;
-  }
+  if (resolved.skip || resolved.isExternal) return;
   if (resolved.tsConfigAtPath) ctx.tsConfigAtPaths.push(resolved.tsConfigAtPath);
+
   let absPath;
   let module: IModule;
   if (resolved.package) {
@@ -136,10 +136,6 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
 
       for (const item of transformerResult.requireStatementCollection) {
         if (item.statement.arguments.length === 1 && typeof item.statement.arguments[0].value === 'string') {
-          /**
-           * @todo
-           * improve this resolvement
-           */
           const source = item.statement.arguments[0].value;
           const resolvedModule = resolve({
             bundleContext,
@@ -150,8 +146,9 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
           });
           if (resolvedModule) {
             module.moduleSourceRefs[source] = resolvedModule;
+            // rewrite statement because we have a resolvedModule
+            item.statement = createRuntimeRequireStatement({ ctx, item, module });
           }
-          item.statement = createRuntimeRequireStatement({ ctx, item, module });
         } else {
           // other possible options
           continue;
