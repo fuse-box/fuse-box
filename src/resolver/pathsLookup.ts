@@ -1,10 +1,13 @@
 import * as fs from 'fs';
+import { env } from '../env';
+import { WatchablePathCache } from '../watcher/bindWatcherReactions';
 import { fileLookup, ILookupResult } from './fileLookup';
 
 export type ITypescriptPaths = { [key: string]: Array<string> };
 interface IPathsLookupProps {
   baseURL: string;
   cachePaths?: boolean;
+  configLocation?: string;
   homeDir: string;
   isDev?: boolean;
   paths?: ITypescriptPaths;
@@ -13,8 +16,6 @@ interface IPathsLookupProps {
 
 type DirectoryListing = Array<{ nameWithoutExtension: string; name: string }>;
 type TypescriptPaths = Array<(target: string) => Array<string>>;
-const CACHED_LISTING: { [key: string]: DirectoryListing } = {};
-const CACHED_PATHS: { [key: string]: TypescriptPaths } = {};
 
 function pathRegex(input: string) {
   const str = input.replace(/\*/, '(.*)').replace(/[\-\[\]\/\{\}\+\?\\\^\$\|]/g, '\\$&');
@@ -28,10 +29,11 @@ function pathRegex(input: string) {
  * @param {{ [key: string]: Array<string> }} [paths]
  * @returns
  */
+
+const localPathsData: Record<string, any> = {};
 function getPathsData(props: IPathsLookupProps): TypescriptPaths {
-  if (CACHED_PATHS[props.homeDir] && props.cachePaths) {
-    return CACHED_PATHS[props.homeDir];
-  }
+  const location = props.configLocation;
+  if (props.cachePaths && localPathsData[location]) return localPathsData[location];
   const fns: TypescriptPaths = [];
   for (const key in props.paths) {
     fns.push((target: string) => {
@@ -44,9 +46,7 @@ function getPathsData(props: IPathsLookupProps): TypescriptPaths {
       }
     });
   }
-  if (props.cachePaths) {
-    CACHED_PATHS[props.homeDir] = fns;
-  }
+  if (props.cachePaths) localPathsData[location] = fns;
 
   return fns;
 }
@@ -58,30 +58,33 @@ function getPathsData(props: IPathsLookupProps): TypescriptPaths {
  * @returns {(DirectoryListing | undefined)}
  */
 function getIndexFiles(props: IPathsLookupProps): undefined | DirectoryListing {
-  let indexFiles: Array<{ nameWithoutExtension: string; name: string }>;
-  if (props.baseURL) {
-    if (CACHED_LISTING[props.baseURL]) {
-      indexFiles = CACHED_LISTING[props.baseURL];
-    } else {
-      const files = [];
-      const listed = fs.readdirSync(props.baseURL);
-      for (const file of listed) {
-        if (file[0] !== '.') {
-          const [nameWithoutExtension] = file.split('.');
-          files.push({
-            name: file,
-            nameWithoutExtension,
-          });
-        }
-      }
+  if (!props.baseURL) return [];
+  const location = props.baseURL;
+  if (props.cachePaths && WatchablePathCache[location] && WatchablePathCache[location].indexFiles) {
+    return WatchablePathCache[location].indexFiles;
+  }
 
-      indexFiles = CACHED_LISTING[props.baseURL] = files;
+  let indexFiles: Array<{ nameWithoutExtension: string; name: string }> = [];
+  const listed = fs.readdirSync(location);
+  for (const file of listed) {
+    if (file[0] !== '.') {
+      const [nameWithoutExtension] = file.split('.');
+      indexFiles.push({
+        name: file,
+        nameWithoutExtension,
+      });
     }
   }
+  if (props.cachePaths) {
+    if (!WatchablePathCache[location]) WatchablePathCache[location] = {};
+    WatchablePathCache[location].indexFiles = indexFiles;
+  }
+
   return indexFiles;
 }
 
 export function pathsLookup(props: IPathsLookupProps): ILookupResult {
+  props.configLocation = props.configLocation ? props.configLocation : env.SCRIPT_FILE;
   // if baseDir is the same as homeDir we can assume aliasing directories
   // and files without the need in specifying "paths"
   // so we check if first
