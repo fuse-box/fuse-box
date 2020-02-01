@@ -148,6 +148,12 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
             module.moduleSourceRefs[source] = resolvedModule;
             // rewrite statement because we have a resolvedModule
             item.statement = createRuntimeRequireStatement({ ctx, item, module });
+          } else {
+            module.errored = true;
+            ctx.log.warn('Unresolved statement $source in $file', {
+              file: module.absPath,
+              source: source,
+            });
           }
         } else {
           // other possible options
