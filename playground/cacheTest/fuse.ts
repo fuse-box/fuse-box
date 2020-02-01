@@ -14,6 +14,6 @@ const fuse = fusebox({
 fuse.runDev({
   bundles: {
     app: 'app.js',
-    root: path.join(__dirname, 'dist'),
+    distRoot: path.join(__dirname, 'dist'),
   },
 });
