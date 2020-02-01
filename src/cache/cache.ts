@@ -1,10 +1,10 @@
-import { existsSync, statSync } from 'fs';
+import { existsSync } from 'fs';
 import * as path from 'path';
 import { Context } from '../core/context';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { createModule, IModule, IModuleMeta } from '../moduleResolver/module';
-import { Package, IPackage } from '../moduleResolver/package';
-import { ensureDir, fastHash, removeFolder, writeFile } from '../utils/utils';
+import { Package, PackageType, IPackage } from '../moduleResolver/package';
+import { fastHash, fileExists, getFileModificationTime, readFile, removeFolder, writeFile } from '../utils/utils';
 import { WatcherReaction } from '../watcher/watcher';
 
 export interface ICachePublicProps {
@@ -12,16 +12,20 @@ export interface ICachePublicProps {
   enabled: boolean;
   root?: string;
 }
+
+export interface IModuleRestoreResponse {
+  module?: IModule;
+  mrc: IModuleResolutionContext;
+}
 export interface ICache {
+  meta: ICacheMeta;
   nuke: () => void;
-  restore: (absPath: string) => { module: IModule; mrc: IModuleResolutionContext };
+  restore: (absPath: string) => IModuleRestoreResponse;
   write: () => void;
 }
 
 export interface IModuleResolutionContext {
-  modulesCached: Array<IModule>;
-  modulesRequireResolution: Array<{ id: any; absPath: string; pkg?: IPackage }>;
-  processed: Record<number, number>;
+  modulesRequireResolution: Array<{ absPath: string; pkg: IPackage }>;
 }
 
 export interface ICacheMeta {
@@ -31,8 +35,31 @@ export interface ICacheMeta {
   packages: Record<string, IPackage>;
 }
 
-export function getMTime(absPath): number {
-  return statSync(absPath).mtime.getTime();
+function readJSONFile(target: string) {
+  return JSON.parse(readFile(target));
+}
+
+const META_CACHE: Record<string, any> = {};
+
+export function moduleMetaCache(modulesFolder: string) {
+  const self = {
+    read: (meta: IModuleMeta) => {
+      const cachedFile = path.join(modulesFolder, meta.id + '.json');
+      if (META_CACHE[cachedFile]) return META_CACHE[cachedFile];
+      if (!existsSync(cachedFile)) return;
+      const data = readJSONFile(cachedFile);
+      META_CACHE[cachedFile] = data;
+      return data;
+    },
+    write: (module: IModule) => {
+      const cachedFile = path.join(modulesFolder, `${module.id}.json`);
+      const data = { contents: module.contents, sourceMap: module.sourceMap };
+      META_CACHE[cachedFile] = data;
+      const contents = JSON.stringify(data);
+      return writeFile(cachedFile, contents);
+    },
+  };
+  return self;
 }
 
 export function createCache(ctx: Context, bundleContext: IBundleContext): ICache {
@@ -41,11 +68,13 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
 
   const metaFile = path.join(cacheRoot, 'meta.json');
   const modulesFolder = path.join(cacheRoot, 'files');
-  ensureDir(modulesFolder);
+  const metaCache = moduleMetaCache(modulesFolder);
 
   let meta: ICacheMeta;
+
   if (existsSync(metaFile)) {
     meta = require(metaFile);
+
     bundleContext.currentId = meta.currentId;
   } else {
     meta = {
@@ -53,6 +82,11 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       packages: {},
     };
   }
+  const modules = meta.modules;
+
+  const packages = meta.packages;
+  const verifiedPackages: Record<string, boolean> = {};
+  const verifiedModules: Record<string, boolean> = {};
 
   // restore context cachable
   if (meta.ctx) {
@@ -61,102 +95,207 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     }
   }
 
-  function flushRecord(absPath: string, id: number, mrc: IModuleResolutionContext) {
-    const cachedModule = meta.modules[id];
+  /**
+   *
+   * Restoring module
+   * If module cache data is present we can safely restore
+   * the modules. This function should be called on a verified module (mtime matches)
+   * @param meta
+   * @param cachedPackage
+   */
+  function restoreModule(meta: IModuleMeta, cachedPackage: IPackage) {
+    if (!cachedPackage) return;
 
-    let pkg: IPackage;
-    if (cachedModule) {
-      pkg = meta.packages[cachedModule.packageId];
-      delete meta.modules[id];
+    const moduleCacheData = metaCache.read(meta);
+    if (!moduleCacheData) return;
+
+    const module = createModule({ absPath: meta.absPath, ctx: ctx });
+    module.initFromCache(meta, moduleCacheData);
+
+    if (bundleContext.packages[cachedPackage.publicName]) {
+      module.pkg = bundleContext.packages[cachedPackage.publicName];
+    } else {
+      // restore package and assign it to module
+      const pkg = Package();
+      for (const key in cachedPackage) pkg[key] = cachedPackage[key];
+      bundleContext.packages[cachedPackage.publicName] = pkg;
+      module.pkg = pkg;
     }
-    mrc.modulesRequireResolution.push({ absPath, id, pkg });
+    return module;
   }
 
-  function flushDependantsOfModule(record: IModuleMeta, mrc: IModuleResolutionContext) {
-    for (const id in meta.modules) {
-      const r = meta.modules[id];
-      if (r.dependencies.includes(record.id))
-        mrc.modulesRequireResolution.push({ absPath: r.absPath, id: id, pkg: meta.packages[r.packageId] });
+  /**
+   * FInding a module in meta
+   * @param absPath
+   */
+  function findModuleMeta(absPath: string) {
+    for (const moduleId in modules) {
+      if (modules[moduleId].absPath === absPath) return modules[moduleId];
     }
-    return;
   }
 
-  function verifyRecord(id: number, mrc: IModuleResolutionContext): IModule {
-    // avoid circular dependency issues
-    if (mrc.processed[id] === 1) return;
-    mrc.processed[id] = 1;
+  /**
+   * Veifying module
+   * @param meta
+   * @param mrc
+   */
+  function restoreModuleDependencies(meta: IModuleMeta, mrc: IModuleResolutionContext) {
+    if (verifiedModules[meta.absPath]) return true;
+    verifiedModules[meta.absPath] = true;
 
-    const record = meta.modules[id];
-    if (!record) return;
-    let target: IModule;
+    const pkg = packages[meta.packageId];
+    if (!pkg) return;
 
-    // if a file was present in the cache but removed by user
-    // we need to veriry the files that depenentant on it and re-resolve them
-    if (!existsSync(record.absPath)) {
-      flushDependantsOfModule(record, mrc);
+    if (isExternalPackage(pkg)) if (!restorePackage(pkg, mrc)) return;
+
+    for (const dependencyId of meta.dependencies) {
+      const target = modules[dependencyId];
+      if (!target) return;
+      if (!restoreModuleDependencies(target, mrc)) return;
+    }
+    return true;
+  }
+
+  function restorePackage(pkg: IPackage, mrc: IModuleResolutionContext) {
+    if (verifiedPackages[pkg.publicName]) {
+      return true;
+    }
+
+    verifiedPackages[pkg.publicName] = true;
+
+    const packageJSONLocation = pkg.meta.packageJSONLocation;
+    if (!fileExists(packageJSONLocation)) {
+      // flush the package if package.json doesn't exist anymore
+      packages[pkg.publicName] = undefined;
+      return false;
+    }
+
+    // version changed or anything else. Drop the package from meta
+    // but leave the files to preserved assigned IDS (required for the HMR)
+    if (getFileModificationTime(packageJSONLocation) !== pkg.mtime) {
+      // here we reset the cache of that entry point
+
+      const bustedPackage = packages[pkg.publicName];
+      const pkgName = bustedPackage.publicName;
+      //bundleContext.packages[pkgName] = undefined;
+      verifiedPackages[pkgName] = undefined;
+      packages[pkgName] = undefined;
+      return false;
+    }
+
+    const collection: Array<IModule> = [];
+    // package is in tact pulling out all the files
+    for (const moduleId of pkg.deps) {
+      const meta = modules[moduleId];
+
+      const depPackage = packages[meta.packageId];
+      // a required dependency is missing
+      // verifying and external package of the current package
+      if (!meta) return false;
+      if (!depPackage) return false;
+      // meta might be missing ?!
+      const target = restoreModule(meta, pkg);
+      // cache might be missing?
+      if (!target) return false;
+
+      if (!restoreModuleDependencies(meta, mrc)) return;
+
+      collection.push(target);
+    }
+
+    // finally populating the bundle context
+    for (const restored of collection) {
+      bundleContext.modules[restored.absPath] = restored;
+    }
+    return true;
+  }
+
+  function restoreModuleSafely(absPath: string, mrc: IModuleResolutionContext): IModule {
+    if (verifiedModules[absPath]) return;
+
+    verifiedModules[absPath] = true;
+    const meta = findModuleMeta(absPath);
+
+    const metaPackage = packages[meta.packageId];
+    // not present in meta
+    if (!meta) {
+      mrc.modulesRequireResolution.push({ absPath, pkg: metaPackage });
       return;
     }
 
-    if (getMTime(record.absPath) === record.mtime) {
-      const cacheFile = path.join(modulesFolder, record.id + '.json');
-
-      if (existsSync(cacheFile)) {
-        const moduleCacheData = require(cacheFile);
-        const module = (target = createModule({ absPath: record.absPath, ctx: ctx }));
-        module.initFromCache(record, moduleCacheData);
-
-        const cachedPackage = meta.packages[record.packageId];
-        if (cachedPackage) {
-          // restore directly from the bundle context
-          if (bundleContext.packages[cachedPackage.publicName]) {
-            module.pkg = bundleContext.packages[cachedPackage.publicName];
-          } else {
-            // restore package and assign it to module
-            const pkg = Package();
-            for (const key in cachedPackage) pkg[key] = cachedPackage[key];
-            bundleContext.packages[cachedPackage.publicName] = pkg;
-            module.pkg = pkg;
-          }
+    // file was removed
+    if (!fileExists(meta.absPath)) {
+      // need to break dependants cache
+      //return shouldResolve(absPath, metaPackage);
+      for (const id in modules) {
+        const x = modules[id];
+        // package is no longer verified
+        if (x.dependencies.includes(meta.id)) {
+          verifiedModules[x.absPath] = false;
+          x.mtime = -1;
+          if (!restoreModuleSafely(x.absPath, mrc)) return;
         }
-
-        mrc.modulesCached.push(module);
-        if (record.dependencies) {
-          for (const rid of record.dependencies) {
-            verifyRecord(rid, mrc);
-          }
-        }
-      } else flushRecord(record.absPath, id, mrc);
-    } else flushRecord(record.absPath, id, mrc);
-    return target;
-  }
-
-  function verityAbsPath(absPath: string, mrc: IModuleResolutionContext): IModule {
-    let recordId;
-    for (const id in meta.modules) {
-      const record = meta.modules[id];
-
-      if (record && record.absPath === absPath) {
-        recordId = id;
-        break;
       }
     }
-    if (recordId) return verifyRecord(recordId, mrc);
+
+    if (getFileModificationTime(meta.absPath) !== meta.mtime) {
+      // should be resolved
+      bundleContext.modules[absPath] = undefined;
+      mrc.modulesRequireResolution.push({ absPath, pkg: metaPackage });
+      return;
+    }
+
+    for (const depId of meta.dependencies) {
+      const target = modules[depId];
+      const pkg = packages[target.packageId];
+      if (pkg && isExternalPackage(pkg)) {
+        if (!restorePackage(pkg, mrc)) {
+          // package has failed
+          // interrupt everything
+          return;
+        }
+      } else restoreModuleSafely(target.absPath, mrc);
+    }
+    const module = restoreModule(meta, metaPackage);
+
+    if (module) bundleContext.modules[module.absPath] = module;
+
+    return module;
+  }
+
+  function getModuleByPath(absPath: string): IModuleRestoreResponse {
+    const moduleMeta = findModuleMeta(absPath);
+
+    const mrc: IModuleResolutionContext = {
+      modulesRequireResolution: [],
+    };
+
+    const busted = { mrc };
+
+    // if a module was not found in cache we do nothing
+    if (!moduleMeta) return busted;
+
+    const targetPackageId = moduleMeta.packageId;
+    const modulePackage = packages[targetPackageId];
+
+    if (!modulePackage) return busted;
+
+    if (isExternalPackage(modulePackage)) {
+      if (!restorePackage(modulePackage, mrc)) return busted;
+    } else {
+      // restore local files (check the modification time on each)
+      return { module: restoreModuleSafely(absPath, mrc), mrc };
+    }
+  }
+
+  function isExternalPackage(pkg: IPackage) {
+    return pkg.type === PackageType.EXTERNAL_PACKAGE;
   }
 
   const self = {
-    nuke: () => {
-      removeFolder(cacheRoot);
-    },
-    restore: (absPath: string) => {
-      const mrc: IModuleResolutionContext = {
-        modulesCached: [],
-        modulesRequireResolution: [],
-        processed: {},
-      };
-
-      return { module: verityAbsPath(absPath, mrc), mrc };
-    },
-
+    meta,
+    nuke: () => removeFolder(cacheRoot),
+    restore: (absPath: string) => getModuleByPath(absPath),
     write: async () => {
       const cacheWriters = [];
       let shouldWriteMeta = false;
@@ -165,9 +304,13 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       for (const packageId in bundleContext.packages) {
         const pkg = bundleContext.packages[packageId];
 
-        if (!meta.packages[pkg.publicName]) {
+        if (!packages[pkg.publicName]) {
           shouldWriteMeta = true;
-          meta.packages[pkg.publicName] = pkg;
+          if (isExternalPackage(pkg)) {
+            pkg.deps = [];
+            pkg.mtime = getFileModificationTime(pkg.meta.packageJSONLocation);
+          }
+          packages[pkg.publicName] = pkg;
         }
       }
 
@@ -176,10 +319,17 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
 
         if (!module.isCached && !module.errored) {
           shouldWriteMeta = true;
-          meta.modules[module.id] = module.getMeta();
-          const cacheFile = path.join(modulesFolder, `${module.id}.json`);
-          const contents = JSON.stringify({ contents: module.contents, sourceMap: module.sourceMap });
-          cacheWriters.push(writeFile(cacheFile, contents));
+          const meta = module.getMeta();
+
+          modules[module.id] = meta;
+
+          const cachedPackage = packages[module.pkg.publicName];
+
+          if (isExternalPackage(cachedPackage)) {
+            if (!cachedPackage.deps.includes(module.id)) cachedPackage.deps.push(module.id);
+          }
+
+          cacheWriters.push(metaCache.write(module));
         }
       }
 
@@ -198,18 +348,6 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
   const nukableReactions = [WatcherReaction.TS_CONFIG_CHANGED, WatcherReaction.FUSE_CONFIG_CHANGED];
   ctx.ict.on('watcher_reaction', ({ reactionStack }) => {
     for (const item of reactionStack) {
-      // reacting to unlink
-
-      // if (item.event === 'unlink') {
-      //   for (const id in meta.modules) {
-      //     console.log(meta.modules[id].absPath);
-      //     if (meta.modules[id].absPath === item.absPath) {
-      //       console.log('removing from cache', item.absPath);
-      //       meta.modules[id] = undefined;
-      //     }
-      //   }
-      //   // reacting to file deletion
-      // }
       if (nukableReactions.includes(item.reaction)) {
         self.nuke();
         break;

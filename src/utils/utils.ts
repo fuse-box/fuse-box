@@ -25,6 +25,10 @@ export function matchAll(regex: RegExp, str: string, cb: (matches) => void) {
   }
 }
 
+export function getFileModificationTime(absPath) {
+  return fs.statSync(absPath).mtime.getTime();
+}
+
 export function makePublicPath(target: string) {
   return ensureFuseBoxPath(path.relative(appRoot.path, target));
 }

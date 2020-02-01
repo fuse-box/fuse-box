@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { env } from '../env';
 import { findUp } from '../utils/findUp';
-import { fileExists, makeFuseBoxPath } from '../utils/utils';
+import { fileExists, makeFuseBoxPath, readFile } from '../utils/utils';
 import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
@@ -135,7 +135,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   if (!fileExists(packageJSONFile)) {
     return { error: `Failed to find package.json in ${folder} when resolving module ${parsed.name}` };
   }
-  const json = require(packageJSONFile);
+  const json = JSON.parse(readFile(packageJSONFile));
   pkg.version = json.version || '0.0.0';
   pkg.browser = json.browser;
   pkg.packageJSONLocation = packageJSONFile;
