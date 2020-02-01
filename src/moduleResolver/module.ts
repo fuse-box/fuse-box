@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as sourceMapModule from 'source-map';
 import * as ts from 'typescript';
-import { getMTime } from '../cache/cache';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
@@ -13,7 +12,7 @@ import { env } from '../env';
 import { ITypescriptTarget } from '../interfaces/TypescriptInterfaces';
 import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
-import { makePublicPath, readFile } from '../utils/utils';
+import { getFileModificationTime, makePublicPath, readFile } from '../utils/utils';
 import { PackageType, IPackage } from './package';
 export function Module() {}
 
@@ -118,7 +117,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
         absPath: self.absPath,
         dependencies: dependencies,
         id: self.id,
-        mtime: getMTime(self.absPath),
+        mtime: getFileModificationTime(self.absPath),
         packageId: props.pkg !== undefined ? props.pkg.publicName : undefined,
         publicPath: self.publicPath,
       };

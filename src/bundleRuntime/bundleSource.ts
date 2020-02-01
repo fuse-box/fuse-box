@@ -1,7 +1,6 @@
-import { getMTime } from '../cache/cache';
 import { ITarget } from '../config/ITarget';
 import { IModule } from '../moduleResolver/module';
-import { Concat, fastHash } from '../utils/utils';
+import { Concat, fastHash, getFileModificationTime } from '../utils/utils';
 import { BUNDLE_RUNTIME_NAMES, ICodeSplittingMap } from './bundleRuntimeCore';
 
 export interface IBundleSourceProps {
@@ -102,7 +101,7 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
     generateHash: () => {
       let str = '';
       for (const module of self.modules) {
-        str += getMTime(module.absPath).toString();
+        str += getFileModificationTime(module.absPath).toString();
       }
       return fastHash(str);
     },

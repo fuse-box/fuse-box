@@ -17,6 +17,15 @@ export function createBundleContext(ctx: Context) {
     currentId,
     modules,
     packages,
+    getIdFor: (absPath: string) => {
+      if (scope.cache) {
+        const meta = scope.cache.meta;
+        for (const id in meta.modules) {
+          if (meta.modules[id].absPath === absPath) return meta.modules[id].id;
+        }
+      }
+      return ++scope.currentId;
+    },
     getModule: (absPath: string) => {
       return modules[absPath];
     },
@@ -24,7 +33,6 @@ export function createBundleContext(ctx: Context) {
       const name = meta ? meta.name + '@' + meta.version : 'default';
       return packages[name];
     },
-    nextId: () => ++scope.currentId,
     setModule: (module: IModule) => {
       modules[module.absPath] = module;
     },

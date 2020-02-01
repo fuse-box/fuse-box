@@ -113,7 +113,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
   const { absPath, bundleContext, ctx, pkg } = props;
   let module = bundleContext.getModule(absPath);
 
-  function init(pkg, absPath, reUseId?: number) {
+  function init(pkg, absPath) {
     if (bundleContext.modules[absPath]) return bundleContext.modules[absPath];
 
     ctx.log.info('init', '<dim>$absPath</dim>', { absPath: getPublicPath(absPath) });
@@ -122,7 +122,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
     module.init();
 
     // generate next id
-    module.id = reUseId ? reUseId : bundleContext.nextId();
+    module.id = bundleContext.getIdFor(absPath);
     // storing for further references (and avoid recursion)
     bundleContext.setModule(module);
     // reading and parsing the contents
@@ -163,19 +163,15 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
   if (bundleContext.cache) {
     const cached = bundleContext.tryCache(absPath);
     if (cached) {
-      const module = cached.module;
-      const mrc = cached.mrc;
-
-      // letting the bundle context know of the dependencies
-      for (const cached of mrc.modulesCached) bundleContext.setModule(cached);
-
-      for (const item of mrc.modulesRequireResolution) {
-        delete bundleContext.modules[item.absPath];
-        init(item.pkg, item.absPath, item.id);
+      if (cached.mrc.modulesRequireResolution.length) {
+        for (const item of cached.mrc.modulesRequireResolution) {
+          bundleContext.modules[item.absPath] = undefined;
+          init(item.pkg, item.absPath);
+        }
       }
-
-      if (module) return module;
+      if (cached.module) return cached.module;
     }
+
     return init(pkg, absPath);
   }
   return init(pkg, absPath);
@@ -196,6 +192,25 @@ export function ModuleResolver(ctx: Context, entryFiles: Array<string>): IModule
     const entryModule = initModule({ absPath, bundleContext, ctx, pkg: userPackage });
     entryModule.isEntry = true;
     entries.push(entryModule);
+  }
+
+  if (process.argv.includes('--debug-cache')) {
+    ctx.log.line();
+
+    ctx.log.echo('<yellow><bold> Cache overview: </bold></yellow>');
+    ctx.log.line();
+    for (const absPath in bundleContext.modules) {
+      const module = bundleContext.modules[absPath];
+      //if (!module.isCached) {
+
+      if (module.isCached) {
+        ctx.log.echo('<dim> [cache]: restored $file</dim>', { file: module.absPath });
+      } else {
+        ctx.log.echo('<dim> [cache]:</dim> <bgGreen><black> busted </black> </bgGreen> <yellow>$file</yellow>', {
+          file: module.absPath,
+        });
+      }
+    }
   }
 
   return { bundleContext, entries, modules: Object.values(bundleContext.modules) };
