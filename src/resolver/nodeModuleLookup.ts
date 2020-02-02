@@ -106,7 +106,19 @@ export interface INodeModuleLookup {
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
   let folder: string;
 
-  folder = findTargetFolder(props, parsed);
+  const isPnp = (process.versions as any).pnp;
+
+  // Support for Yarn v2 PnP
+  if (isPnp) {
+    try {
+      const pnp = require('pnpapi');
+      folder = pnp.resolveToUnqualified(parsed.name, props.filePath, { considerBuiltins: false });
+    } catch (e) {
+      // Ignore error here, since it will be handled further down
+    }
+  } else {
+    folder = findTargetFolder(props, parsed);
+  }
 
   if (!folder) {
     return { error: `Cannot resolve "${parsed.name}"` };
