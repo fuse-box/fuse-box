@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { fusebox } from '../../src';
 const fuse = fusebox({
-  cache: { enabled: true, root: './.cache' },
+  cache: { enabled: true, root: './.cache', strategy: 'fs' },
   devServer: true,
   entry: 'src/index.js',
   modules: ['modules', path.join(__dirname, 'node_modules')],

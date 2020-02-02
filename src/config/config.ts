@@ -186,9 +186,13 @@ export function createConfig(props: {
     if (publicConfig.cache.root !== undefined) {
       config.cache.root = ensureAbsolutePath(publicConfig.cache.root, env.SCRIPT_PATH);
     }
+    if (publicConfig.cache.strategy !== undefined) {
+      config.cache.strategy = publicConfig.cache.strategy;
+    }
   } else if (publicConfig.cache === undefined && !env.isTest) {
     config.cache.enabled = true;
   }
+  if (!config.cache.strategy) config.cache.strategy = 'fs';
 
   config.stylesheet = {};
 
