@@ -152,7 +152,6 @@ export function resolveModule(props: IResolverProps): IResolver {
           moduleParsed = { name: 'fuse-empty-package' };
         }
       }
-
       const pkg = nodeModuleLookup(props, moduleParsed);
 
       if (pkg.error) {
