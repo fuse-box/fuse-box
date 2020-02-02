@@ -2,12 +2,13 @@ import * as fs from 'fs';
 import { writeFileSync } from 'fs';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
+import { ICacheMeta } from '../cache/cache';
 import { EnvironmentType } from '../config/EnvironmentType';
 import { IPublicConfig } from '../config/IConfig';
 import { Context, createContext } from '../core/context';
 import { bundleDev, IBundleDevResponse } from '../development/bundleDev';
 import { env } from '../env';
-import { ensureDir, fastHash, fileExists, readFile } from '../utils/utils';
+import { ensureDir, fastHash, fileExists, path2RegexPattern, readFile, writeFile } from '../utils/utils';
 export interface ITestBrowserResponse {
   __fuse: any;
   entry: any;
@@ -47,6 +48,23 @@ export function createDevSandbox(props: { ctx: Context; response: IBundleDevResp
 
 export type ITestWorkspace = ReturnType<typeof createTestWorkspace>;
 
+function createTestMeta(metaFile: string) {
+  const meta: ICacheMeta = JSON.parse(readFile(metaFile));
+  return {
+    meta: meta,
+    findModule: (target: string) => {
+      const rex = path2RegexPattern(target);
+      for (const id in meta.modules) {
+        const m = meta.modules[id];
+
+        if (rex.test(m.absPath)) return m;
+      }
+    },
+    writeMeta: (meta: any) => {
+      writeFile(metaFile, meta);
+    },
+  };
+}
 function getCacheWorkspace(workspace: ITestWorkspace) {
   const files = fs.readdirSync(workspace.cacheFolder);
 
@@ -60,7 +78,7 @@ function getCacheWorkspace(workspace: ITestWorkspace) {
       return files.map(i => path.join(cacheFilesFolder, i));
     },
     getMetaFile: () => {
-      return JSON.parse(readFile(metaFile));
+      return createTestMeta(metaFile);
     },
   };
 }
