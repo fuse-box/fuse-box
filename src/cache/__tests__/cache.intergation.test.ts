@@ -47,14 +47,12 @@ describe('Cache intergation test', () => {
       it('should give the initial data', async () => {
         const result = await test(workspace);
         expect(result.entry.data).toEqual({ foo: { __esModule: true, foo: 'foo' } });
-        //expect(workspace.getCacheWorkspace().getCachedFiles()).toHaveLength(2);
       });
 
       it('after adding a new file should remain the same', async () => {
         workspace.setFile('bar.ts', 'export const bar = "bar"');
         const result = await test(workspace);
         expect(result.entry.data.foo).toBeTruthy();
-        //expect(workspace.getCacheWorkspace().getCachedFiles()).toHaveLength(2);
       });
 
       it('include bar into foo', async () => {

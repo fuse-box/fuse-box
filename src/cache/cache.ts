@@ -56,7 +56,11 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       getMeta: () => {
         let meta: ICacheMeta;
         if (META_JSON_CACHE[META_FILE]) meta = META_JSON_CACHE[META_FILE];
-        else if (isFileStrategy && existsSync(META_FILE)) meta = require(META_FILE);
+        else if (isFileStrategy && existsSync(META_FILE)) {
+          try {
+            meta = readJSONFile(META_FILE);
+          } catch (e) {}
+        }
         if (!meta) {
           META_JSON_CACHE[META_FILE] = meta = { currentId: 0, modules: {}, packages: {} };
         }
