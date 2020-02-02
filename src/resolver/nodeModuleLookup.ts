@@ -106,7 +106,18 @@ export interface INodeModuleLookup {
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
   let folder: string;
 
-  folder = findTargetFolder(props, parsed);
+  const isPnp = (process.versions as any).pnp;
+  let targetRequire = require;
+
+  // Support for Yarn v2 PnP
+  if (isPnp) {
+    const pnp = require('pnpapi');
+    const { createRequire } = require('module');
+    targetRequire = createRequire(props.filePath);
+    folder = pnp.resolveToUnqualified(parsed.name, props.filePath, { considerBuiltins: false });
+  } else {
+    folder = findTargetFolder(props, parsed);
+  }
 
   if (!folder) {
     return { error: `Cannot resolve "${parsed.name}"` };
@@ -123,7 +134,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   if (!fileExists(packageJSONFile)) {
     return { error: `Failed to find package.json in ${folder} when resolving module ${parsed.name}` };
   }
-  const json = require(packageJSONFile);
+  const json = targetRequire(packageJSONFile);
   pkg.version = json.version || '0.0.0';
   pkg.browser = json.browser;
   pkg.packageJSONLocation = packageJSONFile;

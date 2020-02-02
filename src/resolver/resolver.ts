@@ -5,7 +5,6 @@ import { TsConfigAtPath, fileLookup, ILookupResult } from './fileLookup';
 import { isNodeModule, nodeModuleLookup, INodeModuleLookup } from './nodeModuleLookup';
 import { pathsLookup } from './pathsLookup';
 import { isElectronPolyfill, isServerPolyfill } from './polyfills';
-import { resolvePnpModule } from './yarnPnpModuleLookup';
 export enum ImportType {
   REQUIRE,
   FROM,
@@ -154,8 +153,7 @@ export function resolveModule(props: IResolverProps): IResolver {
         }
       }
 
-      const isPnp = (process.versions as any).pnp;
-      const pkg = isPnp ? resolvePnpModule(props, moduleParsed) : nodeModuleLookup(props, moduleParsed);
+      const pkg = nodeModuleLookup(props, moduleParsed);
 
       if (pkg.error) {
         return { error: pkg.error };
