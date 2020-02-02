@@ -65,7 +65,6 @@ function getCacheWorkspace(workspace: ITestWorkspace) {
   };
 }
 export function createTestWorkspace(props: {
-  cache?: boolean;
   files: Record<string, string>;
   modules?: Record<string, Record<string, string>>;
 }) {
@@ -73,10 +72,7 @@ export function createTestWorkspace(props: {
   const rootDir = path.join(env.APP_ROOT, '.tmp', sourceFolder);
   const sourceDir = path.join(rootDir, 'src');
   const distRoot = path.join(rootDir, 'dist');
-  let cacheFolder;
-  if (props.cache) {
-    cacheFolder = path.join(rootDir, '.cache');
-  }
+  let cacheFolder = path.join(rootDir, '.cache');
 
   // creating modules if needed
   const modulesRoot = path.join(rootDir, 'modules');
@@ -148,7 +144,6 @@ export function createIntegrationTest(props: {
   const { workspace } = props;
 
   const config: IPublicConfig = {
-    cache: { enabled: !!workspace.cacheFolder, root: workspace.cacheFolder },
     devServer: false,
     logging: { level: 'disabled' },
     modules: workspace.modules,
@@ -156,6 +151,12 @@ export function createIntegrationTest(props: {
     webIndex: { publicPath: './' },
     ...customConfig,
   };
+
+  if (typeof config.cache === 'object') {
+    if (config.cache.enabled) {
+      config.cache.root = workspace.cacheFolder;
+    }
+  }
 
   const ctx = createContext({
     envType: props.envType,

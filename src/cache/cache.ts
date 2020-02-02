@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Context } from '../core/context';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { createModule, IModule, IModuleMeta } from '../moduleResolver/module';
-import { Package, PackageType, IPackage } from '../moduleResolver/package';
+import { createPackageFromCache, IPackage } from '../moduleResolver/package';
 import { fastHash, fileExists, getFileModificationTime, readFile, removeFolder, writeFile } from '../utils/utils';
 import { WatcherReaction } from '../watcher/watcher';
 
@@ -39,60 +39,70 @@ function readJSONFile(target: string) {
   return JSON.parse(readFile(target));
 }
 
-const META_CACHE: Record<string, any> = {};
-
-export function moduleMetaCache(modulesFolder: string) {
-  const self = {
-    read: (meta: IModuleMeta) => {
-      const cachedFile = path.join(modulesFolder, meta.id + '.json');
-      if (META_CACHE[cachedFile]) return META_CACHE[cachedFile];
-      if (!existsSync(cachedFile)) return;
-      const data = readJSONFile(cachedFile);
-      META_CACHE[cachedFile] = data;
-      return data;
-    },
-    write: (module: IModule) => {
-      const cachedFile = path.join(modulesFolder, `${module.id}.json`);
-      const data = { contents: module.contents, sourceMap: module.sourceMap };
-      META_CACHE[cachedFile] = data;
-      const contents = JSON.stringify(data);
-      return writeFile(cachedFile, contents);
-    },
-  };
-  return self;
-}
+const META_MODULES_CACHE: Record<string, any> = {};
+const META_JSON_CACHE: Record<string, ICacheMeta> = {};
 
 export function createCache(ctx: Context, bundleContext: IBundleContext): ICache {
   const prefix = fastHash(ctx.config.entries.toString());
-  let cacheRoot = path.join(ctx.config.cache.root, prefix);
 
-  const metaFile = path.join(cacheRoot, 'meta.json');
-  const modulesFolder = path.join(cacheRoot, 'files');
-  const metaCache = moduleMetaCache(modulesFolder);
+  const CACHE_ROOT = path.join(ctx.config.cache.root, prefix);
+  const isFileStrategy = ctx.config.cache.strategy === 'fs';
+  const META_FILE = path.join(CACHE_ROOT, 'meta.json');
+  const CACHE_MODULES_FOLDER = path.join(CACHE_ROOT, 'files');
 
-  let meta: ICacheMeta;
+  function moduleMetaCache() {
+    const moduleWriters = [];
+    const self = {
+      getMeta: () => {
+        let meta: ICacheMeta;
+        if (META_JSON_CACHE[META_FILE]) meta = META_JSON_CACHE[META_FILE];
+        else if (isFileStrategy && existsSync(META_FILE)) meta = require(META_FILE);
+        if (!meta) {
+          META_JSON_CACHE[META_FILE] = meta = { currentId: 0, modules: {}, packages: {} };
+        }
+        bundleContext.currentId = meta.currentId;
+        return meta;
+      },
+      persist: async (metaChanged: boolean, meta) => {
+        await Promise.all(moduleWriters);
+        if (isFileStrategy && metaChanged) {
+          await writeFile(META_FILE, JSON.stringify(meta));
+        }
+      },
+      read: (meta: IModuleMeta) => {
+        const cachedFile = path.join(CACHE_MODULES_FOLDER, meta.id + '.json');
+        if (META_MODULES_CACHE[cachedFile]) return META_MODULES_CACHE[cachedFile];
+        if (!isFileStrategy) return;
 
-  if (existsSync(metaFile)) {
-    meta = require(metaFile);
+        if (!existsSync(cachedFile)) return;
+        const data = readJSONFile(cachedFile);
+        META_MODULES_CACHE[cachedFile] = data;
+        return data;
+      },
+      write: (module: IModule) => {
+        const cachedFile = path.join(CACHE_MODULES_FOLDER, `${module.id}.json`);
+        const data = { contents: module.contents, sourceMap: module.sourceMap };
+        META_MODULES_CACHE[cachedFile] = data;
 
-    bundleContext.currentId = meta.currentId;
-  } else {
-    meta = {
-      modules: {},
-      packages: {},
+        if (!isFileStrategy) return;
+        const contents = JSON.stringify(data);
+        moduleWriters.push(writeFile(cachedFile, contents));
+      },
     };
+    return self;
   }
-  const modules = meta.modules;
 
+  const metaCache = moduleMetaCache();
+  const meta = metaCache.getMeta();
+
+  const modules = meta.modules;
   const packages = meta.packages;
   const verifiedPackages: Record<string, boolean> = {};
   const verifiedModules: Record<string, boolean> = {};
 
   // restore context cachable
   if (meta.ctx) {
-    for (const key in meta.ctx) {
-      ctx[key] = meta.ctx[key];
-    }
+    for (const key in meta.ctx) ctx[key] = meta.ctx[key];
   }
 
   /**
@@ -107,6 +117,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     if (!cachedPackage) return;
 
     const moduleCacheData = metaCache.read(meta);
+
     if (!moduleCacheData) return;
 
     const module = createModule({ absPath: meta.absPath, ctx: ctx });
@@ -116,8 +127,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       module.pkg = bundleContext.packages[cachedPackage.publicName];
     } else {
       // restore package and assign it to module
-      const pkg = Package();
-      for (const key in cachedPackage) pkg[key] = cachedPackage[key];
+      const pkg = createPackageFromCache(cachedPackage);
       bundleContext.packages[cachedPackage.publicName] = pkg;
       module.pkg = pkg;
     }
@@ -146,7 +156,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     const pkg = packages[meta.packageId];
     if (!pkg) return;
 
-    if (isExternalPackage(pkg)) if (!restorePackage(pkg, mrc)) return;
+    if (pkg.isExternalPackage) if (!restorePackage(pkg, mrc)) return;
 
     for (const dependencyId of meta.dependencies) {
       const target = modules[dependencyId];
@@ -248,7 +258,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     for (const depId of meta.dependencies) {
       const target = modules[depId];
       const pkg = packages[target.packageId];
-      if (pkg && isExternalPackage(pkg)) {
+      if (pkg && pkg.isExternalPackage) {
         if (!restorePackage(pkg, mrc)) {
           // package has failed
           // interrupt everything
@@ -257,9 +267,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       } else restoreModuleSafely(target.absPath, mrc);
     }
     const module = restoreModule(meta, metaPackage);
-
     if (module) bundleContext.modules[module.absPath] = module;
-
     return module;
   }
 
@@ -280,7 +288,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
 
     if (!modulePackage) return busted;
 
-    if (isExternalPackage(modulePackage)) {
+    if (modulePackage.isExternalPackage) {
       if (!restorePackage(modulePackage, mrc)) return busted;
     } else {
       // restore local files (check the modification time on each)
@@ -288,71 +296,69 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     }
   }
 
-  function isExternalPackage(pkg: IPackage) {
-    return pkg.type === PackageType.EXTERNAL_PACKAGE;
-  }
+  async function write() {
+    let shouldWriteMeta = false;
+    meta.currentId = bundleContext.currentId;
 
-  const self = {
-    meta,
-    nuke: () => removeFolder(cacheRoot),
-    restore: (absPath: string) => getModuleByPath(absPath),
-    write: async () => {
-      const cacheWriters = [];
-      let shouldWriteMeta = false;
-      meta.currentId = bundleContext.currentId;
-
-      for (const packageId in bundleContext.packages) {
-        const pkg = bundleContext.packages[packageId];
-
-        if (!packages[pkg.publicName]) {
-          shouldWriteMeta = true;
-          if (isExternalPackage(pkg)) {
-            pkg.deps = [];
-            pkg.mtime = getFileModificationTime(pkg.meta.packageJSONLocation);
-          }
-          packages[pkg.publicName] = pkg;
+    for (const packageId in bundleContext.packages) {
+      const pkg = bundleContext.packages[packageId];
+      if (!packages[pkg.publicName]) {
+        shouldWriteMeta = true;
+        if (pkg.isExternalPackage) {
+          pkg.deps = [];
+          pkg.mtime = getFileModificationTime(pkg.meta.packageJSONLocation);
         }
+        packages[pkg.publicName] = pkg;
       }
+    }
 
-      for (const absPath in bundleContext.modules) {
-        const module = bundleContext.modules[absPath];
+    for (const absPath in bundleContext.modules) {
+      const module = bundleContext.modules[absPath];
 
-        if (!module.isCached && !module.errored) {
-          shouldWriteMeta = true;
-          const meta = module.getMeta();
-
-          modules[module.id] = meta;
-
-          const cachedPackage = packages[module.pkg.publicName];
-
-          if (isExternalPackage(cachedPackage)) {
-            if (!cachedPackage.deps.includes(module.id)) cachedPackage.deps.push(module.id);
-          }
-
-          cacheWriters.push(metaCache.write(module));
-        }
+      if (!module.isCached && !module.errored) {
+        shouldWriteMeta = true;
+        const meta = module.getMeta();
+        modules[module.id] = meta;
+        const pkg = packages[module.pkg.publicName];
+        if (pkg.isExternalPackage) if (!pkg.deps.includes(module.id)) pkg.deps.push(module.id);
+        metaCache.write(module);
       }
+    }
 
-      // fast and ugly check if cache context needs to be written
-      const cachable = ctx.getCachable();
+    // fast and ugly check if cache context needs to be written
+    const cachable = ctx.getCachable();
 
+    if (isFileStrategy) {
       if (JSON.stringify(meta.ctx) !== JSON.stringify(cachable)) {
         shouldWriteMeta = true;
         meta.ctx = cachable;
       }
-      await Promise.all(cacheWriters);
-      if (shouldWriteMeta) await writeFile(metaFile, JSON.stringify(meta, null, 2));
-    },
+    } else meta.ctx = cachable;
+    if (!isFileStrategy) shouldWriteMeta = false;
+
+    await metaCache.persist(shouldWriteMeta, meta);
+  }
+
+  const self = {
+    meta,
+    write,
+    nuke: () => removeFolder(CACHE_ROOT),
+    restore: (absPath: string) => getModuleByPath(absPath),
   };
 
-  const nukableReactions = [WatcherReaction.TS_CONFIG_CHANGED, WatcherReaction.FUSE_CONFIG_CHANGED];
-  ctx.ict.on('watcher_reaction', ({ reactionStack }) => {
-    for (const item of reactionStack) {
-      if (nukableReactions.includes(item.reaction)) {
-        self.nuke();
-        break;
+  if (isFileStrategy) {
+    // destroying the cache folder only in case of a file staregy
+    // memory strategy should not be affected since the process is closed
+    const nukableReactions = [WatcherReaction.TS_CONFIG_CHANGED, WatcherReaction.FUSE_CONFIG_CHANGED];
+    ctx.ict.on('watcher_reaction', ({ reactionStack }) => {
+      for (const item of reactionStack) {
+        if (nukableReactions.includes(item.reaction)) {
+          self.nuke();
+          break;
+        }
       }
-    }
-  });
+    });
+  }
+
   return self;
 }
