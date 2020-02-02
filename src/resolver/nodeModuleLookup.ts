@@ -110,8 +110,12 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
   // Support for Yarn v2 PnP
   if (isPnp) {
-    const pnp = require('pnpapi');
-    folder = pnp.resolveToUnqualified(parsed.name, props.filePath, { considerBuiltins: false });
+    try {
+      const pnp = require('pnpapi');
+      folder = pnp.resolveToUnqualified(parsed.name, props.filePath, { considerBuiltins: false });
+    } catch (e) {
+      // Ignore error here, since it will be handled further down
+    }
   } else {
     folder = findTargetFolder(props, parsed);
   }
