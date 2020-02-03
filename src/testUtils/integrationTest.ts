@@ -5,43 +5,63 @@ import * as path from 'path';
 import { ICacheMeta } from '../cache/cache';
 import { EnvironmentType } from '../config/EnvironmentType';
 import { IPublicConfig } from '../config/IConfig';
+import { IRunResponse } from '../core/IRunResponse';
 import { Context, createContext } from '../core/context';
-import { bundleDev, IBundleDevResponse } from '../development/bundleDev';
+import { bundleDev } from '../development/bundleDev';
 import { env } from '../env';
-import { ensureDir, fastHash, fileExists, path2RegexPattern, readFile, writeFile } from '../utils/utils';
-export interface ITestBrowserResponse {
-  __fuse: any;
-  entry: any;
-  errors: Array<any>;
-}
-export function createDevSandbox(props: { ctx: Context; response: IBundleDevResponse; workspace: ITestWorkspace }) {
-  const self = {
-    runBundleInBrowser: async (): Promise<ITestBrowserResponse> => {
-      const app = readFile(path.join(props.workspace.distRoot, 'app.js'));
-      const window: any = {};
-      const __fuse: any = new Proxy(
-        {},
-        {
-          get: (obj, prop) => {
-            return window.__fuse[prop];
-          },
-        },
-      );
-      var fn = new Function('window', '__fuse', app);
-      const errors = [];
-      try {
-        fn(window, __fuse);
-      } catch (e) {
-        errors.push(e);
-      }
-      return new Promise((resolve, reject) => {
-        return resolve({
-          __fuse,
-          entry: __fuse.r(1),
-          errors,
-        });
-      });
+import { bundleProd } from '../production/bundleProd';
+import { ensureDir, fastHash, fileExists, path2RegexPattern, readFile } from '../utils/utils';
+import { createTestBrowserEnv } from './browserEnv/testBrowserEnv';
+import { createTestServerEnv, ITestServerResponse } from './serverEnv/testServerEnv';
+
+export async function testServer(props: {
+  config?: IPublicConfig;
+  type?: EnvironmentType;
+  workspace: ITestWorkspace;
+}): Promise<ITestServerResponse> {
+  const userConfig = props.config || {};
+  const test = createIntegrationTest({
+    config: {
+      cache: false,
+      entry: path.join(props.workspace.sourceDir, 'index.ts'),
+      target: 'server',
+      ...userConfig,
     },
+    envType: props.type ? props.type : EnvironmentType.DEVELOPMENT,
+    workspace: props.workspace,
+  });
+
+  const response = props.type === EnvironmentType.DEVELOPMENT ? await test.runDev() : await test.runProd();
+  return response.runServer();
+}
+
+export async function testBrowser(props: {
+  config?: IPublicConfig;
+  type?: EnvironmentType;
+  workspace: ITestWorkspace;
+}): Promise<ITestServerResponse> {
+  const userConfig = props.config || {};
+  const test = createIntegrationTest({
+    config: {
+      cache: false,
+      entry: path.join(props.workspace.sourceDir, 'index.ts'),
+      target: 'browser',
+      ...userConfig,
+    },
+    envType: props.type ? props.type : EnvironmentType.DEVELOPMENT,
+    workspace: props.workspace,
+  });
+
+  const response = props.type === EnvironmentType.DEVELOPMENT ? await test.runDev() : await test.runProd();
+  return response.runBrowser();
+}
+
+export const EnvironmentTypesTestable = [EnvironmentType.DEVELOPMENT, EnvironmentType.PRODUCTION];
+
+export function createDevSandbox(props: { ctx: Context; response: IRunResponse; workspace: ITestWorkspace }) {
+  const self = {
+    runBrowser: () => createTestBrowserEnv(props.response),
+    runServer: () => createTestServerEnv(props.response)(),
   };
   return self;
 }
@@ -187,7 +207,10 @@ export function createIntegrationTest(props: {
     ctx,
     runDev: async () => {
       const response = await bundleDev({ ctx });
-
+      return createDevSandbox({ ctx, response, workspace: props.workspace });
+    },
+    runProd: async () => {
+      const response = await bundleProd(ctx);
       return createDevSandbox({ ctx, response, workspace: props.workspace });
     },
   };

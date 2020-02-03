@@ -1,4 +1,5 @@
 import { IBundleWriteResponse } from '../bundle/bundle';
+import { IRunResponse } from '../core/IRunResponse';
 import { Context } from '../core/context';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
@@ -19,19 +20,9 @@ export interface InterceptorEvents {
 
   watcher_reaction: { reactionStack: ReactionStack };
 
-  complete: {
-    bundleContext?: IBundleContext;
-    bundles: Array<IBundleWriteResponse>;
-    entries?: Array<IModule>;
-    modules?: Array<IModule>;
-  };
+  complete: IRunResponse;
+  rebundle_complete: IRunResponse;
   rebundle: {
     bundles: Array<IBundleWriteResponse>;
-  };
-  rebundle_complete: {
-    bundles: Array<IBundleWriteResponse>;
-    file: string;
-    entries?: Array<IModule>;
-    modules?: Array<IModule>;
   };
 }
