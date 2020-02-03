@@ -6,9 +6,16 @@ import { recursive1 } from './recursive1';
 console.log('moduleFoo', moduleFoo);
 console.log('shit!!111');
 
-if (typeof oi !== 'undefined') {
-  console.log(oi);
+//if (typeof oi !== 'undefined') {
+//console.log(oi);
+//}
+
+if (process.env.NODE_ENV === 'development') {
+  console.log('IS DEV');
+} else {
+  console.log('IS PROD');
 }
+
 console.log('recursive1', recursive1);
 
 console.log(baz);

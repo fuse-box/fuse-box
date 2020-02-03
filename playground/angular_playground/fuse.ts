@@ -10,7 +10,7 @@ class Context {
       modules: ['./node_modules'],
       target: 'browser',
 
-      cache: { enabled: true, root: './.cache', strategy: 'memory' },
+      cache: { enabled: true, root: './.cache', strategy: 'fs' },
       devServer: this.runServer,
       sourceMap: true,
       watcher: true,

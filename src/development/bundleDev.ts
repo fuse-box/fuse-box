@@ -26,7 +26,7 @@ export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Pr
     await ict.resolve();
     const bundles = await router.writeBundles();
 
-    if (bundleContext.cache) bundleContext.cache.write();
+    if (bundleContext.cache) await bundleContext.cache.write();
     ctx.isWorking = false;
     const response = { bundleContext, bundles, entries, modules };
     ict.sync(rebundle ? 'rebundle' : 'complete', response);
