@@ -1,12 +1,8 @@
 import * as path from 'path';
 import { EnvironmentType } from '../../config/EnvironmentType';
 import { ICacheStrategy } from '../../config/ICacheProps';
-import {
-  createIntegrationTest,
-  createTestWorkspace,
-  ITestBrowserResponse,
-  ITestWorkspace,
-} from '../../testUtils/integrationTest';
+import { ITestBrowserResponse } from '../../testUtils/browserEnv/testBrowserEnv';
+import { createIntegrationTest, createTestWorkspace, ITestWorkspace } from '../../testUtils/integrationTest';
 
 describe('Cache intergation test', () => {
   const test = async (workspace): Promise<ITestBrowserResponse> => {
@@ -21,7 +17,7 @@ describe('Cache intergation test', () => {
     });
 
     const response = await test.runDev();
-    return await response.runBundleInBrowser();
+    return await response.runBrowser();
   };
 
   let workspace: ITestWorkspace;

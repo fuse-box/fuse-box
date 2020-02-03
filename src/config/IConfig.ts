@@ -13,6 +13,7 @@ import { IRunProps } from './IRunProps';
 import { IStyleSheetProps } from './IStylesheetProps';
 import { ITarget } from './ITarget';
 
+import { IDependencies } from './IDependencies';
 import { IWatcherPublicConfig } from './IWatcher';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 
@@ -23,15 +24,8 @@ export interface IPublicConfig {
   logging?: IFuseLoggerProps;
   modules?: Array<string>;
 
-  target?: ITarget;
-  webWorkers?: IWebWorkerConfig;
-  dependencies?: {
-    ignoreAllExternal?: boolean;
-    ignorePackages?: Array<string>;
-    include?: Array<string>;
-  };
-
   cache?: ICacheProps | boolean;
+  dependencies?: IDependencies;
   entry?: Array<string> | string;
   hmr?: IHMRProps | boolean;
   json?: IJSONPluginProps;
@@ -47,7 +41,9 @@ export interface IPublicConfig {
         vendor?: boolean;
       };
   stylesheet?: IStyleSheetProps;
+  target?: ITarget;
   watcher?: IWatcherPublicConfig | boolean;
+  webWorkers?: IWebWorkerConfig;
   env?: { [key: string]: string };
 
   webIndex?: IWebIndexConfig | boolean;
@@ -59,6 +55,7 @@ export interface IPublicConfig {
 export interface IConfig {
   cache?: ICacheProps;
   compilerOptions?: ICompilerOptions;
+  dependencies?: IDependencies;
   devServer?: IDevServerProps;
   entries?: Array<string>;
   hmr?: IHMRProps;
@@ -81,11 +78,6 @@ export interface IConfig {
   webIndex?: IWebIndexConfig;
   webWorkers?: IWebWorkerConfig;
   alias?: { [key: string]: string };
-  dependencies?: {
-    ignoreAllExternal?: boolean;
-    ignorePackages?: Array<string>;
-    include?: Array<string>;
-  };
   env?: { [key: string]: string };
   sourceMap?: {
     css?: boolean;

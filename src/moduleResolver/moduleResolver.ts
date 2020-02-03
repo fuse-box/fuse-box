@@ -20,8 +20,10 @@ export function createRuntimeRequireStatement(props: {
   const { ctx, item, module } = props;
   const log = ctx.log;
 
+  const isServer = ctx.config.target === 'server';
   // no value.. import() or require();
   if (!item.statement.arguments[0]) {
+    module.errored = true;
     log.warn(`Empty require detected in ${module.publicPath}`, item.statement);
   }
 
@@ -37,6 +39,7 @@ export function createRuntimeRequireStatement(props: {
       // we're importing some weird stuff... require(1) ie.
       if (typeof source !== 'string') {
         log.warn(`Invalid import "${source}" in ${module.publicPath}`, { statement: item.statement });
+        module.errored = true;
       }
       // don't convert it and let the user figure it out
       requireModuleId = source;
@@ -46,9 +49,14 @@ export function createRuntimeRequireStatement(props: {
      * computed statement import
      * require('./x' + b);
      */
-    log.warn(`Unsupported require detected in ${module.publicPath}`, item.statement);
-    requireModuleId = 'unsupported';
+    if (!isServer) {
+      log.warn(`Unsupported require detected in ${module.publicPath}`, item.statement);
+      requireModuleId = 'unsupported';
+      module.errored = true;
+    }
   }
+  // prevert require for production to matter what
+  if (ctx.config.target === 'server' && typeof requireModuleId !== 'number') return item.statement;
 
   item.statement.callee.name = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION;
   item.statement.arguments = [
@@ -57,7 +65,6 @@ export function createRuntimeRequireStatement(props: {
       value: requireModuleId,
     },
   ];
-
   return item.statement;
 }
 
@@ -94,6 +101,11 @@ export function resolve(props: {
   let module: IModule;
   if (resolved.package) {
     absPath = resolved.package.targetAbsPath;
+
+    if (config.shouldIgnoreDependency(resolved.package.meta.name)) {
+      return;
+    }
+
     let pkg = bundleContext.getPackage(resolved.package.meta);
 
     if (!pkg) {
@@ -147,7 +159,6 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
           if (resolvedModule) {
             module.moduleSourceRefs[source] = resolvedModule;
             // rewrite statement because we have a resolvedModule
-            item.statement = createRuntimeRequireStatement({ ctx, item, module });
           } else {
             module.errored = true;
             ctx.log.warn('Unresolved statement $source in $file', {
@@ -155,6 +166,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
               source: source,
             });
           }
+          item.statement = createRuntimeRequireStatement({ ctx, item, module });
         } else {
           // other possible options
           continue;
@@ -189,13 +201,37 @@ export interface IModuleResolver {
   modules: Array<IModule>;
 }
 
+function addExtraDepednencies(props: { bundleContext: IBundleContext; ctx: Context; entryModule: IModule }) {
+  const { bundleContext, ctx, entryModule } = props;
+  for (const statement of ctx.config.dependencies.include) {
+    const targetModule = resolve({
+      bundleContext,
+      ctx,
+      importType: ImportType.RAW_IMPORT,
+      parent: entryModule,
+      statement,
+    });
+    // when a plugin injects dependencies it will most likely want to have the reference
+    // the easiest way is to store them to the bundle context for later retrieval
+    bundleContext.injectedDependencies[statement] = targetModule;
+  }
+}
+
 export function ModuleResolver(ctx: Context, entryFiles: Array<string>): IModuleResolver {
   const entries = [];
   const bundleContext = createBundleContext(ctx);
   const userPackage = createPackage({ type: PackageType.USER_PACKAGE });
   bundleContext.setPackage(userPackage);
+
+  let shouldAddExtraDependencies = ctx.config.dependencies.include.length > 0;
   for (const absPath of entryFiles) {
     const entryModule = initModule({ absPath, bundleContext, ctx, pkg: userPackage });
+
+    if (shouldAddExtraDependencies) {
+      // add them only once to the first entry module
+      shouldAddExtraDependencies = false;
+      addExtraDepednencies({ bundleContext, ctx, entryModule });
+    }
     entryModule.isEntry = true;
     entries.push(entryModule);
   }

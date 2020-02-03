@@ -1,5 +1,6 @@
 import { IBundleWriteResponse } from '../bundle/bundle';
 import { createBundleRouter } from '../bundle/bundleRouter';
+import { IRunResponse } from '../core/IRunResponse';
 import { Context } from '../core/context';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
@@ -28,7 +29,14 @@ export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Pr
 
     if (bundleContext.cache) await bundleContext.cache.write();
     ctx.isWorking = false;
-    const response = { bundleContext, bundles, entries, modules };
+
+    const response: IRunResponse = {
+      bundleContext,
+      bundles,
+      entries,
+      modules,
+    };
+
     ict.sync(rebundle ? 'rebundle' : 'complete', response);
     return response;
   }

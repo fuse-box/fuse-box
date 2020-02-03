@@ -10,6 +10,7 @@ console.log('shit!!111');
 //console.log(oi);
 //}
 
+import './somethign';
 if (process.env.NODE_ENV === 'development') {
   console.log('IS DEV');
 } else {
