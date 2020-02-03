@@ -22,7 +22,7 @@ export interface ITestEnvironment {
   productionContext: IProductionContext;
   sourceDir: string;
   cleanup: () => void;
-  run: (phases: Array<(IProductionContext) => void>) => IProductionContext;
+  run: (phases: Array<(IProductionContext) => void>) => Promise<IProductionContext>;
 }
 
 export function createTestEnvironment(customConfig: Record<string, string>, files: Record<string, string>) {
@@ -60,8 +60,8 @@ export function createTestEnvironment(customConfig: Record<string, string>, file
     cleanup: () => {
       fsExtra.removeSync(rootDir);
     },
-    run: (phases): IProductionContext => {
-      Engine(productionContext).start(phases);
+    run: async (phases): Promise<IProductionContext> => {
+      await Engine(productionContext).start(phases);
       return productionContext;
     },
   };

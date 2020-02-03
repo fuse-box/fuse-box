@@ -1,8 +1,10 @@
+import { IRunResponse } from '../core/IRunResponse';
 import { Context } from '../core/context';
 import { createProductionContext } from './ProductionContext';
 import { Engine } from './engine';
 
-export function bundleProd(ctx: Context) {
+export async function bundleProd(ctx: Context): Promise<IRunResponse> {
   const context = createProductionContext(ctx);
-  Engine(context).start();
+  await Engine(context).start();
+  return context.runResponse;
 }

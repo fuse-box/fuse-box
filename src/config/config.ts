@@ -38,8 +38,11 @@ export function Configuration(ctx: Context): IConfig {
     },
     isEssentialDependency: (name: string) => ESSENTIAL_DEPENDENCIES.includes(name),
     shouldIgnoreDependency: (name: string) => {
-      if (self.dependencies.ignoreAllExternal && !self.isEssentialDependency(name)) return true;
-      if (self.dependencies.ignorePackages && self.dependencies.ignorePackages.includes(name)) return true;
+      if (ESSENTIAL_DEPENDENCIES.includes(name)) return false;
+      if (self.target === 'server') {
+        if (self.dependencies.serverIgnoreExternals) return true;
+        if (self.dependencies.serverIgnore && self.dependencies.serverIgnore.includes(name)) return true;
+      }
       return false;
     },
     supportsStylesheet: () => self.target === 'browser' || self.target === 'electron',
@@ -204,10 +207,11 @@ export function createConfig(props: {
 
   /**  DEFAULT DEPENDENCY SETUP  */
   if (config.target === 'server') {
-    if (config.dependencies.ignoreAllExternal === undefined) {
+    if (config.dependencies.serverIgnoreExternals === undefined) {
+      config.dependencies.serverIgnoreExternals = true;
     }
-    config.dependencies.ignoreAllExternal = true;
   }
+  if (config.dependencies.include === undefined) config.dependencies.include = [];
 
   /*  DEFAULT WATCHER AND HTML */
   config.watcher = {
