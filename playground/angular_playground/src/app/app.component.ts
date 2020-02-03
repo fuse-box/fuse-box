@@ -8,7 +8,7 @@ import { OtherService } from './services/OtherService';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'hello';
+  title = 'hello!';
   constructor(private heroService: HeroService, otherService: OtherService) {
     console.log(otherService);
     console.log(heroService.getHeroes());

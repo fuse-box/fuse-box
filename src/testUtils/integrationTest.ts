@@ -60,8 +60,8 @@ function createTestMeta(metaFile: string) {
         if (rex.test(m.absPath)) return m;
       }
     },
-    writeMeta: (meta: any) => {
-      writeFile(metaFile, meta);
+    writeMeta: async (meta: any) => {
+      return writeFileSync(metaFile, meta);
     },
   };
 }

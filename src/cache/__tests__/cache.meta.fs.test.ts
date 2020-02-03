@@ -25,8 +25,8 @@ describe('Cache intergation test', () => {
   };
 
   let workspace: ITestWorkspace;
-  beforeAll(() => {
-    workspace = createTestWorkspace({
+  function initWorkspace() {
+    return (workspace = createTestWorkspace({
       files: {
         'foo.ts': 'export const foo = "foo"',
         'index.ts': `
@@ -34,15 +34,14 @@ describe('Cache intergation test', () => {
             const data = { foo }
             export { data }`,
       },
-    });
-  });
-  afterAll(() => {
-    workspace.destroy();
-  });
+    }));
+  }
+
   /**** THOSE TEST CAN"T RUN WITHOUT EACH OTHER ****/
   /**** DO NOT TRY .only ****/
   describe('Check module files constency', () => {
     it('should give the initial data', async () => {
+      await initWorkspace();
       await test(workspace);
       expect(workspace.getCacheWorkspace().getCachedFiles()).toHaveLength(2);
     });
@@ -100,7 +99,7 @@ describe('Cache intergation test', () => {
       expect(bar.id).toEqual(barData.id);
       expect(bar.mtime).toBeGreaterThan(barData.id);
 
-      meta.writeMeta(`@invalidjson@`);
+      await meta.writeMeta(`@invalidjson@`);
     });
 
     it('should handle json corruation', async () => {
