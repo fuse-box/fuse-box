@@ -1,10 +1,5 @@
-import { IPublicConfig } from '../../config/IConfig';
-
-import * as fs from 'fs';
 import * as path from 'path';
 import { Context } from '../../core/context';
-import { env } from '../../env';
-import { mockWriteFile, testUtils } from '../../utils/test_utils';
 import { matchAll } from '../../utils/utils';
 
 export function createFileSet(directory, files: { [key: string]: string }) {

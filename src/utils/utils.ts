@@ -37,6 +37,10 @@ export function removeFolder(userPath) {
   fsExtra.removeSync(userPath);
 }
 
+export function readJSONFile(target: string) {
+  return JSON.parse(readFile(target));
+}
+
 export function isPathRelative(from: string, to: string) {
   const relativePath = path.relative(from, to);
   return !relativePath.startsWith('..');

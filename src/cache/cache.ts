@@ -4,7 +4,7 @@ import { Context } from '../core/context';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { createModule, IModule, IModuleMeta } from '../moduleResolver/module';
 import { createPackageFromCache, IPackage } from '../moduleResolver/package';
-import { fastHash, fileExists, getFileModificationTime, readFile, removeFolder, writeFile } from '../utils/utils';
+import { fastHash, fileExists, getFileModificationTime, readJSONFile, removeFolder, writeFile } from '../utils/utils';
 import { WatcherReaction } from '../watcher/watcher';
 
 export interface ICachePublicProps {
@@ -35,10 +35,6 @@ export interface ICacheMeta {
   packages: Record<string, IPackage>;
 }
 
-function readJSONFile(target: string) {
-  return JSON.parse(readFile(target));
-}
-
 const META_MODULES_CACHE: Record<string, any> = {};
 const META_JSON_CACHE: Record<string, ICacheMeta> = {};
 
@@ -46,6 +42,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
   const prefix = fastHash(ctx.config.entries.toString());
 
   const CACHE_ROOT = path.join(ctx.config.cache.root, prefix);
+
   const isFileStrategy = ctx.config.cache.strategy === 'fs';
   const META_FILE = path.join(CACHE_ROOT, 'meta.json');
   const CACHE_MODULES_FOLDER = path.join(CACHE_ROOT, 'files');
