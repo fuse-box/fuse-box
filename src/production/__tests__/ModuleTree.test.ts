@@ -5,7 +5,7 @@ import { createTestEnvironment, ITestEnvironment } from './testUtils';
 describe('ModuleTree test', () => {
   let environment: ITestEnvironment;
 
-  const getProductionContext = (files: Record<string, string>): IProductionContext => {
+  const getProductionContext = async (files: Record<string, string>): Promise<IProductionContext> => {
     environment = createTestEnvironment({ entry: 'index.ts' }, files);
     const context = environment.run([WarmupPhase]);
     return context;
@@ -19,8 +19,8 @@ describe('ModuleTree test', () => {
     }
   });
 
-  it('should have dependant', () => {
-    const context = getProductionContext({
+  it('should have dependant', async () => {
+    const context = await getProductionContext({
       'foo.ts': 'export function foo(){}',
       'index.ts': `import "./foo"`,
     });

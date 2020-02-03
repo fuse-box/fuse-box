@@ -8,6 +8,7 @@ export type IBundleContext = ReturnType<typeof createBundleContext>;
 export function createBundleContext(ctx: Context) {
   let currentId = 0;
 
+  const injectedDependencies: Record<string, IModule> = {};
   const modules: Record<string, IModule> = {};
   const packages: Record<string, IPackage> = {};
 
@@ -15,6 +16,7 @@ export function createBundleContext(ctx: Context) {
   const scope = {
     cache,
     currentId,
+    injectedDependencies,
     modules,
     packages,
     getIdFor: (absPath: string) => {

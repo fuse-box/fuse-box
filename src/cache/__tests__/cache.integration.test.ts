@@ -1,11 +1,7 @@
 import * as path from 'path';
 import { EnvironmentType } from '../../config/EnvironmentType';
-import {
-  createIntegrationTest,
-  createTestWorkspace,
-  ITestBrowserResponse,
-  ITestWorkspace,
-} from '../../testUtils/integrationTest';
+import { ITestBrowserResponse } from '../../testUtils/browserEnv/testBrowserEnv';
+import { createIntegrationTest, createTestWorkspace, ITestWorkspace } from '../../testUtils/integrationTest';
 
 describe('Cache intergation test', () => {
   const test = async (workspace): Promise<ITestBrowserResponse> => {
@@ -20,7 +16,7 @@ describe('Cache intergation test', () => {
     });
 
     const response = await test.runDev();
-    return await response.runBundleInBrowser();
+    return await response.runBrowser();
   };
 
   describe(`[ FS ] Workspace simple manupulations`, () => {
@@ -41,13 +37,14 @@ describe('Cache intergation test', () => {
     it('should give the initial data', async () => {
       await initWorkspace();
       const result = await test(workspace);
-      expect(result.entry.data).toEqual({ foo: { __esModule: true, foo: 'foo' } });
+
+      expect(result.eval().entry().data).toEqual({ foo: { __esModule: true, foo: 'foo' } });
     });
 
     it('after adding a new file should remain the same', async () => {
       workspace.setFile('bar.ts', 'export const bar = "bar"');
       const result = await test(workspace);
-      expect(result.entry.data.foo).toBeTruthy();
+      expect(result.eval().entry().data.foo).toBeTruthy();
     });
 
     it('include bar into foo', async () => {
@@ -59,29 +56,26 @@ describe('Cache intergation test', () => {
       `,
       );
       const result = await test(workspace);
-      //expect(workspace.getCacheWorkspace().getCachedFiles()).toHaveLength(3);
-      expect(result.entry.data).toEqual({ foo: { __esModule: true, bar: 'bar', foo: 'foo' } });
+
+      expect(result.eval().entry().data).toEqual({ foo: { __esModule: true, bar: 'bar', foo: 'foo' } });
     });
 
     it('removing bar should yield an error', async () => {
       workspace.removeFile('bar.ts');
       const result = await test(workspace);
-      expect(result.errors).toHaveLength(1);
+      expect(() => result.eval()).toThrowError();
     });
 
     it('bringing back bar', async () => {
       workspace.setFile('bar.ts', 'export const bar = "bar"');
       const result = await test(workspace);
-      expect(result.entry.data).toEqual({ foo: { __esModule: true, bar: 'bar', foo: 'foo' } });
-
-      // const cache = workspace.getCacheWorkspace();
-      // expect(cache.getCachedFiles()).toHaveLength(3);
+      expect(result.eval().entry().data).toEqual({ foo: { __esModule: true, bar: 'bar', foo: 'foo' } });
     });
 
     it('Should modify bar', async () => {
       workspace.setFile('bar.ts', 'export const bar = "new_bar"');
       const result = await test(workspace);
-      expect(result.entry.data).toEqual({ foo: { __esModule: true, bar: 'new_bar', foo: 'foo' } });
+      expect(result.eval().entry().data).toEqual({ foo: { __esModule: true, bar: 'new_bar', foo: 'foo' } });
     });
 
     it('Should handle recursion', async () => {
@@ -113,13 +107,13 @@ describe('Cache intergation test', () => {
       );
 
       const result = await test(workspace);
-      expect(result.entry.data).toEqual({ foo: { __esModule: true, bar: 'mod_1mod_2', foo: 'foo' } });
+      expect(result.eval().entry().data).toEqual({ foo: { __esModule: true, bar: 'mod_1mod_2', foo: 'foo' } });
     });
 
     it('Should handle recursion (removing 1)', async () => {
       workspace.removeFile('mod_2.ts');
       const result = await test(workspace);
-      expect(result.errors).toHaveLength(1);
+      expect(() => result.eval()).toThrowError();
     });
 
     it('Should handle recursion (reverting mode_2)', async () => {
@@ -133,7 +127,7 @@ describe('Cache intergation test', () => {
       `,
       );
       const result = await test(workspace);
-      expect(result.entry.data).toEqual({ foo: { __esModule: true, bar: 'mod_1mod_2', foo: 'foo' } });
+      expect(result.eval().entry().data).toEqual({ foo: { __esModule: true, bar: 'mod_1mod_2', foo: 'foo' } });
     });
   });
 
@@ -157,14 +151,14 @@ describe('Cache intergation test', () => {
     it('should get package foo', async () => {
       initWorkspace();
       const result = await test(workspace);
-      expect(result.entry).toEqual({ __esModule: true, foo: { __esModule: true, fooPackage: 1 } });
+      expect(result.eval().entry()).toEqual({ __esModule: true, foo: { __esModule: true, fooPackage: 1 } });
     });
 
     it('should update package foo', async () => {
       workspace.setModuleFile('foo/package.json', JSON.stringify({ main: 'index.ts', name: 'foo', version: '2.0.0' }));
       workspace.setModuleFile('foo/index.ts', `export const fooPackage = 2`);
       const result = await test(workspace);
-      expect(result.entry).toEqual({ __esModule: true, foo: { __esModule: true, fooPackage: 2 } });
+      expect(result.eval().entry()).toEqual({ __esModule: true, foo: { __esModule: true, fooPackage: 2 } });
     });
 
     it('should change package foo entry', async () => {
@@ -174,7 +168,7 @@ describe('Cache intergation test', () => {
       );
       workspace.setModuleFile('foo/new_index.ts', `export const fooPackage = 'new_foo'`);
       const result = await test(workspace);
-      expect(result.entry).toEqual({ __esModule: true, foo: { __esModule: true, fooPackage: 'new_foo' } });
+      expect(result.eval().entry()).toEqual({ __esModule: true, foo: { __esModule: true, fooPackage: 'new_foo' } });
     });
 
     it('should introduce a new package within', async () => {
@@ -186,7 +180,7 @@ describe('Cache intergation test', () => {
 
       const result = await test(workspace);
 
-      expect(result.entry).toEqual({
+      expect(result.eval().entry()).toEqual({
         __esModule: true,
         foo: { __esModule: true, fooPackage: { __esModule: true, barPackage: 'bar' } },
       });
