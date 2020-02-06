@@ -10,6 +10,8 @@ import { createSplitEntry, ISplitEntry } from '../module/SplitEntries';
  */
 function resolveDynamicImport(possibleSplitEntry: IModule): boolean {
   const { moduleTree } = possibleSplitEntry;
+  if (moduleTree.dependants.length === 0) return false;
+
   let isDynamic = true;
   for (const dependant of moduleTree.dependants) {
     // if all dependants require this module dynamic
