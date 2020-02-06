@@ -1,4 +1,3 @@
-import { existsSync } from 'fs';
 import * as path from 'path';
 import { Context } from '../core/context';
 import { env } from '../env';
@@ -168,9 +167,6 @@ export function createConfig(props: {
   if (publicConfig.entry) {
     config.entries = [].concat(publicConfig.entry).map(entry => {
       const entryPath = ensureAbsolutePath(entry, env.SCRIPT_PATH);
-      if (!existsSync(entryPath)) {
-        throw new Error(`Failed to resolve entry point ${entryPath}`);
-      }
       return entryPath;
     });
   }

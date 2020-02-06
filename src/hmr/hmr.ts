@@ -8,7 +8,7 @@ import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
 import { resolve } from '../moduleResolver/moduleResolver';
 import { IHMRModulesUpdate } from '../types/hmr';
-import { Concat, fastHash } from '../utils/utils';
+import { Concat, fastHash, fileExists } from '../utils/utils';
 function generateUpdateId() {
   return fastHash(new Date().getTime().toString() + Math.random().toString());
 }
@@ -74,6 +74,13 @@ export function createHMR(ctx: Context) {
   ict.on('entry_resolve', props => {
     const module = props.module;
     if (config.hmr.plugin) {
+      if (!fileExists(config.hmr.plugin)) {
+        ctx.fatal('Failed to resolve HMR plugin file', [
+          config.hmr.plugin,
+          'Make sure to resolve it correctly',
+          'File name should absolute or relative to your fuse file',
+        ]);
+      }
       const hmrModule = resolve({
         bundleContext: ctx.bundleContext,
         ctx,
@@ -94,7 +101,8 @@ export function createHMR(ctx: Context) {
     for (const r of props.reactionStack) {
       if (r.absPath === config.hmr.plugin) {
         // send a reload
-        ctx.devServer.clientSend('reload', {});
+
+        ctx.sendPageReload('HMR module plugin');
       }
     }
   });
