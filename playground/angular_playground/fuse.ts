@@ -12,7 +12,7 @@ class Context {
 
       cache: { enabled: true, root: './.cache', strategy: 'fs' },
       devServer: this.runServer,
-      sourceMap: true,
+      sourceMap: { project: true, vendor: false },
       watcher: true,
       webIndex: {
         publicPath: '/',
