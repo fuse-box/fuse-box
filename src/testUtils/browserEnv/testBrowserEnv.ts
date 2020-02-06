@@ -19,7 +19,9 @@ export interface ITestBrowserResponse {
 export function createTestBrowserEnv(runResponse: IRunResponse) {
   let contents = '\n';
   for (const bundle of runResponse.bundles) {
-    contents += bundle.bundle.contents + '\n';
+    if (bundle.bundle.webIndexed) {
+      contents += bundle.bundle.contents + '\n';
+    }
   }
   contents + '\n';
 
@@ -31,6 +33,7 @@ export function createTestBrowserEnv(runResponse: IRunResponse) {
         Error: class {
           constructor(public message: string) {}
         },
+        Promise: Promise,
         console: {
           error: (...args) => {
             if (props.onConsoleError) props.onConsoleError(args);

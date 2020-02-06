@@ -11,7 +11,9 @@ export function createTestServerEnv(runResponse: IRunResponse) {
   return (): ITestServerResponse => {
     let contents = '\n';
     for (const bundle of runResponse.bundles) {
-      contents += bundle.bundle.contents + '\n';
+      if (bundle.bundle.webIndexed) {
+        contents += bundle.bundle.contents + '\n';
+      }
     }
     contents + '\n';
 

@@ -12,6 +12,7 @@ export function fusebox(publicConfig: IPublicConfig) {
 
     ctx.isWorking = true;
     ctx.ict.sync('init', { ctx: ctx });
+
     preflightFusebox(ctx);
     switch (props.envType) {
       case EnvironmentType.DEVELOPMENT:
