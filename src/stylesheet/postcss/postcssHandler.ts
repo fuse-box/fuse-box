@@ -63,7 +63,8 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
       if (props.options.breakDependantsCache) {
         props.module.breakDependantsCache = true;
       }
-      //props.module.addWeakReference(resolved.path);
+
+      props.module.ctx.setLinkedReference(resolved.path, props.module);
       return resolved.path;
     }
   }

@@ -46,7 +46,8 @@ export async function renderModule(props: { ctx: Context; less: any; module: IMo
                 if (props.options.breakDependantsCache) {
                   props.module.breakDependantsCache = true;
                 }
-                //props.module.addWeakReference(resolved.path);
+                props.module.ctx.setLinkedReference(resolved.path, props.module);
+
                 const contents = readFile(resolved.path);
 
                 const processed = cssHandleResources(

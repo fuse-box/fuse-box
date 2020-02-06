@@ -44,8 +44,9 @@ export function cssDevModuleRender(props: ICSSModuleRender) {
     // ctx.writer.write(targetSourceMapPath, data.map);
   }
 
-  if (module.storage.styleSheetModule) {
-    const methodString = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION + '(' + module.storage.styleSheetModule.id + ')';
+  const fuseBoxCSSModuleId = ctx.systemDependencies['fuse-box-css'];
+  if (fuseBoxCSSModuleId) {
+    const methodString = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION + '(' + fuseBoxCSSModuleId + ')';
     let contents = `${methodString}(${JSON.stringify(filePath)},${JSON.stringify(cssData)})`;
     if (props.data.json) {
       contents += '\n' + wrapContents(JSON.stringify(props.data.json), props.useDefault);
