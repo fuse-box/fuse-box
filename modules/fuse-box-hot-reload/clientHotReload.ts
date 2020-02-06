@@ -91,7 +91,6 @@ export const connect = opts => {
       hmrModule.default(payload, hmr);
       return;
     }
-
     hmr.updateModules();
     if (hmr.isStylesheeetUpdate) {
       log(`Flushing ${updates.map(item => item.path)}`);
