@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { BUNDLE_RUNTIME_NAMES } from '../bundleRuntime/bundleRuntimeCore';
 import { Context } from '../core/context';
 import { env } from '../env';
 import { ensureAbsolutePath } from '../utils/utils';
@@ -95,5 +96,12 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
   }
   if (baseURL) options.baseUrl = path.resolve(tsConfigDirectory, baseURL);
 
+  if (options.buildEnv === undefined) {
+    options.buildEnv = {};
+  }
+
+  // set default helplers
+  options.buildEnv.require = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ + '.' + BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
+  options.buildEnv.cachedModules = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ + '.' + BUNDLE_RUNTIME_NAMES.CACHE_MODULES;
   return options;
 }
