@@ -19,7 +19,7 @@ export type BundleSource = {
   containsMaps: boolean;
   entries: Array<IModule>;
   expose?: Array<{ name: string; moduleId: number }>;
-  injection?: string;
+  injection?: Array<string>;
   modules: Array<IModule>;
   generate: (opts: IBundleGenerateProps) => Concat;
   generateHash: () => string;
@@ -33,6 +33,7 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
   const self: BundleSource = {
     containsMaps: false,
     entries: [],
+    injection: [],
     // user injection
     // for example inject some code after the bundle is ready
 
@@ -88,6 +89,10 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
             injectionCode.push(`${exposedGlobal}[${JSON.stringify(item.name)}] = ${ReqFn + '(' + item.moduleId + ')'}`);
           }
         }
+      }
+
+      if (self.injection.length) {
+        for (const userInjectionLine of self.injection) injectionCode.push(userInjectionLine);
       }
 
       let readyFunction = '';

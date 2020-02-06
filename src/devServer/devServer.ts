@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as proxyMiddleware from 'http-proxy-middleware';
 import * as open from 'open';
+import { createGlobalModuleCall } from '../bundleRuntime/bundleRuntimeCore';
 import { Context } from '../core/context';
 import {
   createDevServerConfig,
@@ -112,31 +113,34 @@ export function createDevServer(ctx: Context): IDevServerActions {
   if (hmrServerProps.enabled) {
     // injecting hmr dependency
     if (!isProduction) {
-      // ict.on('assemble_after_transpile', props => {
-      //   const module = props.module;
-      //   const pkg = module.pkg;
-      //   // if (pkg.isDefaultPackage && pkg.entry === module) {
-      //   //   module.analysis.imports.push({ type: ImportType.REQUIRE, literal: 'fuse-box-hot-reload' });
-      //   // }
-      //   return props;
-      // });
-      // ict.on('before_bundle_write', props => {
-      //   const bundle = props.bundle;
-      //   if (bundle.props.type === BundleType.PROJECT_JS) {
-      //     const clientProps: any = {};
-      //     if (hmrServerProps.connectionURL) {
-      //       clientProps.connectionURL = hmrServerProps.connectionURL;
-      //     } else {
-      //       if (hmrServerProps.useCurrentURL || httpServerProps.port === hmrServerProps.port) {
-      //         clientProps.useCurrentURL = true;
-      //       } else if (hmrServerProps.port) {
-      //         clientProps.port = hmrServerProps.port;
-      //       }
-      //     }
-      //     bundle.addContent(`FuseBox.import("fuse-box-hot-reload").connect(${JSON.stringify(clientProps)})`);
-      //   }
-      //   return props;
-      // });
+      const clientProps: any = {};
+      if (hmrServerProps.connectionURL) {
+        clientProps.connectionURL = hmrServerProps.connectionURL;
+      } else {
+        if (hmrServerProps.useCurrentURL || httpServerProps.port === hmrServerProps.port) {
+          clientProps.useCurrentURL = true;
+        } else if (hmrServerProps.port) {
+          clientProps.port = hmrServerProps.port;
+        }
+      }
+      const INJECTION_MODULE = 'fuse-box-hot-reload';
+
+      ict.on('init', () => {
+        // including the essential development module
+        ctx.config.dependencies.include.push(INJECTION_MODULE);
+      });
+
+      ict.on('before_bundle_write', props => {
+        const { bundle } = props;
+        const bundleContext = ctx.bundleContext;
+        if (bundle.containsApplicationEntryCall) {
+          //console.log(bundle);
+          const injectedModule = bundleContext.injectedDependencies[INJECTION_MODULE];
+          const requireLine = 'const hmr = ' + createGlobalModuleCall(injectedModule.id);
+          bundle.source.injection.push(requireLine);
+          bundle.source.injection.push(`hmr.connect(${JSON.stringify(clientProps)})`);
+        }
+      });
     }
   }
 

@@ -4,10 +4,17 @@ import { readFile } from '../utils/utils';
 export const BUNDLE_RUNTIME_NAMES = {
   ARG_REQUIRE_FUNCTION: '__fusereq',
   BUNDLE_FUNCTION: 'bundle',
+  CACHE_MODULES: 'c',
   GLOBAL_OBJ: '__fuse',
   INTEROP_REQUIRE_DEFAULT_FUNCTION: 'dt',
+  MODULE_COLLECTION: 'modules',
   REQUIRE_FUNCTION: 'r',
 };
+
+export function createGlobalModuleCall(moduleId: number) {
+  const fn = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ + '.' + BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
+  return fn + '(' + moduleId + ');';
+}
 
 export type ICodeSplittingMap = {
   b: Record<number, { p: string }>;
@@ -15,6 +22,7 @@ export type ICodeSplittingMap = {
 
 export interface IBundleRuntimeCore {
   codeSplittingMap?: ICodeSplittingMap;
+  includeHMR?: boolean;
   interopRequireDefault?: boolean;
   isIsolated?: boolean;
   target: ITarget;
@@ -77,6 +85,10 @@ export function bundleRuntimeCore(props: IBundleRuntimeCore) {
   if (props.codeSplittingMap) {
     optional += `\nvar cs = ${JSON.stringify(props.codeSplittingMap)};`;
     optional += '\n' + getCodeSplittingFunction(props.target);
+  }
+
+  if (props.includeHMR) {
+    optional += '\nf.modules = modules;';
   }
 
   let CODE = `${isIsolated ? `var ${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} = ` : ''}(function() {

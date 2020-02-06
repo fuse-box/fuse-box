@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { bundleRuntimeCore, ICodeSplittingMap } from '../bundleRuntime/bundleRuntimeCore';
 import { Context } from '../core/context';
+import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
 import { PackageType } from '../moduleResolver/package';
 import { ISplitEntry } from '../production/module/SplitEntries';
@@ -14,6 +15,7 @@ export interface IBundleRouter {
 }
 
 export interface IBundleRouteProps {
+  bundleContext?: IBundleContext;
   ctx: Context;
   entries: Array<IModule>;
 }
@@ -76,6 +78,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
 
     return bundleRuntimeCore({
       codeSplittingMap: codeSplittingIncluded ? codeSplittingMap : undefined,
+      includeHMR: ctx.config.hmr.enabled,
       interopRequireDefault: ctx.compilerOptions.esModuleInterop,
       isIsolated: false,
       target: ctx.config.target,
@@ -140,14 +143,23 @@ export function createBundleRouter(props: IBundleRouteProps) {
           lastWebIndexed = bundle;
           if (!apiInserted) {
             apiInserted = true;
+            bundle.containsAPI = true;
             writerProps = { runtimeCore: createRuntimeCore() };
           }
         }
+
         writers.push(() => bundle.generate(writerProps));
         index++;
       }
-      if (lastWebIndexed) lastWebIndexed.entries = entries;
-      return await Promise.all(writers.map(wr => wr()));
+      if (lastWebIndexed) {
+        lastWebIndexed.containsApplicationEntryCall = true;
+        lastWebIndexed.entries = entries;
+      }
+      return await Promise.all(
+        writers.map(write => {
+          return write();
+        }),
+      );
     },
   };
   return self;

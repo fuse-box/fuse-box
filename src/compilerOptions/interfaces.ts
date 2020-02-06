@@ -6,6 +6,7 @@ export type IJavaScriptTarget = 'ES2015' | 'ES2016' | 'ES2017' | 'ES2019' | 'ES3
 
 export interface ICompilerOptions {
   baseUrl?: string;
+  buildEnv?: Record<string, any>;
   buildTarget?: ITarget;
   emitDecoratorMetadata?: boolean;
   esModuleInterop?: boolean;

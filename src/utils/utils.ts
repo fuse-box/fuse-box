@@ -253,6 +253,13 @@ export function ensureAbsolutePath(userPath: string, root: string) {
   return userPath;
 }
 
+export function ensureScriptRoot(userPath: string) {
+  if (!path.isAbsolute(userPath)) {
+    return path.join(env.SCRIPT_PATH, userPath);
+  }
+  return userPath;
+}
+
 export function getPathRelativeToConfig(props: { dirName: string; ensureDirExist?: boolean; fileName?: string }) {
   let target = props.fileName ? path.dirname(props.fileName) : props.dirName;
   const fileName = props.fileName && path.basename(props.fileName);

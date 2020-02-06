@@ -2,7 +2,7 @@ import { existsSync } from 'fs';
 import * as path from 'path';
 import { Context } from '../core/context';
 import { env } from '../env';
-import { ensureAbsolutePath } from '../utils/utils';
+import { ensureAbsolutePath, ensureScriptRoot } from '../utils/utils';
 import { EnvironmentType } from './EnvironmentType';
 import { IConfig, IPublicConfig } from './IConfig';
 import { IResourceConfig } from './IResourceConfig';
@@ -229,7 +229,8 @@ export function createConfig(props: {
   }
 
   // hmr ************************************************************************************************
-  const hmrAllowedByDefault = config.isDevelopment && config.target !== 'server' && config.watcher.enabled;
+  const hmrAllowedByDefault =
+    config.isDevelopment && config.cache.enabled && config.target !== 'server' && config.watcher.enabled;
   config.hmr = {
     enabled: hmrAllowedByDefault,
   };
@@ -238,6 +239,13 @@ export function createConfig(props: {
     if (typeof publicConfig.hmr === 'boolean') {
       config.hmr.enabled = publicConfig.hmr;
     }
+    if (typeof publicConfig.hmr === 'object') {
+      if (publicConfig.hmr.plugin) {
+        config.hmr.plugin = ensureScriptRoot(publicConfig.hmr.plugin);
+      }
+    }
+    // pverride back if not supported
+    if (config.hmr.enabled === true) config.hmr.enabled = hmrAllowedByDefault;
   }
 
   /**  DEFAULT PLUGIN SETUP */

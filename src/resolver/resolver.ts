@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { ITarget } from '../config/ITarget';
 import { path2Regex } from '../utils/utils';
 import { handleBrowserField } from './browserField';
@@ -101,6 +102,11 @@ function replaceAliases(
 }
 
 export function resolveModule(props: IResolverProps): IResolver {
+  if (path.isAbsolute(props.target))
+    return {
+      absPath: props.target,
+    };
+
   const external = isExternalModule(props);
   if (external) {
     return external;

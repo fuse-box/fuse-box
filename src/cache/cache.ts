@@ -67,7 +67,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       persist: async (metaChanged: boolean, meta) => {
         await Promise.all(moduleWriters);
         if (isFileStrategy && metaChanged) {
-          await writeFile(META_FILE, JSON.stringify(meta));
+          await writeFile(META_FILE, JSON.stringify(meta, null, 2));
         }
       },
       read: (meta: IModuleMeta) => {
@@ -105,6 +105,24 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
   if (meta.ctx) {
     for (const key in meta.ctx) ctx[key] = meta.ctx[key];
   }
+
+  function verifyLinkedReferences() {
+    for (const absPath in ctx.linkedReferences) {
+      const item = ctx.linkedReferences[absPath];
+      if (!fileExists(absPath)) {
+        // cleaning up
+        ctx.linkedReferences[absPath] = undefined;
+      } else {
+        if (getFileModificationTime(absPath) !== item.mtime) {
+          // reset modification time so it naver matches
+          for (const depId of item.deps) modules[depId].mtime = -1;
+        }
+      }
+    }
+  }
+  // first thing we need to verify linked referneces
+  // if dependant files have changed we need to break cache on targeted modules
+  verifyLinkedReferences();
 
   /**
    *
