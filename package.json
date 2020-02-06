@@ -50,7 +50,6 @@
     "source-map-support": "^0.5.16",
     "stream-browserify": "^2.0.2",
     "terser": "^4.5.1",
-    "ts-morph": "^6.0.2",
     "typescript": "3.7.4",
     "ws": "^7.2.1"
   },
@@ -136,5 +135,5 @@
     "typecheck": "ts-node -T fuse typecheck"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.279"
+  "version": "4.0.0-alpha.299"
 }
