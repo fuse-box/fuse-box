@@ -15,6 +15,6 @@ export interface HMRHelper {
   callEntries: () => void;
   callModules: (modules: IHMRModulesUpdate) => void;
   flushAll: () => void;
-  flushModule: (modules: IHMRModulesUpdate) => void;
-  updateModule: () => void;
+  flushModules: (modules: IHMRModulesUpdate) => void;
+  updateModules: () => void;
 }
