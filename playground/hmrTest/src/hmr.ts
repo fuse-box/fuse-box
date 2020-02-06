@@ -1,6 +1,6 @@
 export default function(payload, helper) {
   const { modules, updates } = payload;
-
+  helper.updateModules();
   if (helper.isStylesheeetUpdate) {
     // console.log(updates[0].content);
     // console.log(payload);
@@ -10,7 +10,7 @@ export default function(payload, helper) {
     // }
     // console.log(__build_env.cachedModules);
     helper.flushModules(updates);
-    helper.updateModules();
+
     helper.callModules(updates);
 
     // for (const update of updates) {
@@ -20,7 +20,7 @@ export default function(payload, helper) {
     // for (const item of updates) __build_env.require(item.id);
   } else {
     helper.flushAll();
-    helper.updateModules();
+
     helper.callEntries();
   }
 }

@@ -126,7 +126,9 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
             name: opts.distFileName,
           },
         );
-        self.generate(lateBundles);
+        self.generate(lateBundles).then(() => {
+          ctx.sendPageReload('webindex change');
+        });
       }
     }
   });

@@ -5,7 +5,7 @@ import { ImportType } from '../compiler/interfaces/ImportType';
 import { Context } from '../core/context';
 import { env } from '../env';
 import { resolveModule } from '../resolver/resolver';
-import { getPublicPath } from '../utils/utils';
+import { fileExists, getPublicPath } from '../utils/utils';
 import { createBundleContext, IBundleContext } from './bundleContext';
 import { createModule, IModule } from './module';
 import { getModuleResolutionPaths } from './moduleResolutionPaths';
@@ -243,6 +243,12 @@ export function ModuleResolver(ctx: Context, entryFiles: Array<string>): IModule
 
   let shouldAddExtraDependencies = ctx.config.dependencies.include.length > 0;
   for (const absPath of entryFiles) {
+    if (!fileExists(absPath)) {
+      ctx.fatal("Entry point doesn't exist", [
+        absPath,
+        'Entry point path must be absolute or relative to the fuse file',
+      ]);
+    }
     const entryModule = initModule({ absPath, bundleContext, ctx, isEntry: true, pkg: userPackage });
 
     if (shouldAddExtraDependencies) {

@@ -52,9 +52,7 @@ export function bindWatcherReactions(ctx: Context) {
       if (WatchableCachePathEvents.includes(item.event)) verifyWatchablePaths(item.absPath);
     }
     if (lastAbsPath) {
-      ctx.log.clearConsole();
-      ctx.log.line();
-      ctx.log.info('changed', `<dim>$file</dim>`, {
+      ctx.log.info('changed', `$file`, {
         file: path.relative(env.APP_ROOT, lastAbsPath),
       });
 

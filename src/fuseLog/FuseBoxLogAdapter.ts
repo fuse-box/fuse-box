@@ -79,7 +79,6 @@ export class FuseBoxLogAdapter extends FuseLog {
 
   log(type: string, message: string) {
     const level = this.props.level;
-    //console.log(message);
 
     if (level === 'disabled') return;
 
@@ -109,6 +108,7 @@ export class FuseBoxLogAdapter extends FuseLog {
     if (!this.streaming) {
       return console.log(message);
     }
+    //console.log(message);
     if (this.props.level === 'succinct' && this.streaming) {
       readline.clearLine(process.stdout, 0);
       readline.cursorTo(process.stdout, 0);
@@ -117,7 +117,7 @@ export class FuseBoxLogAdapter extends FuseLog {
   }
 
   css(group: string, message: string) {
-    this.log('info', this.getString(`${this.indent}<bold><yellow>${group}</yellow></bold> ${message}`));
+    this.log('info', this.getString(`${this.indent}<bold><yellow>${group}</yellow></bold> <dim>${message}</dim>`));
   }
   processing(group: string, message: string) {
     this.log('info', this.getString(`${this.indent}<bold><green>${group}</green></bold> ${message}`));

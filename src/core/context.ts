@@ -62,6 +62,7 @@ export interface Context {
   fatal?: (header: string, messages?: Array<string>) => void;
   getCachable?: () => any;
   registerTransformer?: (transformer: ITransformer) => void;
+  sendPageReload?: (reason?: string) => void;
   setLinkedReference?: (asbPath: string, module: IModule) => void;
   setPersistantModuleDependency?: (module: IModule, dependencyName: string) => void;
 }
@@ -88,6 +89,16 @@ export function createContext(props: ICreateContextProps): Context {
         systemDependencies: self.systemDependencies,
         tsConfigAtPaths: self.tsConfigAtPaths,
       };
+    },
+    sendPageReload: (reason?: string) => {
+      if (self.devServer) {
+        //self.log.line();
+
+        setTimeout(() => {
+          self.log.info('hmr', 'Reloading your browser.' + (reason ? ` Reason: ${reason}` : ''));
+        }, 10);
+        self.devServer.clientSend('reload', {});
+      }
     },
     setLinkedReference: (absPath: string, module: IModule) => {
       let ref = self.linkedReferences[absPath];

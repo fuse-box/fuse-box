@@ -94,6 +94,10 @@ export function createWatcher(ctx: Context) {
         break;
       }
     }
+    if (projectFilesChanged) {
+      ctx.log.clearConsole();
+      ctx.log.line();
+    }
 
     if (projectFilesChanged) reactionStack.push({ absPath, event, reaction: WatcherReaction.PROJECT_FILE_CHANGED });
     for (const x of Reactions) {

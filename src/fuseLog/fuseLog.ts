@@ -18,7 +18,8 @@ export abstract class FuseLog {
     if (group) {
       str += `<bold><cyan>${group}</cyan></bold> `;
     }
-    str += `${message}`;
+    str += `<dim>${message}</dim>`;
+
     this.log('info', codeLog(str, vars));
   }
 
