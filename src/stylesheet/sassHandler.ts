@@ -84,12 +84,8 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
       // gathering imported dependencies in order to let the watcher pickup the right module
 
       const result = sassImporter({ options: props.options, ctx, module, url, fileRoot: prev });
-
-      if (props.options.breakDependantsCache) {
-        module.breakDependantsCache = true;
-      }
       if (result && result.file) {
-        //module.addWeakReference(result.file);
+        ctx.setLinkedReference(result.file, props.module);
         return result;
       }
 

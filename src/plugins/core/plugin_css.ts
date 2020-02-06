@@ -1,9 +1,6 @@
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { Context } from '../../core/context';
-import { IModule } from '../../moduleResolver/module';
-import { resolve } from '../../moduleResolver/moduleResolver';
-import { ImportType } from '../../resolver/resolver';
 import { cssResolveURL } from '../../stylesheet/cssResolveURL';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
@@ -16,27 +13,12 @@ export function pluginCSS(a?: ICSSPluginProps | RegExp | string, b?: ICSSPluginP
   let [opts, matcher] = parsePluginOptions<ICSSPluginProps>(a, b, {});
   if (!matcher) matcher = /\.(css)$/;
   return (ctx: Context) => {
-    let styleSheetModule: IModule;
     opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
     if (!ctx.config.isProduction && ctx.config.supportsStylesheet()) {
       ctx.ict.on('module_init', props => {
-        const { bundleContext, module } = props;
+        const { module } = props;
         if (!module.isStylesheet) return;
-        // we need to resolve it only once
-        if (styleSheetModule) {
-          module.storage.styleSheetModule = styleSheetModule;
-          return;
-        }
-        // retriving the module
-        styleSheetModule = resolve({
-          bundleContext,
-          ctx,
-          importType: ImportType.REQUIRE,
-          parent: module,
-          statement: 'fuse-box-css',
-        });
-        module.storage.styleSheetModule = styleSheetModule;
-
+        ctx.setPersistantModuleDependency(module, 'fuse-box-css');
         return props;
       });
     }

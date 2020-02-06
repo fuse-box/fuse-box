@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { CustomTransformers } from 'typescript';
 import { ITransformer } from '../compiler/interfaces/ITransformer';
+import { ImportType } from '../compiler/interfaces/ImportType';
 import { createCompilerOptions } from '../compilerOptions/compilerOptions';
 import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { EnvironmentType } from '../config/EnvironmentType';
@@ -10,17 +11,29 @@ import { createConfig } from '../config/config';
 import { createDevServer, IDevServerActions } from '../devServer/devServer';
 import { env } from '../env';
 import { FuseBoxLogAdapter, createFuseLogger } from '../fuseLog/FuseBoxLogAdapter';
+import { createHMR } from '../hmr/hmr';
 import { MainInterceptor, createInterceptor } from '../interceptor/interceptor';
+import { IBundleContext } from '../moduleResolver/bundleContext';
+import { IModule } from '../moduleResolver/module';
+import { resolve } from '../moduleResolver/moduleResolver';
 import { outputConfigConverter } from '../output/OutputConfigConverter';
 import { IOutputConfig } from '../output/OutputConfigInterface';
 import { DistWriter, distWriter } from '../output/distWriter';
 import { TsConfigAtPath } from '../resolver/fileLookup';
+import { getFileModificationTime } from '../utils/utils';
 import { createWatcher } from '../watcher/watcher';
 import { createWebIndex, IWebIndexInterface } from '../webIndex/webIndex';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
 import { WeakModuleReferences } from './WeakModuleReferences';
 
+export interface ILinkedReference {
+  deps: Array<number>;
+  mtime: number;
+}
+export type LinkedReferences = Record<string, ILinkedReference>;
+
 export interface Context {
+  bundleContext?: IBundleContext;
   cache?: Cache;
   compilerOptions?: ICompilerOptions;
   config?: IConfig;
@@ -29,8 +42,17 @@ export interface Context {
   ict?: MainInterceptor;
   interceptor?: MainInterceptor;
   isWorking?: boolean;
+  /**
+   * A list of of references that do not come naturally in form of javascript imports
+   * for example css imports
+   * This will be used by the watcher to determine if a file should be reloaded
+   */
+  linkedReferences?: LinkedReferences;
   log?: FuseBoxLogAdapter;
   outputConfig?: IOutputConfig;
+  // a list of of system dependencies with names and ids
+  // storable to cache
+  systemDependencies?: Record<string, number>;
   taskManager?: ContextTaskManager;
   tsConfigAtPaths?: Array<TsConfigAtPath>;
   userTransformers?: Array<ITransformer>;
@@ -40,6 +62,8 @@ export interface Context {
   fatal?: (header: string, messages?: Array<string>) => void;
   getCachable?: () => any;
   registerTransformer?: (transformer: ITransformer) => void;
+  setLinkedReference?: (asbPath: string, module: IModule) => void;
+  setPersistantModuleDependency?: (module: IModule, dependencyName: string) => void;
 }
 
 export interface ICreateContextProps {
@@ -51,16 +75,42 @@ export interface ICreateContextProps {
 
 export function createContext(props: ICreateContextProps): Context {
   const self: Context = {
+    linkedReferences: {},
+    systemDependencies: {},
     fatal: (header: string, messages?: Array<string>) => {
       self.log.clearConsole();
       self.log.fuseFatal(header, messages);
       process.exit(1);
     },
     getCachable: () => {
-      const cachable = {
+      return {
+        linkedReferences: self.linkedReferences,
+        systemDependencies: self.systemDependencies,
         tsConfigAtPaths: self.tsConfigAtPaths,
       };
-      return cachable;
+    },
+    setLinkedReference: (absPath: string, module: IModule) => {
+      let ref = self.linkedReferences[absPath];
+
+      if (!ref) {
+        ref = self.linkedReferences[absPath] = { deps: [], mtime: getFileModificationTime(absPath) };
+      }
+      if (!ref.deps.includes(module.id)) ref.deps.push(module.id);
+    },
+    setPersistantModuleDependency: (module: IModule, dependencyName: string) => {
+      const targetId = self.systemDependencies[dependencyName];
+      if (!targetId) {
+        const dependencyObject = resolve({
+          bundleContext: self.bundleContext,
+          ctx: self,
+          importType: ImportType.REQUIRE,
+          parent: module,
+          statement: dependencyName,
+        });
+        self.systemDependencies[dependencyName] = dependencyObject.id;
+      } else {
+        if (!module.dependencies.includes(targetId)) module.dependencies.push(targetId);
+      }
     },
   };
 
@@ -108,5 +158,8 @@ export function createContext(props: ICreateContextProps): Context {
   createWatcher(self);
   // custom ts configs at path
   self.tsConfigAtPaths = [];
+
+  if (self.config.hmr.enabled) createHMR(self);
+
   return self;
 }
