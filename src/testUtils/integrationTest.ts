@@ -7,11 +7,13 @@ import { EnvironmentType } from '../config/EnvironmentType';
 import { IPublicConfig } from '../config/IConfig';
 import { IRunResponse } from '../core/IRunResponse';
 import { Context, createContext } from '../core/context';
+import { fusebox } from '../core/fusebox';
+import { preflightFusebox } from '../core/helpers/preflightFusebox';
 import { bundleDev } from '../development/bundleDev';
 import { env } from '../env';
 import { bundleProd } from '../production/bundleProd';
 import { ensureDir, fastHash, fileExists, path2RegexPattern, readFile } from '../utils/utils';
-import { createTestBrowserEnv } from './browserEnv/testBrowserEnv';
+import { createTestBrowserEnv, ITestBrowserResponse } from './browserEnv/testBrowserEnv';
 import { createTestServerEnv, ITestServerResponse } from './serverEnv/testServerEnv';
 
 export async function testServer(props: {
@@ -39,7 +41,7 @@ export async function testBrowser(props: {
   config?: IPublicConfig;
   type?: EnvironmentType;
   workspace: ITestWorkspace;
-}): Promise<ITestServerResponse> {
+}): Promise<ITestBrowserResponse> {
   const userConfig = props.config || {};
   const test = createIntegrationTest({
     config: {
@@ -206,10 +208,12 @@ export function createIntegrationTest(props: {
   return {
     ctx,
     runDev: async () => {
+      preflightFusebox(ctx);
       const response = await bundleDev({ ctx });
       return createDevSandbox({ ctx, response, workspace: props.workspace });
     },
     runProd: async () => {
+      preflightFusebox(ctx);
       const response = await bundleProd(ctx);
       return createDevSandbox({ ctx, response, workspace: props.workspace });
     },
