@@ -98,19 +98,14 @@ export function createContext(props: ICreateContextProps): Context {
       if (!ref.deps.includes(module.id)) ref.deps.push(module.id);
     },
     setPersistantModuleDependency: (module: IModule, dependencyName: string) => {
-      const targetId = self.systemDependencies[dependencyName];
-      if (!targetId) {
-        const dependencyObject = resolve({
-          bundleContext: self.bundleContext,
-          ctx: self,
-          importType: ImportType.REQUIRE,
-          parent: module,
-          statement: dependencyName,
-        });
-        self.systemDependencies[dependencyName] = dependencyObject.id;
-      } else {
-        if (!module.dependencies.includes(targetId)) module.dependencies.push(targetId);
-      }
+      const dependencyObject = resolve({
+        bundleContext: self.bundleContext,
+        ctx: self,
+        importType: ImportType.REQUIRE,
+        parent: module,
+        statement: dependencyName,
+      });
+      self.systemDependencies[dependencyName] = dependencyObject.id;
     },
   };
 
