@@ -20,6 +20,7 @@
     "target": "es2017"
   },
   "exclude": [
+    "dist",
     "node_modules",
     "src/**/__tests__",
     "playground",

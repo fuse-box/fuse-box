@@ -116,15 +116,26 @@ export function resolve(props: {
   } else {
     module = initModule({ absPath: resolved.absPath, bundleContext, ctx, pkg: parent.pkg });
   }
-  if (module) props.parent.dependencies.push(module);
+  if (module) {
+    const parentDeps = props.parent.dependencies;
+    if (!parentDeps.includes(module.id)) parentDeps.push(module.id);
+  }
 
   return module;
 }
 
-function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx: Context; pkg?: IPackage }) {
+export function addModule(ctx: Context, absPath: string) {}
+
+export function initModule(props: {
+  absPath: string;
+  bundleContext: IBundleContext;
+  ctx: Context;
+  isEntry?: boolean;
+  pkg?: IPackage;
+}) {
   const { absPath, bundleContext, ctx, pkg } = props;
   let module = bundleContext.getModule(absPath);
-
+  const compilerOptions = ctx.compilerOptions;
   function init(pkg, absPath) {
     if (bundleContext.modules[absPath]) return bundleContext.modules[absPath];
 
@@ -135,6 +146,12 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
 
     // generate next id
     module.id = bundleContext.getIdFor(absPath);
+    if (props.isEntry) {
+      module.isEntry = true;
+      if (!compilerOptions.buildEnv.entries) compilerOptions.buildEnv.entries = [];
+      compilerOptions.buildEnv.entries.push(module.id);
+      ctx.ict.sync('entry_resolve', { module });
+    }
     // storing for further references (and avoid recursion)
     bundleContext.setModule(module);
     // reading and parsing the contents
@@ -220,19 +237,20 @@ function addExtraDepednencies(props: { bundleContext: IBundleContext; ctx: Conte
 export function ModuleResolver(ctx: Context, entryFiles: Array<string>): IModuleResolver {
   const entries = [];
   const bundleContext = createBundleContext(ctx);
+  ctx.bundleContext = bundleContext;
   const userPackage = createPackage({ type: PackageType.USER_PACKAGE });
   bundleContext.setPackage(userPackage);
 
   let shouldAddExtraDependencies = ctx.config.dependencies.include.length > 0;
   for (const absPath of entryFiles) {
-    const entryModule = initModule({ absPath, bundleContext, ctx, pkg: userPackage });
+    const entryModule = initModule({ absPath, bundleContext, ctx, isEntry: true, pkg: userPackage });
 
     if (shouldAddExtraDependencies) {
       // add them only once to the first entry module
       shouldAddExtraDependencies = false;
       addExtraDepednencies({ bundleContext, ctx, entryModule });
     }
-    entryModule.isEntry = true;
+
     entries.push(entryModule);
   }
 

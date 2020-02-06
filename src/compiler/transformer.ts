@@ -9,6 +9,7 @@ import { createGlobalContext } from './program/GlobalContext';
 import { transpileModule } from './program/transpileModule';
 import { GlobalContextTransformer } from './transformers/GlobalContextTransformer';
 import { BrowserProcessTransformer } from './transformers/bundle/BrowserProcessTransformer';
+import { BuildEnvTransformer } from './transformers/bundle/BuildEnvTransformer';
 import { BundleFastConditionUnwrapper } from './transformers/bundle/BundleFastConditionTransformer';
 import { BundlePolyfillTransformer } from './transformers/bundle/BundlePolyfillTransformer';
 import { RequireStatementInterceptor } from './transformers/bundle/RequireStatementInterceptor';
@@ -28,6 +29,8 @@ import { DecoratorTransformer } from './transformers/ts/decorators/DecoratorTran
 export const BASE_TRANSFORMERS: Array<ITransformer> = [
   // this should always come first
   GlobalContextTransformer(),
+
+  BuildEnvTransformer(),
 
   //OptionalChaningTransformer(),
 
