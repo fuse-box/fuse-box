@@ -5,6 +5,7 @@ const fuse = fusebox({
   dependencies: { include: ['ext_1'] },
   devServer: true,
   entry: 'src/index.js',
+  hmr: { plugin: 'src/hmr.ts' },
   modules: ['modules', path.join(__dirname, 'node_modules')],
   target: 'browser',
   webIndex: {
