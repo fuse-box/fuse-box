@@ -42,7 +42,7 @@ async function renderModule(props: IPostCSSHandlerProps) {
         if (props.options.breakDependantsCache) {
           props.module.breakDependantsCache = true;
         }
-        //props.module.addWeakReference(item.value);
+        props.module.ctx.setLinkedReference(item.value, props.module);
       }
     },
   });

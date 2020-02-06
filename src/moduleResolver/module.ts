@@ -24,7 +24,7 @@ export interface IModule {
   contents?: string;
   css?: IStylesheetModuleResponse;
   ctx?: Context;
-  dependencies?: Array<IModule>;
+  dependencies?: Array<number>;
   errored?: boolean;
   extension?: string;
   id?: number;
@@ -72,10 +72,12 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
   const self: IModule = {
     ctx: props.ctx,
     dependencies: [],
+
     pkg: props.pkg,
     // legacy props
     props: {},
     storage: {},
+
     // generate the code
     generate: () => {
       if (!self.ast) throw new Error('Cannot generate code without AST');
@@ -109,14 +111,11 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       return code;
     },
     getMeta: (): IModuleMeta => {
-      const dependencies = [];
-      for (const module of self.dependencies) {
-        dependencies.push(module.id);
-      }
       return {
         absPath: self.absPath,
-        dependencies: dependencies,
+        dependencies: self.dependencies,
         id: self.id,
+
         mtime: getFileModificationTime(self.absPath),
         packageId: props.pkg !== undefined ? props.pkg.publicName : undefined,
         publicPath: self.publicPath,
@@ -127,6 +126,8 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       self.extension = path.extname(props.absPath);
       self.isJavaScript = JS_EXTENSIONS.includes(ext);
       self.isTypeScript = TS_EXTENSIONS.includes(ext);
+      self.isStylesheet = STYLESHEET_EXTENSIONS.includes(ext);
+      self.isExecutable = EXECUTABLE_EXTENSIONS.includes(ext);
       self.absPath = props.absPath;
       self.isCommonsEligible = false;
       self.moduleSourceRefs = {};
@@ -142,13 +143,12 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
         isCSSSourceMapRequired = false;
       }
 
-      self.isStylesheet = STYLESHEET_EXTENSIONS.includes(ext);
-      self.isExecutable = EXECUTABLE_EXTENSIONS.includes(ext);
       self.isCSSSourceMapRequired = isCSSSourceMapRequired;
       self.props.fuseBoxPath = makePublicPath(self.absPath);
       self.publicPath = self.props.fuseBoxPath;
 
       self.isSourceMapRequired = true;
+
       if (self.pkg.type === PackageType.USER_PACKAGE) {
         if (!config.sourceMap.project) self.isSourceMapRequired = false;
       } else {
@@ -157,12 +157,18 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
     },
     initFromCache: (meta: IModuleMeta, data: { contents: string; sourceMap: string }) => {
       self.id = meta.id;
-      self.publicPath = meta.publicPath;
-      self.contents = data.contents;
-      self.sourceMap = data.sourceMap;
       self.absPath = meta.absPath;
+      self.extension = path.extname(self.absPath);
+      self.isJavaScript = JS_EXTENSIONS.includes(self.extension);
+      self.isTypeScript = TS_EXTENSIONS.includes(self.extension);
+      self.isStylesheet = STYLESHEET_EXTENSIONS.includes(self.extension);
+      self.isExecutable = EXECUTABLE_EXTENSIONS.includes(self.extension);
+      self.contents = data.contents;
+
+      self.sourceMap = data.sourceMap;
+      self.dependencies = meta.dependencies;
+      self.publicPath = meta.publicPath;
       self.isCached = true;
-      self.extension = path.extname(meta.absPath);
       if (self.sourceMap) self.isSourceMapRequired = true;
     },
     // parse using javascript or typescript
