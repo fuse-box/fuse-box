@@ -77,6 +77,7 @@ export function cssContextHandler(props: ICSSContextHandler) {
         data.map = undefined;
         data.css = result.css;
         props.module.isCSSModule = true;
+        props.module.breakDependantsCache = true;
       } else if (shared.asText) {
         props.module.isCSSText = true;
         props.module.isStylesheet = false;

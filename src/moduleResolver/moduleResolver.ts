@@ -174,6 +174,13 @@ export function initModule(props: {
             statement: source,
           });
           if (resolvedModule) {
+            // extra instructions from the resolver
+            // for example to break cache when a module has been modified
+            if (item.moduleOptions) {
+              for (const moduleField in item.moduleOptions) {
+                resolvedModule[moduleField] = item.moduleOptions[moduleField];
+              }
+            }
             module.moduleSourceRefs[source] = resolvedModule;
             // rewrite statement because we have a resolvedModule
           } else {

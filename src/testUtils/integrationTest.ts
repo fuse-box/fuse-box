@@ -196,6 +196,8 @@ export function createIntegrationTest(props: {
     if (config.cache.enabled) {
       config.cache.root = workspace.cacheFolder;
     }
+  } else if (config.cache === true) {
+    config.cache = { enabled: true, root: workspace.cacheFolder };
   }
 
   const ctx = createContext({

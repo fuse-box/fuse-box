@@ -61,11 +61,15 @@ export interface IModule {
 
 export interface IModuleMeta {
   absPath: string;
+  breakDependantsCache?: boolean;
   dependencies: Array<number>;
   id: number;
   mtime: number;
   packageId?: string;
   publicPath: string;
+  // a list of dependencies for verification (essential dependency)
+  // if those dependencies changed this one should be affected too.
+  v?: Array<number>;
 }
 
 export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPackage }): IModule {
@@ -111,7 +115,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       return code;
     },
     getMeta: (): IModuleMeta => {
-      return {
+      const meta: IModuleMeta = {
         absPath: self.absPath,
         dependencies: self.dependencies,
         id: self.id,
@@ -120,6 +124,8 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
         packageId: props.pkg !== undefined ? props.pkg.publicName : undefined,
         publicPath: self.publicPath,
       };
+      if (self.breakDependantsCache) meta.breakDependantsCache = true;
+      return meta;
     },
     init: () => {
       const ext = path.extname(props.absPath);
@@ -164,10 +170,10 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       self.isStylesheet = STYLESHEET_EXTENSIONS.includes(self.extension);
       self.isExecutable = EXECUTABLE_EXTENSIONS.includes(self.extension);
       self.contents = data.contents;
-
       self.sourceMap = data.sourceMap;
       self.dependencies = meta.dependencies;
       self.publicPath = meta.publicPath;
+      self.breakDependantsCache = meta.breakDependantsCache;
       self.isCached = true;
       if (self.sourceMap) self.isSourceMapRequired = true;
     },
