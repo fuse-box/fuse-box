@@ -21,7 +21,7 @@ class Context {
 
       plugins: [
         pluginAngular('*.component.ts'),
-        pluginSass({ asText: true, useDefault: false }),
+        pluginSass('*.component.scss', { asText: true, useDefault: false }),
         pluginCSS('app*.css', { asText: true }),
       ],
     });
