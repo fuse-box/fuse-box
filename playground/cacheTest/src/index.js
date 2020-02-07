@@ -7,6 +7,8 @@ import { recursive1 } from './recursive1';
 console.log('moduleFoo', moduleFoo);
 console.log('shit!!111');
 
+import './some';
+
 //if (typeof oi !== 'undefined') {
 //console.log(oi);
 //}
