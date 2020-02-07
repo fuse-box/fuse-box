@@ -54,17 +54,16 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
       while (index < totalAmount) {
         const module = self.modules[index];
         const isLast = index + 1 === totalAmount;
-        if (module.contents) {
-          if (!props.isProduction) concat.add(null, `\n// ${module.publicPath} @${module.id}`);
+        if (!props.isProduction) concat.add(null, `\n// ${module.publicPath} @${module.id}`);
 
-          concat.add(null, module.id + `: function(${BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION}, exports, module){`);
-          if (module.isSourceMapRequired && module.sourceMap) {
-            self.containsMaps = true;
-          }
-
-          concat.add(null, module.contents, module.isSourceMapRequired ? module.sourceMap : undefined);
-          concat.add(null, '}' + (isLast ? '' : ','));
+        concat.add(null, module.id + `: function(${BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION}, exports, module){`);
+        if (module.isSourceMapRequired && module.sourceMap) {
+          self.containsMaps = true;
         }
+        if (module.contents) {
+          concat.add(null, module.contents, module.isSourceMapRequired ? module.sourceMap : undefined);
+        }
+        concat.add(null, '}' + (isLast ? '' : ','));
         index++;
       }
 
