@@ -27,7 +27,9 @@ export function AngularURLTransformer(test: RegExp): ITransformer {
                     const req = createRequireCallExpression([{ type: 'Literal', value: el.value }]);
 
                     // emit require statement
-                    if (props.onRequireCallExpression) props.onRequireCallExpression(ImportType.REQUIRE, req);
+                    if (props.onRequireCallExpression) {
+                      props.onRequireCallExpression(ImportType.REQUIRE, req, { breakDependantsCache: true });
+                    }
                     value.elements[i] = req;
                   }
                   i++;

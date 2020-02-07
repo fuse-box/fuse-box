@@ -6,17 +6,11 @@ import { createServerEntry } from '../module/ServerEntry';
 export async function BundlePhase(productionContext: IProductionContext) {
   const { ctx, entries, modules } = productionContext;
 
-  await ctx.ict.resolve();
-
   for (const module of modules) {
     if (module.isExecutable) {
       productionContext.log.info('generate', module.publicPath);
       const transformerResult = module.transpile();
       for (const item of transformerResult.requireStatementCollection) {
-        // if (ctx.config.shouldIgnoreDependency(resolved.package.meta.name)) {
-        //   return;
-        // }
-
         item.statement = createRuntimeRequireStatement({ ctx, item, module });
       }
       module.generate();
@@ -25,6 +19,8 @@ export async function BundlePhase(productionContext: IProductionContext) {
         // need to down transpile
         module.transpileDown(ctx.config.productionBuildTarget);
       }
+    } else {
+      productionContext.log.info('add', module.publicPath);
     }
   }
 
@@ -34,6 +30,7 @@ export async function BundlePhase(productionContext: IProductionContext) {
     if (productionContext.splitEntries.entries.length > 0) {
       router.generateSplitBundles(productionContext.splitEntries.entries);
     }
+    await ctx.ict.resolve();
     const bundles = await router.writeBundles();
 
     productionContext.runResponse = {

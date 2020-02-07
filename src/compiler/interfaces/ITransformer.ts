@@ -13,11 +13,18 @@ export interface ITransformerVisitors {
   onTopLevelTraverse?: ITranformerCallback;
 }
 
+export interface IRequireStatementModuleOptions {
+  breakDependantsCache?: boolean;
+}
 export interface ITransformerCommon {
   compilerOptions: ICompilerOptions;
   ctx: Context;
   module: IModule;
-  onRequireCallExpression?: (importType: ImportType, node: ASTNode) => void;
+  onRequireCallExpression?: (
+    importType: ImportType,
+    node: ASTNode,
+    moduleOptions?: IRequireStatementModuleOptions,
+  ) => void;
 }
 
 export interface ITransformerProduction {
