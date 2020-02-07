@@ -2,7 +2,7 @@ import { watch as chokidarWatch } from 'chokidar';
 import * as path from 'path';
 import { Context } from '../core/context';
 import { env } from '../env';
-import { path2RegexPattern } from '../utils/utils';
+import { ensureScriptRoot, path2RegexPattern } from '../utils/utils';
 import { bindWatcherReactions } from './bindWatcherReactions';
 export type IWatcher = ReturnType<typeof createWatcher>;
 
@@ -47,6 +47,12 @@ export function createWatcher(ctx: Context) {
     // taking an assumption that the watch directory should be next to the entry point
     const entryPath = path.dirname(ctx.config.entries[0]);
     includePaths.push(path2RegexPattern(entryPath));
+  } else {
+    for (const prop of props.include) {
+      if (typeof prop === 'string') {
+        includePaths.push(path2RegexPattern(ensureScriptRoot(prop)));
+      } else includePaths.push(prop);
+    }
   }
 
   if (!props.ignore) {
