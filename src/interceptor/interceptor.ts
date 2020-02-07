@@ -31,10 +31,10 @@ export function createInterceptor(): MainInterceptor {
   return {
     on,
     promise: function(fn: () => Promise<any>) {
-      promises.push(fn);
+      promises.push(fn());
     },
     resolve: async function(): Promise<any> {
-      const res = await Promise.all(promises.map(p => p()));
+      const res = await Promise.all(promises);
       promises = [];
       return res;
     },

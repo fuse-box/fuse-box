@@ -2,7 +2,7 @@ import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { IModule } from '../moduleResolver/module';
 import { ASTNode } from './interfaces/AST';
 import { ITransformerResult } from './interfaces/ITranformerResult';
-import { ITransformer, ITransformerVisitors } from './interfaces/ITransformer';
+import { IRequireStatementModuleOptions, ITransformer, ITransformerVisitors } from './interfaces/ITransformer';
 import { ITransformerRequireStatementCollection } from './interfaces/ITransformerRequireStatements';
 import { ImportType } from './interfaces/ImportType';
 import { createGlobalContext } from './program/GlobalContext';
@@ -73,11 +73,15 @@ export function isTransformerEligible(module: IModule, transformer: ITransformer
 export function transformCommonVisitors(module: IModule, compilerOptions?: ICompilerOptions): ITransformerResult {
   compilerOptions = compilerOptions || {};
   const requireStatementCollection: ITransformerRequireStatementCollection = [];
-  function onRequireCallExpression(importType: ImportType, statement: ASTNode) {
+  function onRequireCallExpression(
+    importType: ImportType,
+    statement: ASTNode,
+    moduleOptions?: IRequireStatementModuleOptions,
+  ) {
     // making sure we have haven't emitted the same property twice
     if (!statement['emitted']) {
       Object.defineProperty(statement, 'emitted', { enumerable: false, value: true });
-      requireStatementCollection.push({ importType, statement });
+      requireStatementCollection.push({ importType, moduleOptions, statement });
     }
   }
 

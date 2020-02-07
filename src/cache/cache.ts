@@ -240,7 +240,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
   }
 
   function restoreModuleSafely(absPath: string, mrc: IModuleResolutionContext): IModule {
-    if (verifiedModules[absPath]) return;
+    if (verifiedModules[absPath]) return bundleContext.modules[absPath];
 
     verifiedModules[absPath] = true;
     const meta = findModuleMeta(absPath);
@@ -267,7 +267,20 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       }
     }
 
-    if (getFileModificationTime(meta.absPath) !== meta.mtime) {
+    // check if that module depends on some other dependencies that need to be consistent
+    let shouldBreakCachedModule = getFileModificationTime(meta.absPath) !== meta.mtime;
+    if (meta.v) {
+      for (const id of meta.v) {
+        const target = modules[id];
+        const restored = restoreModuleSafely(target.absPath, mrc);
+
+        if (!target || !restored) {
+          shouldBreakCachedModule = true;
+          break;
+        }
+      }
+    }
+    if (shouldBreakCachedModule) {
       // should be resolved
       bundleContext.modules[absPath] = undefined;
       mrc.modulesRequireResolution.push({ absPath, pkg: metaPackage });
@@ -331,16 +344,31 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       }
     }
 
+    const breakingCacheIds = [];
     for (const absPath in bundleContext.modules) {
       const module = bundleContext.modules[absPath];
 
       if (!module.isCached && !module.errored) {
         shouldWriteMeta = true;
-        const meta = module.getMeta();
-        modules[module.id] = meta;
+        const fileMeta = module.getMeta();
+        modules[module.id] = fileMeta;
         const pkg = packages[module.pkg.publicName];
         if (pkg.isExternalPackage) if (!pkg.deps.includes(module.id)) pkg.deps.push(module.id);
+        if (module.breakDependantsCache) {
+          breakingCacheIds.push(module.id);
+        }
         metaCache.write(module);
+      }
+    }
+
+    for (const breakId of breakingCacheIds) {
+      for (const id in meta.modules) {
+        const target = meta.modules[id];
+        if (target.dependencies.includes(breakId)) {
+          if (!target.v) target.v = [];
+          target.v.push(breakId);
+          modules[id] = target;
+        }
       }
     }
 
