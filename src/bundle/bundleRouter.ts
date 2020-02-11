@@ -5,13 +5,14 @@ import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
 import { PackageType } from '../moduleResolver/package';
 import { ISplitEntry } from '../production/module/SplitEntries';
-import { beautifyBundleName } from '../utils/utils';
+import { beautifyBundleName, writeFile } from '../utils/utils';
 import { Bundle, BundleType, createBundle, IBundleWriteResponse } from './bundle';
 
 export interface IBundleRouter {
   generateBundles: (modules: Array<IModule>) => void;
   generateSplitBundles: (entries: Array<ISplitEntry>) => void;
   writeBundles: () => Promise<Array<IBundleWriteResponse>>;
+  writeManifest: (bundles: Array<IBundleWriteResponse>) => Promise<boolean>;
 }
 
 export interface IBundleRouteProps {
@@ -160,6 +161,25 @@ export function createBundleRouter(props: IBundleRouteProps) {
           return write();
         }),
       );
+    },
+    writeManifest: async (bundles: Array<IBundleWriteResponse>): Promise<boolean> => {
+      const manifest = [];
+      for (const bundle of bundles) {
+        manifest.push({
+          absPath: bundle.absPath,
+          browserPath: bundle.browserPath,
+          relativePath: bundle.relativePath,
+        });
+      }
+      try {
+        await writeFile(
+          path.join(outputConfig.distRoot, `manifest-${ctx.config.target}.json`),
+          JSON.stringify(manifest),
+        );
+        return true;
+      } catch (err) {
+        return false;
+      }
     },
   };
   return self;
