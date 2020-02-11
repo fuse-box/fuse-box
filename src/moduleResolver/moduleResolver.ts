@@ -236,7 +236,7 @@ export interface IModuleResolver {
 function addExtraDepednencies(props: { bundleContext: IBundleContext; ctx: Context; entryModule: IModule }) {
   const { bundleContext, ctx, entryModule } = props;
   for (const statement of ctx.config.dependencies.include) {
-    const targetModule = resolve({
+    const { module: targetModule } = resolve({
       bundleContext,
       ctx,
       importType: ImportType.RAW_IMPORT,
