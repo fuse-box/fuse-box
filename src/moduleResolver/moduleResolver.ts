@@ -68,13 +68,19 @@ export function createRuntimeRequireStatement(props: {
   return item.statement;
 }
 
+interface IResolve {
+  errored?: boolean;
+  ignore?: boolean;
+  module?: IModule;
+}
+
 export function resolve(props: {
   bundleContext: IBundleContext;
   ctx: Context;
   importType: ImportType;
   parent: IModule;
   statement: string;
-}) {
+}): IResolve {
   const config = props.ctx.config;
 
   const { bundleContext, ctx, parent } = props;
@@ -93,8 +99,8 @@ export function resolve(props: {
     typescriptPaths: getModuleResolutionPaths({ module: parent }),
   });
 
-  if (!resolved || (resolved && resolved.error)) return;
-  if (resolved.skip || resolved.isExternal) return;
+  if (!resolved || (resolved && resolved.error)) return { errored: true };
+  if (resolved.skip || resolved.isExternal) return { ignore: true };
   if (resolved.tsConfigAtPath) ctx.tsConfigAtPaths.push(resolved.tsConfigAtPath);
 
   let absPath;
@@ -103,7 +109,7 @@ export function resolve(props: {
     absPath = resolved.package.targetAbsPath;
 
     if (config.shouldIgnoreDependency(resolved.package.meta.name)) {
-      return;
+      return { ignore: true };
     }
 
     let pkg = bundleContext.getPackage(resolved.package.meta);
@@ -121,7 +127,7 @@ export function resolve(props: {
     if (!parentDeps.includes(module.id)) parentDeps.push(module.id);
   }
 
-  return module;
+  return { module };
 }
 
 export function addModule(ctx: Context, absPath: string) {}
@@ -166,23 +172,25 @@ export function initModule(props: {
       for (const item of transformerResult.requireStatementCollection) {
         if (item.statement.arguments.length === 1 && typeof item.statement.arguments[0].value === 'string') {
           const source = item.statement.arguments[0].value;
-          const resolvedModule = resolve({
+          const resolveResult = resolve({
             bundleContext,
             ctx,
             importType: item.importType,
             parent: module,
             statement: source,
           });
-          if (resolvedModule) {
+          if (resolveResult.module) {
             // extra instructions from the resolver
             // for example to break cache when a module has been modified
             if (item.moduleOptions) {
               for (const moduleField in item.moduleOptions) {
-                resolvedModule[moduleField] = item.moduleOptions[moduleField];
+                resolveResult.module[moduleField] = item.moduleOptions[moduleField];
               }
             }
-            module.moduleSourceRefs[source] = resolvedModule;
-            // rewrite statement because we have a resolvedModule
+            module.moduleSourceRefs[source] = resolveResult.module;
+          } else if (resolveResult.ignore) {
+            // just ignore
+            // should we do something here?
           } else {
             module.errored = true;
             ctx.log.warn('Unresolved statement $source in $file', {
@@ -274,7 +282,6 @@ export function ModuleResolver(ctx: Context, entryFiles: Array<string>): IModule
     ctx.log.line();
     for (const absPath in bundleContext.modules) {
       const module = bundleContext.modules[absPath];
-      //if (!module.isCached) {
 
       if (module.isCached) {
         ctx.log.echo('<dim> [cache]: restored $file</dim>', { file: module.absPath });

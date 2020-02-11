@@ -65,7 +65,7 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
       extra.openProps.target = extra.openProps.target || `http://localhost:${props.port}`;
       open(extra.openProps.target, extra.openProps);
     }
-
+    ctx.log.clearLine();
     ctx.log.info('development', `Development server is running at <bold>http://localhost:$port</bold>`, {
       port: props.port,
     });

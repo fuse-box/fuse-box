@@ -26,6 +26,8 @@ export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Pr
     router.generateBundles(modules);
     await ict.resolve();
     const bundles = await router.writeBundles();
+    // write the manifest!
+    await router.writeManifest(bundles);
 
     if (bundleContext.cache) await bundleContext.cache.write();
     ctx.isWorking = false;
