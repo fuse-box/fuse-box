@@ -81,7 +81,7 @@ export function createHMR(ctx: Context) {
           'File name should absolute or relative to your fuse file',
         ]);
       }
-      const hmrModule = resolve({
+      const { module: hmrModule } = resolve({
         bundleContext: ctx.bundleContext,
         ctx,
         importType: ImportType.RAW_IMPORT,

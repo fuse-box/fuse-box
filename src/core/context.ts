@@ -109,7 +109,7 @@ export function createContext(props: ICreateContextProps): Context {
       if (!ref.deps.includes(module.id)) ref.deps.push(module.id);
     },
     setPersistantModuleDependency: (module: IModule, dependencyName: string) => {
-      const dependencyObject = resolve({
+      const { module: dependencyObject } = resolve({
         bundleContext: self.bundleContext,
         ctx: self,
         importType: ImportType.REQUIRE,
