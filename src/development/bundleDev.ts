@@ -1,20 +1,10 @@
-import { IBundleWriteResponse } from '../bundle/bundle';
 import { createBundleRouter } from '../bundle/bundleRouter';
 import { IRunResponse } from '../core/IRunResponse';
 import { Context } from '../core/context';
-import { createServer, IServer } from '../devServer/server';
-import { IBundleContext } from '../moduleResolver/bundleContext';
-import { IModule } from '../moduleResolver/module';
+import { createRunResponse } from '../core/runResponse';
 import { ModuleResolver } from '../moduleResolver/moduleResolver';
 
-export interface IBundleDevResponse {
-  bundleContext?: IBundleContext;
-  bundles: Array<IBundleWriteResponse>;
-  entries?: Array<IModule>;
-  modules?: Array<IModule>;
-  server?: IServer;
-}
-export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Promise<IBundleDevResponse> {
+export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Promise<IRunResponse> {
   const { ctx, rebundle } = props;
   ctx.log.startStreaming();
   ctx.log.startTimeMeasure();
@@ -27,24 +17,19 @@ export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Pr
     const router = createBundleRouter({ ctx, entries });
     router.generateBundles(modules);
     await ict.resolve();
-    const bundles = await router.writeBundles();
-    // write the manifest
-    await router.writeManifest(bundles);
+
+    const { bundles, manifest, onComplete } = await createRunResponse(ctx, router);
 
     if (bundleContext.cache) await bundleContext.cache.write();
     ctx.isWorking = false;
-
-    let server: IServer;
-    if (ctx.config.target === 'electron' || ctx.config.target === 'server') {
-      server = createServer(ctx, bundles);
-    }
 
     const response: IRunResponse = {
       bundleContext,
       bundles,
       entries,
+      manifest,
       modules,
-      server,
+      onComplete,
     };
 
     ict.sync(rebundle ? 'rebundle' : 'complete', response);

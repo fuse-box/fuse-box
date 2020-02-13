@@ -9,7 +9,7 @@ export const App = () => {
   const decrement = () => setCount(currentCount => currentCount - 1);
 
   return (
-    <div css={styles}>
+    <div>
       <h1>🚀 Jättesnabb 🚀</h1>
       <h2>🚀 Jättesnabb 🚀</h2>
       <h3>🚀 Jättesnabb 🚀</h3>

@@ -26,11 +26,12 @@ export interface Bundle {
 }
 
 export enum BundleType {
-  JS_APP,
-  JS_VENDOR,
-  JS_SPLIT,
   CSS_APP,
   CSS_SPLIT,
+  JS_APP,
+  JS_SERVER_ENTRY,
+  JS_SPLIT,
+  JS_VENDOR,
 }
 
 export interface IBundleProps {
