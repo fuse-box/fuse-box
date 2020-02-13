@@ -12,7 +12,7 @@ export interface IBundleRouter {
   generateBundles: (modules: Array<IModule>) => void;
   generateSplitBundles: (entries: Array<ISplitEntry>) => void;
   writeBundles: () => Promise<Array<IBundleWriteResponse>>;
-  writeManifest: (bundles: Array<IBundleWriteResponse>) => Promise<boolean>;
+  writeManifest: (bundles: Array<IBundleWriteResponse>) => Promise<string>;
 }
 
 export interface IBundleRouteProps {
@@ -21,7 +21,7 @@ export interface IBundleRouteProps {
   entries: Array<IModule>;
 }
 
-export function createBundleRouter(props: IBundleRouteProps) {
+export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
   const { ctx, entries } = props;
   const ict = ctx.ict;
   const outputConfig = ctx.outputConfig;
@@ -162,7 +162,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
         }),
       );
     },
-    writeManifest: async (bundles: Array<IBundleWriteResponse>): Promise<boolean> => {
+    writeManifest: async (bundles: Array<IBundleWriteResponse>): Promise<string> => {
       const manifest = [];
       for (const bundle of bundles) {
         let type: string;
@@ -172,6 +172,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
             type = 'css';
             break;
           case BundleType.JS_APP:
+          case BundleType.JS_SERVER_ENTRY:
           case BundleType.JS_SPLIT:
           case BundleType.JS_VENDOR:
           default:
@@ -187,13 +188,11 @@ export function createBundleRouter(props: IBundleRouteProps) {
         });
       }
       try {
-        await writeFile(
-          path.join(outputConfig.distRoot, `manifest-${ctx.config.target}.json`),
-          JSON.stringify(manifest),
-        );
-        return true;
+        const manifestFile = path.join(outputConfig.distRoot, `manifest-${ctx.config.target}.json`);
+        await writeFile(manifestFile, JSON.stringify(manifest));
+        return manifestFile;
       } catch (err) {
-        return false;
+        return;
       }
     },
   };

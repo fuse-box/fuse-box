@@ -3,11 +3,13 @@ import { IPublicConfig } from '../config/IConfig';
 import { IRunProps } from '../config/IRunProps';
 import { bundleDev } from '../development/bundleDev';
 import { bundleProd } from '../production/bundleProd';
+import { IRunResponse } from './IRunResponse';
 import { createContext, ICreateContextProps } from './context';
 import { preflightFusebox } from './helpers/preflightFusebox';
 
 export function fusebox(publicConfig: IPublicConfig) {
-  async function execute(props: ICreateContextProps) {
+  async function execute(props: ICreateContextProps): Promise<IRunResponse> {
+    let response: IRunResponse;
     const ctx = createContext(props);
 
     ctx.isWorking = true;
@@ -17,7 +19,7 @@ export function fusebox(publicConfig: IPublicConfig) {
     switch (props.envType) {
       case EnvironmentType.DEVELOPMENT:
         try {
-          await bundleDev({ ctx, rebundle: false });
+          response = await bundleDev({ ctx, rebundle: false });
         } catch (e) {
           ctx.fatal('Error during development build', [e.stack]);
         }
@@ -25,16 +27,19 @@ export function fusebox(publicConfig: IPublicConfig) {
         break;
       case EnvironmentType.PRODUCTION:
         try {
-          await bundleProd(ctx);
+          response = await bundleProd(ctx);
         } catch (e) {
           ctx.fatal('Error during production build', [e.stack]);
         }
         break;
     }
     ctx.isWorking = false;
+    return response;
   }
   return {
-    runDev: (runProps?: IRunProps) => execute({ envType: EnvironmentType.DEVELOPMENT, publicConfig, runProps }),
-    runProd: (runProps?: IRunProps) => execute({ envType: EnvironmentType.PRODUCTION, publicConfig, runProps }),
+    runDev: (runProps?: IRunProps): Promise<IRunResponse> =>
+      execute({ envType: EnvironmentType.DEVELOPMENT, publicConfig, runProps }),
+    runProd: (runProps?: IRunProps): Promise<IRunResponse> =>
+      execute({ envType: EnvironmentType.PRODUCTION, publicConfig, runProps }),
   };
 }

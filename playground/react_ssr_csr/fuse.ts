@@ -65,7 +65,11 @@ task('default', async ctx => {
   await client.runDev(clientBundleOutput);
 
   const server = ctx.getServer();
-  await server.runDev(serverBundleOutput);
+  const { onComplete } = await server.runDev(serverBundleOutput);
+  onComplete(({ server }) => {
+    server.start([]);
+    // electron.start();
+  });
 });
 
 task('dist', async ctx => {
@@ -78,5 +82,8 @@ task('dist', async ctx => {
   await client.runProd(clientBundleOutput);
 
   const server = ctx.getServer();
-  await server.runProd(serverBundleOutput);
+  const { onComplete } = await server.runProd(serverBundleOutput);
+  onComplete(props => {
+    console.log(props);
+  });
 });

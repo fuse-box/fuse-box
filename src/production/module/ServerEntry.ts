@@ -9,7 +9,7 @@ export async function createServerEntry(ctx: Context, bundles: Array<IBundleWrit
     },
     ctx,
     fileName: serverEntryFileName,
-    type: BundleType.JS_APP,
+    type: BundleType.JS_SERVER_ENTRY,
     webIndexed: false,
   });
   serverEntry.prepare();
