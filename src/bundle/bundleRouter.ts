@@ -165,10 +165,25 @@ export function createBundleRouter(props: IBundleRouteProps) {
     writeManifest: async (bundles: Array<IBundleWriteResponse>): Promise<boolean> => {
       const manifest = [];
       for (const bundle of bundles) {
+        let type: string;
+        switch (bundle.bundle.type) {
+          case BundleType.CSS_APP:
+          case BundleType.CSS_SPLIT:
+            type = 'css';
+            break;
+          case BundleType.JS_APP:
+          case BundleType.JS_SPLIT:
+          case BundleType.JS_VENDOR:
+          default:
+            type = 'js';
+            break;
+        }
         manifest.push({
           absPath: bundle.absPath,
           browserPath: bundle.browserPath,
           relativePath: bundle.relativePath,
+          type,
+          webIndexed: bundle.bundle.webIndexed,
         });
       }
       try {
