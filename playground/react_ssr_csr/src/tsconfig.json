@@ -2,7 +2,6 @@
   "compilerOptions": {
     "allowJs": true,
     "jsx": "react",
-    "jsxFactory": "jsx",
     "outDir": "dist/"
   }
 }

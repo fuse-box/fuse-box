@@ -1,7 +1,7 @@
 import { createBundleRouter } from '../../bundle/bundleRouter';
+import { createRunResponse } from '../../core/runResponse';
 import { createRuntimeRequireStatement } from '../../moduleResolver/moduleResolver';
 import { IProductionContext } from '../ProductionContext';
-import { createServerEntry } from '../module/ServerEntry';
 
 export async function BundlePhase(productionContext: IProductionContext) {
   const { ctx, entries, modules } = productionContext;
@@ -31,20 +31,18 @@ export async function BundlePhase(productionContext: IProductionContext) {
       router.generateSplitBundles(productionContext.splitEntries.entries);
     }
     await ctx.ict.resolve();
-    const bundles = await router.writeBundles();
+
+    const { bundles, manifest, onComplete } = await createRunResponse(ctx, router);
 
     productionContext.runResponse = {
       bundleContext: productionContext.bundleContext,
-      bundles: bundles,
-      entries: entries,
+      bundles,
+      entries,
+      manifest,
       modules: productionContext.modules,
+      onComplete,
       splitEntries: productionContext.splitEntries,
     };
-
-    // create a server bundle if we have more than 1 bundle in a server setup
-    if (ctx.config.target === 'server' && bundles.length > 1) bundles.push(await createServerEntry(ctx, bundles));
-    // write the manifest!
-    await router.writeManifest(bundles);
 
     ctx.log.stopStreaming();
     ctx.ict.sync('complete', productionContext.runResponse);
