@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { IASTScope } from '../Visitor/Visitor';
+import { ASTNode } from '../interfaces/AST';
 
 export function generateModuleNameFromSource(source: string, sourceReferences) {
   let variable = path.basename(source).replace(/\.|-/g, '_');
@@ -35,4 +36,24 @@ export function isLocalDefined(name: string, scope: IASTScope) {
   if (!scope) return;
   if (scope.locals && scope.locals[name] === 1) return true;
   if (scope.hoisted && scope.hoisted[name] === 1) return true;
+}
+
+export function createUndefinedVariable(name: string): ASTNode {
+  return {
+    definite: false,
+    id: {
+      name: name,
+      optional: false,
+      type: 'Identifier',
+    },
+    init: null,
+    type: 'VariableDeclarator',
+  };
+}
+export function createVariableDeclaration(): ASTNode {
+  return {
+    declarations: [],
+    kind: 'var',
+    type: 'VariableDeclaration',
+  } as ASTNode;
 }
