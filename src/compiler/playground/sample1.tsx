@@ -1,2 +1,1 @@
-const add = function() {};
-export default add;
+a?.().k;
