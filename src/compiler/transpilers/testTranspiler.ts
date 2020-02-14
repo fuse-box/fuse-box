@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import { ICompilerOptions } from '../../compilerOptions/interfaces';
+import { EnvironmentType } from '../../config/EnvironmentType';
 import { ITarget } from '../../config/ITarget';
+import { createContext } from '../../core/context';
 import { createModule } from '../../moduleResolver/module';
 import { createPackage } from '../../moduleResolver/package';
-import { createTestContext } from '../../utils/test_utils';
 import { generate } from '../generator/generator';
 import { ASTNode } from '../interfaces/AST';
 import { parseJavascript, parseTypeScript } from '../parser';
@@ -32,9 +33,11 @@ export function testTranspile(props: ICompileModuleProps) {
     ast = parseTypeScript(contents, { jsx: true });
   }
 
-  const ctx = createTestContext({
-    cache: false,
-    devServer: false,
+  const ctx = createContext({
+    envType: EnvironmentType.DEVELOPMENT,
+
+    publicConfig: { cache: false, devServer: false, entry: __filename },
+    runProps: {},
   });
 
   const pkg = createPackage({ meta: {} as any });
@@ -43,7 +46,7 @@ export function testTranspile(props: ICompileModuleProps) {
     ctx,
     pkg,
   });
-  module.props.fuseBoxPath = __filename;
+
   module.ast = ast as ASTNode;
 
   transformCommonVisitors(module, props.compilerOptions);
