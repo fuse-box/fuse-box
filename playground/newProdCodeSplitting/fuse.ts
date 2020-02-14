@@ -43,6 +43,6 @@ task('default', ctx => {
   ctx.isProduction = false;
   const fuse = ctx.getFusebox();
   fuse.runDev({
-    bundles: { app: { path: 'app.js', publicPath: './bundles/' } },
+    bundles: { app: { path: 'app.js' } },
   });
 });
