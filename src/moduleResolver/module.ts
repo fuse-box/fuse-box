@@ -241,7 +241,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       try {
         result = transformCommonVisitors(self, props.ctx.compilerOptions);
       } catch (e) {
-        props.ctx.log.error(`Error while transforming ${self.absPath}\n\t ${e.stack}`);
+        props.ctx.fatal(`Error while transforming ${self.absPath}`, [e.stack]);
       }
       return result;
     },
