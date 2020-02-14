@@ -13,6 +13,7 @@ import { BuildEnvTransformer } from './transformers/bundle/BuildEnvTransformer';
 import { BundleFastConditionUnwrapper } from './transformers/bundle/BundleFastConditionTransformer';
 import { BundlePolyfillTransformer } from './transformers/bundle/BundlePolyfillTransformer';
 import { RequireStatementInterceptor } from './transformers/bundle/RequireStatementInterceptor';
+import { OptionalChaningTransformer } from './transformers/optionalChaining/OptionalChainingTransformer';
 import { DynamicImportTransformer } from './transformers/shared/DynamicImportTransformer';
 import { ExportTransformer } from './transformers/shared/ExportTransformer';
 import { ImportTransformer } from './transformers/shared/ImportTransformer';
@@ -32,7 +33,7 @@ export const BASE_TRANSFORMERS: Array<ITransformer> = [
 
   BuildEnvTransformer(),
 
-  //OptionalChaningTransformer(),
+  OptionalChaningTransformer(),
 
   BundleFastConditionUnwrapper(),
 
