@@ -7,5 +7,6 @@ export async function bundleProd(ctx: Context): Promise<IRunResponse> {
   ctx.log.startStreaming();
   const context = createProductionContext(ctx);
   await Engine(context).start();
+  ctx.log.stopStreaming();
   return context.runResponse;
 }

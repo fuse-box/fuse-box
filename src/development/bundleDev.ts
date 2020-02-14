@@ -1,7 +1,6 @@
-import { createBundleRouter } from '../bundle/bundleRouter';
 import { IRunResponse } from '../core/IRunResponse';
+import { createBuild } from '../core/build';
 import { Context } from '../core/context';
-import { createRunResponse } from '../core/runResponse';
 import { ModuleResolver } from '../moduleResolver/moduleResolver';
 
 export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Promise<IRunResponse> {
@@ -10,29 +9,15 @@ export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Pr
   ctx.log.startTimeMeasure();
   ctx.log.flush();
   ctx.isWorking = true;
-  const ict = ctx.ict;
 
   const { bundleContext, entries, modules } = ModuleResolver(ctx, ctx.config.entries);
   if (modules) {
-    const router = createBundleRouter({ ctx, entries });
-    router.generateBundles(modules);
-    await ict.resolve();
-
-    const { bundles, manifest, onComplete } = await createRunResponse(ctx, router);
-
-    if (bundleContext.cache) await bundleContext.cache.write();
-    ctx.isWorking = false;
-
-    const response: IRunResponse = {
+    return await createBuild({
       bundleContext,
-      bundles,
+      ctx,
       entries,
-      manifest,
       modules,
-      onComplete,
-    };
-
-    ict.sync(rebundle ? 'rebundle' : 'complete', response);
-    return response;
+      rebundle,
+    });
   }
 }
