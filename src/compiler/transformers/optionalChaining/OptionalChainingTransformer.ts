@@ -9,17 +9,19 @@ const VALID_NODES = {
   [ASTType.OptionalMemberExpression]: 1,
 };
 
+const NON_DRILLABLE_NODES = {
+  [ASTType.Identifier]: 1,
+  [ASTType.MemberExpression]: 1,
+};
+
 interface IChainingStep {
   callArguments?: Array<ASTNode>;
   computed?: boolean;
   expression?: ASTNode;
   optional?: boolean;
-  uknownCallExpression?: ASTNode;
 }
-
 interface IChainItem {
   items: Array<IChainingStep>;
-  shouldExtractThis?: boolean;
 }
 type IChainingCollection = Array<IChainItem>;
 
@@ -49,13 +51,8 @@ type OptionalChainContext = ReturnType<typeof createOptionalContext>;
 function createPartialExpression(flat: IFlatExpresion, nodes: Array<IChainingStep>) {
   let expression: ASTNode;
   const firstNode = nodes[0];
-  if (nodes.length === 1) {
-    if (firstNode.callArguments) {
-      return { expression: createOptionalCall(flat, firstNode.callArguments) };
-    }
-    return { expression: firstNode.expression };
-  }
 
+  if (nodes.length === 1) return { expression: firstNode.expression };
   const total = nodes.length;
   let index = 0;
 
@@ -89,9 +86,9 @@ function createPartialExpression(flat: IFlatExpresion, nodes: Array<IChainingSte
       } else {
         // if we see a next property while having an existing CallExpression, we must
         // converte to a MemberExpression with an object as the current CallExpression
-        if (expression.type === 'CallExpression') {
+        if (expression.type === 'CallExpression')
           expression = { object: expression, property: null, type: 'MemberExpression' };
-        }
+
         if (!expression.property) {
           expression.property = item.expression;
           expression.computed = computed;
@@ -131,13 +128,10 @@ interface IFlatExpresion {
   conditionSteps?: Array<IChainingStep>;
   context?: OptionalChainContext;
   id?: string;
-  initial?: boolean;
-  internalId?: number;
   nextFlatExpression?: IFlatExpresion;
   shouldExtractThis?: boolean;
   thisVariable?: string;
   collect?: () => OptionalChainHelper;
-
   generate?: () => OptionalChainHelper;
 }
 
@@ -183,29 +177,17 @@ function createFlatExpression(context: OptionalChainContext, index: number): IFl
     context,
     collect: (): OptionalChainHelper => {
       self.id = context.genId();
-
       const targets = self.alternate;
       let expression = createOptionalChaningExpression(self.id);
 
-      // in case of a single optional call things to differently
-      const callTarget = targets[0];
-      if (callTarget.callArguments) {
-        // const thatExpression = createOptionalCall(self, callTarget.callArguments);
-        // expression.setRight(thatExpression);
-        targets.unshift({ expression: { name: self.id, type: 'Identifier' } });
-        const thatExpression = createPartialExpression(self, targets);
-        expression.setRight(thatExpression.expression);
-      } else {
-        targets.unshift({ expression: { name: self.id, type: 'Identifier' } });
+      // inserting the current identifier
+      targets.unshift({ expression: { name: self.id, type: 'Identifier' } });
+      const dataRight = createPartialExpression(self, targets);
+      expression.setRight(dataRight.expression);
 
-        const dataRight = createPartialExpression(self, targets);
-        expression.setRight(dataRight.expression);
-
-        // should notify the following call expression to use "this" variable
-        if (self.nextFlatExpression && dataRight.thisVariable) {
-          self.nextFlatExpression.thisVariable = dataRight.thisVariable;
-        }
-      }
+      // should notify the following call expression to use "this" variable
+      if (self.nextFlatExpression && dataRight.thisVariable)
+        self.nextFlatExpression.thisVariable = dataRight.thisVariable;
 
       if (self.conditionSteps) {
         const dataLeft = createPartialExpression(self, self.conditionSteps);
@@ -279,20 +261,14 @@ function flatten(context: OptionalChainContext) {
   let index = amount - 1;
   while (index >= 0) {
     const step = steps[index];
-    if (!step.optional && collection[collection.length - 1]) {
-      collection[collection.length - 1].items.push(step);
-    } else {
-      const shouldExtractThis = !!step.callArguments;
-      const prev = collection[collection.length - 1];
-      if (shouldExtractThis && prev) prev.shouldExtractThis = true;
-      collection.push({ items: [step] });
-    }
+    const prev = collection[collection.length - 1];
+    if (!step.optional && prev) prev.items.push(step);
+    else collection.push({ items: [step] });
     index--;
   }
   context.flatCollection = collection;
   processFlatCollection(context);
 }
-
 /**
  * Drill every single property on the OptionalChain
  * Split it into steps and prepare for flattening
@@ -302,23 +278,21 @@ function flatten(context: OptionalChainContext) {
 export function chainDrill(node: ASTNode, context: OptionalChainContext) {
   const optional = node.optional === true;
 
-  if (node.type === ASTType.Identifier || node.type === ASTType.MemberExpression) {
-    context.steps.push({ expression: node, optional });
+  if (NON_DRILLABLE_NODES[node.type]) {
+    return context.steps.push({ expression: node, optional });
   }
 
   if (node.type === ASTType.OptionalMemberExpression) {
-    if (node.property) {
-      context.steps.push({ computed: node.computed, expression: node.property, optional });
-    }
+    if (node.property) context.steps.push({ computed: node.computed, expression: node.property, optional });
     if (node.object) {
       if (node.object.type === ASTType.CallExpression) {
         context.steps.push({ expression: node.object });
       } else chainDrill(node.object, context);
     }
+    return;
   }
 
   // Regardless of the "optional" status calls should be separated since the call to those
-  // will handled on a system variable e.g _1_.call(_1_, args)
   if (node.type === ASTType.OptionalCallExpression) {
     if (node.callee) {
       context.steps.push({
