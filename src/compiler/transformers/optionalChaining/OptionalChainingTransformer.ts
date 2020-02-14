@@ -10,6 +10,7 @@ const VALID_NODES = {
 };
 
 const NON_DRILLABLE_NODES = {
+  [ASTType.CallExpression]: 1,
   [ASTType.Identifier]: 1,
   [ASTType.MemberExpression]: 1,
 };
@@ -48,15 +49,34 @@ function createOptionalContext(visit: IVisit) {
 }
 type OptionalChainContext = ReturnType<typeof createOptionalContext>;
 
-function createPartialExpression(flat: IFlatExpresion, nodes: Array<IChainingStep>) {
+function createPartialExpression(props: {
+  flatExpression: IFlatExpresion;
+  nodes: Array<IChainingStep>;
+  shouldExtractThis: boolean;
+}) {
   let expression: ASTNode;
+  const { flatExpression, nodes, shouldExtractThis } = props;
   const firstNode = nodes[0];
+  let thisVariable: string;
 
-  if (nodes.length === 1) return { expression: firstNode.expression };
+  if (nodes.length === 1) {
+    if (shouldExtractThis) {
+      if (firstNode.expression.type === 'MemberExpression') {
+        thisVariable = flatExpression.context.genId();
+        firstNode.expression.object = {
+          left: { name: thisVariable, type: 'Identifier' },
+          operator: '=',
+          right: firstNode.expression.object,
+          type: 'AssignmentExpression',
+        };
+        return { expression: firstNode.expression, thisVariable };
+      }
+    }
+    return { expression: firstNode.expression };
+  }
+
   const total = nodes.length;
   let index = 0;
-
-  let thisVariable: string;
 
   while (index < total) {
     const item = nodes[index];
@@ -67,7 +87,7 @@ function createPartialExpression(flat: IFlatExpresion, nodes: Array<IChainingSte
     // call expression
     if (item.callArguments) {
       if (index === 1) {
-        expression = createOptionalCall(flat, item.callArguments);
+        expression = createOptionalCall(flatExpression, item.callArguments);
       } else {
         expression = {
           arguments: item.callArguments,
@@ -78,7 +98,6 @@ function createPartialExpression(flat: IFlatExpresion, nodes: Array<IChainingSte
     } else {
       if (!expression) {
         expression = {
-          computed: true,
           object: item.expression,
           property: null,
           type: 'MemberExpression',
@@ -102,19 +121,20 @@ function createPartialExpression(flat: IFlatExpresion, nodes: Array<IChainingSte
         }
       }
     }
-    if (isLast && flat.shouldExtractThis) {
+    if (isLast && shouldExtractThis) {
       // adding an expression statement
       // E.g a statement like a?.b.c.d.e.f?.();
       // The second part b.c.d.e.f, gets converted into
       // (_new_variable = _1_.b.c.d.e).f)
       if (expression.object) {
-        thisVariable = flat.context.genId();
+        thisVariable = flatExpression.context.genId();
         expression.object = {
           left: { name: thisVariable, type: 'Identifier' },
           operator: '=',
           right: expression.object,
           type: 'AssignmentExpression',
         };
+      } else {
       }
     }
     index++;
@@ -176,23 +196,41 @@ function createFlatExpression(context: OptionalChainContext, index: number): IFl
   const self: IFlatExpresion = {
     context,
     collect: (): OptionalChainHelper => {
+      let initialLeft;
+
+      if (self.conditionSteps) {
+        initialLeft = createPartialExpression({
+          flatExpression: self,
+          nodes: self.conditionSteps,
+          shouldExtractThis: !!self.alternate[0].callArguments,
+        });
+      }
+
       self.id = context.genId();
       const targets = self.alternate;
       let expression = createOptionalChaningExpression(self.id);
 
+      if (self.conditionSteps) {
+        expression.setLeft(initialLeft.expression);
+        if (initialLeft.thisVariable) {
+          self.thisVariable = initialLeft.thisVariable;
+        }
+      }
+
       // inserting the current identifier
+
       targets.unshift({ expression: { name: self.id, type: 'Identifier' } });
-      const dataRight = createPartialExpression(self, targets);
+      const dataRight = createPartialExpression({
+        flatExpression: self,
+        nodes: targets,
+        shouldExtractThis: self.shouldExtractThis,
+      });
       expression.setRight(dataRight.expression);
 
       // should notify the following call expression to use "this" variable
       if (self.nextFlatExpression && dataRight.thisVariable)
         self.nextFlatExpression.thisVariable = dataRight.thisVariable;
 
-      if (self.conditionSteps) {
-        const dataLeft = createPartialExpression(self, self.conditionSteps);
-        expression.setLeft(dataLeft.expression);
-      }
       return expression;
     },
 
@@ -244,7 +282,9 @@ function processFlatCollection(context: OptionalChainContext) {
   while (i < flatExpressions.length) {
     const f = flatExpressions[i];
     if (f.alternate[0].callArguments) {
-      if (flatExpressions[i - 1]) flatExpressions[i - 1].shouldExtractThis = true;
+      if (flatExpressions[i - 1]) {
+        flatExpressions[i - 1].shouldExtractThis = true;
+      }
     }
     i++;
   }
@@ -279,14 +319,14 @@ export function chainDrill(node: ASTNode, context: OptionalChainContext) {
   const optional = node.optional === true;
 
   if (NON_DRILLABLE_NODES[node.type]) {
-    return context.steps.push({ expression: node, optional });
+    return context.steps.push({ computed: node.computed, expression: node });
   }
 
   if (node.type === ASTType.OptionalMemberExpression) {
     if (node.property) context.steps.push({ computed: node.computed, expression: node.property, optional });
     if (node.object) {
       if (node.object.type === ASTType.CallExpression) {
-        context.steps.push({ expression: node.object });
+        context.steps.push({ expression: node.object, optional });
       } else chainDrill(node.object, context);
     }
     return;

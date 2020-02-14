@@ -60,6 +60,13 @@ const cases: Array<string> = [
   'a.b.c().d?.e?.()',
   'a.b.c().d?.e?.().f()?.()',
   'a.b.c()?.[d.e]?.["one"]()?.f()?.()',
+
+  // starting expressions
+  'a.b()?.().a',
+  'a["foo"]?.();',
+  'a["foo"]?.()?.()()',
+  'a.b()?.()?.()',
+  'a["foo"]()?.o()?.().k()?.c',
 ];
 
 const TYPESCRIPT_SNAPSHOT_FILE = path.join(__dirname, 'typescript.snapshot.json');
