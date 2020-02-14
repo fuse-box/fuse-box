@@ -236,7 +236,15 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       }
       return self.contents;
     },
-    transpile: () => transformCommonVisitors(self, props.ctx.compilerOptions),
+    transpile: () => {
+      let result;
+      try {
+        result = transformCommonVisitors(self, props.ctx.compilerOptions);
+      } catch (e) {
+        props.ctx.log.error(`Error while transforming ${self.absPath}\n\t ${e.stack}`);
+      }
+      return result;
+    },
     transpileDown: (buildTarget: ITypescriptTarget) => {
       // we can't support sourcemaps on downtranspiling
       self.isSourceMapRequired = false;
