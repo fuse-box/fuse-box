@@ -32,8 +32,6 @@ export interface GlobalContext {
   getNextSystemVariable: () => string;
 }
 
-const USE_TEST_ALPHABET = false;
-let alphabet = ['a', 'b', 'c', 'd', 'f', 'g', 'h', 'i', 'j', 'k'];
 export function createGlobalContext(userContext?: { [key: string]: any }): GlobalContext {
   let VARIABLE_COUNTER = 0;
   let essentialContext = {
@@ -43,13 +41,7 @@ export function createGlobalContext(userContext?: { [key: string]: any }): Globa
     namespace: 'exports',
     sourceReferences: {},
     getModuleName: source => generateModuleNameFromSource(source, essentialContext.sourceReferences),
-    getNextSystemVariable: () => {
-      if (USE_TEST_ALPHABET) {
-        return `_${alphabet[++VARIABLE_COUNTER]}`;
-      } else {
-        return `_${[++VARIABLE_COUNTER]}_`;
-      }
-    },
+    getNextSystemVariable: () => `_${[++VARIABLE_COUNTER]}_`,
   };
   if (userContext) {
     for (const key in userContext) {
