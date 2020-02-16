@@ -31,14 +31,10 @@ type IChainingCollection = Array<IChainItem>;
 function createOptionalContext(visit: IVisit) {
   const steps: Array<IChainingStep> = [];
   const globalContext = visit.globalContext;
-  let finalStatement: ASTNode;
-  let flatCollection: IChainingCollection;
   const declaration = createVariableDeclaration();
 
   const self = {
     declaration,
-    finalStatement,
-    flatCollection,
     steps,
     genId: () => {
       const nextVar = globalContext.getNextSystemVariable();
@@ -250,11 +246,23 @@ function createFlatExpression(context: OptionalChainContext): IFlatExpression {
   return self;
 }
 
-function processFlatCollection(context: OptionalChainContext) {
-  const flatCollection = context.flatCollection;
+function createStatement(context: OptionalChainContext) {
+  const { steps } = context;
+  const flatCollection: IChainingCollection = [];
+  let index: number;
   let current: IFlatExpression;
 
-  let index = flatCollection.length - 1;
+  const amount = steps.length;
+  index = amount - 1;
+  while (index >= 0) {
+    const step = steps[index];
+    const prev = flatCollection[flatCollection.length - 1];
+    if (!step.optional && prev) prev.items.push(step);
+    else flatCollection.push({ items: [step] });
+    index--;
+  }
+
+  index = flatCollection.length - 1;
   while (index >= 0) {
     const item = flatCollection[index];
     if (index > 0) {
@@ -272,26 +280,9 @@ function processFlatCollection(context: OptionalChainContext) {
   }
 
   const { statement } = current.generate();
-  context.finalStatement = statement;
+  return statement;
 }
 
-function flatten(context: OptionalChainContext) {
-  const { steps } = context;
-  const amount = steps.length;
-
-  const collection: IChainingCollection = [];
-
-  let index = amount - 1;
-  while (index >= 0) {
-    const step = steps[index];
-    const prev = collection[collection.length - 1];
-    if (!step.optional && prev) prev.items.push(step);
-    else collection.push({ items: [step] });
-    index--;
-  }
-  context.flatCollection = collection;
-  processFlatCollection(context);
-}
 /**
  * Drill every single property on the OptionalChain
  * Split it into steps and prepare for flattening
@@ -337,9 +328,9 @@ export function OptionalChaningTransformer(): ITransformer {
           const context = createOptionalContext(visit);
 
           chainDrill(node, context);
-          flatten(context);
 
-          return { prependToBody: [context.declaration], replaceWith: context.finalStatement };
+          const statement = createStatement(context);
+          return { prependToBody: [context.declaration], replaceWith: statement };
         },
       };
     },
