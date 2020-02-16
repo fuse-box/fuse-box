@@ -21,19 +21,20 @@ interface IChainingStep {
   expression?: ASTNode;
   optional?: boolean;
 }
+
 interface IChainItem {
   items: Array<IChainingStep>;
 }
+
 type IChainingCollection = Array<IChainItem>;
 
 function createOptionalContext(visit: IVisit) {
   const steps: Array<IChainingStep> = [];
   const globalContext = visit.globalContext;
   let finalStatement: ASTNode;
-
   let flatCollection: IChainingCollection;
-
   const declaration = createVariableDeclaration();
+
   const self = {
     declaration,
     finalStatement,
@@ -50,7 +51,7 @@ function createOptionalContext(visit: IVisit) {
 type OptionalChainContext = ReturnType<typeof createOptionalContext>;
 
 function createPartialExpression(props: {
-  flatExpression: IFlatExpresion;
+  flatExpression: IFlatExpression;
   nodes: Array<IChainingStep>;
   shouldExtractThis: boolean;
 }) {
@@ -143,19 +144,19 @@ function createPartialExpression(props: {
   return { expression, thisVariable };
 }
 
-interface IFlatExpresion {
+interface IFlatExpression {
   alternate?: Array<IChainingStep>;
   conditionSteps?: Array<IChainingStep>;
   context?: OptionalChainContext;
   id?: string;
-  nextFlatExpression?: IFlatExpresion;
+  nextFlatExpression?: IFlatExpression;
   shouldExtractThis?: boolean;
   thisVariable?: string;
   collect?: () => OptionalChainHelper;
   generate?: () => OptionalChainHelper;
 }
 
-function createOptionalCall(expression: IFlatExpresion, callArguments: Array<ASTNode>): ASTNode {
+function createOptionalCall(expression: IFlatExpression, callArguments: Array<ASTNode>): ASTNode {
   let args: Array<ASTNode> = [];
   if (expression.thisVariable) {
     args.push({
@@ -192,8 +193,8 @@ function createOptionalCall(expression: IFlatExpresion, callArguments: Array<AST
   };
 }
 
-function createFlatExpression(context: OptionalChainContext, index: number): IFlatExpresion {
-  const self: IFlatExpresion = {
+function createFlatExpression(context: OptionalChainContext): IFlatExpression {
+  const self: IFlatExpression = {
     context,
     collect: (): OptionalChainHelper => {
       let initialLeft;
@@ -251,45 +252,27 @@ function createFlatExpression(context: OptionalChainContext, index: number): IFl
 
 function processFlatCollection(context: OptionalChainContext) {
   const flatCollection = context.flatCollection;
-  const total = flatCollection.length;
-  let index = 0;
-  let startFlatExpression: IFlatExpresion;
-  let current: IFlatExpresion;
+  let current: IFlatExpression;
 
-  const flatExpressions = [];
-  while (index < total) {
+  let index = flatCollection.length - 1;
+  while (index >= 0) {
     const item = flatCollection[index];
-    if (index === 0) {
-      current = createFlatExpression(context, index);
-      flatExpressions.push(current);
+    if (index > 0) {
+      let flatExpression: IFlatExpression = createFlatExpression(context);
+      flatExpression.alternate = item.items;
+      if (current) {
+        flatExpression.shouldExtractThis = !!current.alternate[0].callArguments;
+        flatExpression.nextFlatExpression = current;
+      }
+      current = flatExpression;
+    } else {
       current.conditionSteps = item.items;
-      startFlatExpression = current;
-    } else if (current) {
-      if (index === 1) {
-        current.alternate = item.items;
-      } else {
-        const newFlatExpression = createFlatExpression(context, index);
-        flatExpressions.push(newFlatExpression);
-        current.nextFlatExpression = newFlatExpression;
-        newFlatExpression.alternate = item.items;
-        current = newFlatExpression;
-      }
     }
+    index--;
+  }
 
-    index++;
-  }
-  let i = 0;
-  while (i < flatExpressions.length) {
-    const f = flatExpressions[i];
-    if (f.alternate[0].callArguments) {
-      if (flatExpressions[i - 1]) {
-        flatExpressions[i - 1].shouldExtractThis = true;
-      }
-    }
-    i++;
-  }
-  const data = startFlatExpression.generate();
-  context.finalStatement = data.statement;
+  const { statement } = current.generate();
+  context.finalStatement = statement;
 }
 
 function flatten(context: OptionalChainContext) {
