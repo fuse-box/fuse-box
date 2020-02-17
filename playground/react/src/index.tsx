@@ -4,17 +4,16 @@ import * as ReactDOM from 'react-dom';
 
 import { Application } from './components/application/Application';
 import { some } from './foo';
-import { logger } from './react';
-// console.log(some);
 // import stuff from 'stuff/Stuff';
 // console.log(stuff);
 
-console.log(some);
-function some(some) {}
+import something from './something';
+console.log('oi', some);
+console.log('shut');
+console.log(something);
+
 const App = () => {
-  useEffect(() => {
-    logger("I'm a hook");
-  });
+  useEffect(() => {});
 
   return <Application />;
 };
