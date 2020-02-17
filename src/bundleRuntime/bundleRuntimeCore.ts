@@ -80,7 +80,7 @@ export function bundleRuntimeCore(props: IBundleRuntimeCore) {
 
   let optional = '';
   if (props.interopRequireDefault) {
-    optional += `f.${INTEROP_DEFAULT} = function (x) { return x !== undefined && x.default !== undefined ? x.default : x; };\n`;
+    optional += `f.${INTEROP_DEFAULT} = function (x) { return x && x.__esModule ? x : { "default": x }; };\n`;
   }
   if (props.codeSplittingMap) {
     optional += `\nvar cs = ${JSON.stringify(props.codeSplittingMap)};`;
