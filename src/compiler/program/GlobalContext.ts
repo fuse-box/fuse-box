@@ -4,6 +4,7 @@ import { IProgramProps } from './transpileModule';
 
 export interface GlobalContext {
   completeCallbacks?: Array<() => void>;
+  esModuleStatementInjected?: boolean;
   jsxFactory?: string;
   namespace?: string;
   programProps?: IProgramProps;

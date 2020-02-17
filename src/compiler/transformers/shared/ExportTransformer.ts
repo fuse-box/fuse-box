@@ -41,8 +41,7 @@ export function ExportTransformer(): ITransformer {
     commonVisitors: props => {
       const definedLocallyProcessed: Record<string, number> = {};
       const compilerOptions = props.compilerOptions;
-      let injectEsModuleStatement = compilerOptions.esModuleStatement === true;
-      let esModuleStatementInjected = !injectEsModuleStatement;
+
       return {
         onEachNode: (visit: IVisit) => {
           const global = visit.globalContext as GlobalContext;
@@ -81,8 +80,8 @@ export function ExportTransformer(): ITransformer {
               }
               if (response.insertAfterThisNode || response.appendToBody) {
                 // make sure exports.__eModule is injected
-                if (!esModuleStatementInjected) {
-                  esModuleStatementInjected = true;
+                if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
+                  global.esModuleStatementInjected = true;
                   response.prependToBody = [ES_MODULE_EXPRESSION];
                 }
                 return response;
@@ -160,8 +159,8 @@ export function ExportTransformer(): ITransformer {
               };
 
               // make sure exports.__eModule is injected
-              if (!esModuleStatementInjected) {
-                esModuleStatementInjected = true;
+              if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
+                global.esModuleStatementInjected = true;
                 response.prependToBody = [ES_MODULE_EXPRESSION];
               }
               return response;
@@ -219,8 +218,8 @@ export function ExportTransformer(): ITransformer {
             }
             const response: IVisitorMod = { replaceWith: exportedNodes };
             // make sure exports.__eModule is injected
-            if (!esModuleStatementInjected) {
-              esModuleStatementInjected = true;
+            if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
+              global.esModuleStatementInjected = true;
               response.prependToBody = [ES_MODULE_EXPRESSION];
             }
             return response;
@@ -267,8 +266,8 @@ export function ExportTransformer(): ITransformer {
                   ],
                 };
                 // make sure exports.__eModule is injected
-                if (!esModuleStatementInjected) {
-                  esModuleStatementInjected = true;
+                if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
+                  global.esModuleStatementInjected = true;
                   response.prependToBody = [ES_MODULE_EXPRESSION];
                 }
                 return response;
@@ -277,8 +276,8 @@ export function ExportTransformer(): ITransformer {
                 replaceWith: createExports(global.namespace, 'default', node.declaration),
               };
               // make sure exports.__eModule is injected
-              if (!esModuleStatementInjected) {
-                esModuleStatementInjected = true;
+              if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
+                global.esModuleStatementInjected = true;
                 response.prependToBody = [ES_MODULE_EXPRESSION];
               }
               return response;
@@ -330,8 +329,8 @@ export function ExportTransformer(): ITransformer {
               }
               const response: IVisitorMod = { replaceWith: newNodes };
               // make sure exports.__eModule is injected
-              if (!esModuleStatementInjected) {
-                esModuleStatementInjected = true;
+              if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
+                global.esModuleStatementInjected = true;
                 response.prependToBody = [ES_MODULE_EXPRESSION];
               }
               return response;
@@ -386,8 +385,8 @@ export function ExportTransformer(): ITransformer {
                   const response: IVisitorMod = { replaceWith: newNodes };
 
                   // make sure exports.__eModule is injected
-                  if (!esModuleStatementInjected) {
-                    esModuleStatementInjected = true;
+                  if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
+                    global.esModuleStatementInjected = true;
                     response.prependToBody = [ES_MODULE_EXPRESSION];
                   }
                   return response;
