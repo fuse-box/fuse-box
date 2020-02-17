@@ -1,5 +1,2 @@
-class a {
-  a() {
-    this.a?.a();
-  }
-}
+import some from 'some';
+console.log(some);
