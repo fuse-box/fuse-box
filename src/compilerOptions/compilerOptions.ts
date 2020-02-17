@@ -15,6 +15,10 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
   options.processEnv = ctx.config.env;
   options.buildTarget = ctx.config.target;
 
+  if (!options.jsParser) options.jsParser = {};
+  if (!options.jsParser.nodeModules) options.jsParser.nodeModules = 'meriyah';
+  if (!options.jsParser.project) options.jsParser.project = 'ts';
+
   let tsConfigPath;
 
   // setting up a path to the user specific tsconfig.json

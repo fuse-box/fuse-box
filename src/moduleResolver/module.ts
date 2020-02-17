@@ -4,7 +4,7 @@ import * as ts from 'typescript';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
-import { parseJavascript, parseTypeScript } from '../compiler/parser';
+import { parseJavascript, parseTypeScript, ICodeParser } from '../compiler/parser';
 import { transformCommonVisitors } from '../compiler/transformer';
 import { EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, STYLESHEET_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
 import { Context } from '../core/context';
@@ -197,30 +197,34 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
         return self.ast;
       }
 
-      if (JS_EXTENSIONS.includes(self.extension)) {
-        try {
-          // @todo: fix jsx properly
-          self.ast = parseJavascript(self.contents, {
-            jsx: true,
-            locations: self.isSourceMapRequired,
-          });
-          self.errored = false;
-        } catch (e) {
-          self.errored = true;
-          props.ctx.log.error(`Error while parsing JavaScript ${self.absPath}\n\t ${e.stack}`);
-        }
-      } else if (TS_EXTENSIONS.includes(self.extension)) {
-        try {
-          self.ast = parseTypeScript(self.contents, {
-            jsx: self.extension === '.tsx',
-            locations: self.isSourceMapRequired,
-          });
-          self.errored = false;
-        } catch (e) {
-          self.errored = true;
-          props.ctx.log.error(`Error while parsing TypeScript ${self.absPath}\n\t ${e.stack}`);
-        }
+      let parser: ICodeParser;
+      if (self.isTypeScript) parser = parseTypeScript;
+      else {
+        parser = parseJavascript;
+        const parserOptions = self.ctx.compilerOptions.jsParser;
+        const isExternal = self.pkg.type === PackageType.EXTERNAL_PACKAGE;
+        if (isExternal) {
+          if (parserOptions.nodeModules === 'ts') parser = parseTypeScript;
+        } else if (parserOptions.project === 'ts') parser = parseTypeScript;
       }
+
+      const jsxRequired = self.extension !== '.ts';
+
+      try {
+        // @todo: fix jsx properly
+        self.ast = parser(self.contents, {
+          jsx: jsxRequired,
+          locations: self.isSourceMapRequired,
+        });
+        self.errored = false;
+      } catch (e) {
+        self.errored = true;
+        const message = `Error while parsing module ${self.absPath}\n\t ${e.stack || e.message}`;
+        props.ctx.log.error(message);
+
+        self.ast = parseJavascript(``);
+      }
+
       return self.ast;
     },
     // read the contents
