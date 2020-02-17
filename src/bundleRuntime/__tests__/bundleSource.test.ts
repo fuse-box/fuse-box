@@ -114,7 +114,7 @@ describe('Bundle source test', () => {
       source.entries = [{ id: 1 }];
       const result = source.generate({ runtimeCore: null });
       const { obj } = runWithoutApi(result.content.toString(), { interopRequireDefault: true, target: 'browser' });
-      expect(obj.FirstCalled).toEqual({ foo: 'bar' });
+      expect(obj.FirstCalled.default).toEqual({ foo: 'bar' });
     });
 
     it('should take the existing default (obj)', () => {
@@ -122,14 +122,15 @@ describe('Bundle source test', () => {
 
       source.modules = [
         {
-          contents: `window.FirstCalled = ${createInteropCall({ default: 'bar' })}`,
+          contents: `window.FirstCalled = ${createInteropCall({ __esModule: true, default: 'bar' })}`,
           id: 1,
         },
       ];
       source.entries = [{ id: 1 }];
       const result = source.generate({ runtimeCore: null });
       const { obj } = runWithoutApi(result.content.toString(), { interopRequireDefault: true, target: 'browser' });
-      expect(obj.FirstCalled).toEqual('bar');
+
+      expect(obj.FirstCalled).toEqual({ __esModule: true, default: 'bar' });
     });
 
     it('should take  default (number)', () => {
@@ -144,7 +145,7 @@ describe('Bundle source test', () => {
       source.entries = [{ id: 1 }];
       const result = source.generate({ runtimeCore: null });
       const { obj } = runWithoutApi(result.content.toString(), { interopRequireDefault: true, target: 'browser' });
-      expect(obj.FirstCalled).toEqual(1);
+      expect(obj.FirstCalled.default).toEqual(1);
     });
   });
 

@@ -47,6 +47,7 @@ export function ImportTransformer(): ITransformer {
                   injectDefaultInterop = variable + 'd';
                   replacement = {
                     first: injectDefaultInterop,
+                    second: 'default',
                   };
                 } else {
                   replacement = {
