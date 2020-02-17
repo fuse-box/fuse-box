@@ -15,7 +15,7 @@ describe('Es exports statement integrity with interop', () => {
   };
 
   describe('__esModule', () => {
-    it('Should not add (unused', () => {
+    it('Should not add (unused)', () => {
       const result = test({
         code: `
         import some from "some"
@@ -23,6 +23,25 @@ describe('Es exports statement integrity with interop', () => {
       });
 
       expect(result.code).not.toContain('exports.__esModule = true');
+    });
+
+    it('Should add only once', () => {
+      const result = test({
+        code: `
+        import some from "some";
+        console.log(some);
+        export { some }
+      `,
+      });
+
+      expect(result.code).toMatchInlineSnapshot(`
+        "exports.__esModule = true;
+        var some_1 = require(\\"some\\");
+        var some_1d = __fuse.dt(some_1);
+        console.log(some_1d.default);
+        exports.some = some_1d.default;
+        "
+      `);
     });
 
     it('Should add with import (with interop)', () => {
