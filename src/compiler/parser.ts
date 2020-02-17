@@ -5,6 +5,9 @@ export interface IParserOptions {
   jsx?: boolean;
   locations?: boolean;
 }
+
+export type ICodeParser = (code: string, props?: IParserOptions) => ASTNode;
+
 export function parseTypeScript(code: string, props?: IParserOptions): ASTNode {
   props = props || {};
   return parser.parse(code, {
