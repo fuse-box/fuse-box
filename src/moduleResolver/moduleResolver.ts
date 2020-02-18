@@ -160,10 +160,11 @@ export function initModule(props: {
     }
     // storing for further references (and avoid recursion)
     bundleContext.setModule(module);
-    // reading and parsing the contents
-    module.read();
 
+    // reading and parsing the contents
     ctx.ict.sync('module_init', { bundleContext, module });
+
+    module.read();
 
     if (module.isExecutable) {
       module.parse();

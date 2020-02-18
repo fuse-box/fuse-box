@@ -229,6 +229,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
     },
     // read the contents
     read: () => {
+      if (self.contents !== undefined) return self.contents;
       try {
         self.contents = readFile(self.absPath);
       } catch (e) {
