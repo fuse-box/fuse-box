@@ -193,6 +193,8 @@ export function createConfig(props: {
   }
   if (!config.cache.strategy) config.cache.strategy = 'fs';
 
+  if (config.isProduction) config.cache.enabled = false;
+
   config.stylesheet = {};
 
   if (publicConfig.stylesheet) {

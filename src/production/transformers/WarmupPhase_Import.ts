@@ -14,7 +14,7 @@ export function Phase_1_ImportLink(): ITransformer {
   return {
     productionWarmupPhase: ({ module, productionContext }) => {
       const tree = module.moduleTree;
-      const refs = module.moduleSourceRefs;
+      const refs = module.moduleSourceRefs || {};
 
       function isEligibleRequire(node): boolean {
         return (

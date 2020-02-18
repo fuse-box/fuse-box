@@ -79,7 +79,6 @@ export function createContext(props: ICreateContextProps): Context {
     linkedReferences: {},
     systemDependencies: {},
     fatal: (header: string, messages?: Array<string>) => {
-      self.log.clearConsole();
       self.log.fuseFatal(header, messages);
       process.exit(1);
     },
