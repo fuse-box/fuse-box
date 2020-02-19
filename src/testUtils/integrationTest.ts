@@ -7,12 +7,11 @@ import { EnvironmentType } from '../config/EnvironmentType';
 import { IPublicConfig } from '../config/IConfig';
 import { IRunResponse } from '../core/IRunResponse';
 import { Context, createContext } from '../core/context';
-import { fusebox } from '../core/fusebox';
 import { preflightFusebox } from '../core/helpers/preflightFusebox';
 import { bundleDev } from '../development/bundleDev';
 import { env } from '../env';
 import { bundleProd } from '../production/bundleProd';
-import { ensureDir, fastHash, fileExists, path2RegexPattern, readFile } from '../utils/utils';
+import { ensureDir, fastHash, fileExists, listDirectory, path2RegexPattern, readFile } from '../utils/utils';
 import { createTestBrowserEnv, ITestBrowserResponse } from './browserEnv/testBrowserEnv';
 import { createTestServerEnv, ITestServerResponse } from './serverEnv/testServerEnv';
 
@@ -104,6 +103,23 @@ function getCacheWorkspace(workspace: ITestWorkspace) {
     },
   };
 }
+
+export function createDistWorkspace(workspace: ITestWorkspace) {
+  const files = listDirectory(workspace.distRoot);
+  return {
+    findFile: (re: RegExp) => {
+      return files.find(item => re.test(item));
+    },
+    getAppContents: () => {
+      const app = files.find(item => /app\.js$/.test(item));
+      if (!app) throw new Error("App file wasn't found");
+      return readFile(app);
+    },
+    getFiles: (): Array<string> => {
+      return files;
+    },
+  };
+}
 export function createTestWorkspace(props: {
   files: Record<string, string>;
   modules?: Record<string, Record<string, string>>;
@@ -150,6 +166,7 @@ export function createTestWorkspace(props: {
     getCacheWorkspace: () => {
       return getCacheWorkspace(self);
     },
+    getDist: () => createDistWorkspace(self),
     removeFile: filename => {
       const filePath = path.join(sourceDir, filename);
       if (fileExists(filePath)) {

@@ -37,15 +37,24 @@ function getCodeSplittingFunction(target: ITarget) {
   return new Promise(function(resolve, reject) {
     if (!conf.fns) {
       conf.fns = [resolve];
-      var script = document.createElement('script');
-      document.head.appendChild(script);
-      script.onload = function() {
-        if (modules[id]) {
-          conf.fns.map(x => x(f.r(id)));
-        } else reject('Resolve error of module ' + id + ' at path ' + conf.p);
-        conf.fns = void 0;
-      };
-      script.src = conf.p;
+      function loadJS(){
+        var script = document.createElement('script');
+        document.head.appendChild(script);
+        script.onload = function() {
+          if (modules[id]) {
+            conf.fns.map(x => x(f.r(id)));
+          } else reject('Resolve error of module ' + id + ' at path ' + conf.p);
+          conf.fns = void 0;
+        };
+        script.src = conf.p;
+      }
+      if( conf.s ){
+        var link = document.createElement('link');
+        link.rel = "stylesheet";
+        link.onload = loadJS;
+        link.href = conf.s
+        document.head.appendChild(link);
+      } else loadJS();
     } else conf.fns.push(resolve);
   });
 }`;

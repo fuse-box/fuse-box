@@ -97,7 +97,7 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
         // we skip this module
         if (module.isSplit) {
           continue;
-        } else if (ctx.config.isProduction && module.css) {
+        } else if (ctx.config.isProduction && ctx.config.supportsStylesheet() && module.css) {
           // special treatement for production styles
           if (!cssBundle) createCSSBundle();
           cssBundle.source.modules.push(module);
@@ -168,7 +168,6 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
         if (!m.isCached) ict.sync('bundle_resolve_module', { module: m });
       }
       await ict.resolve();
-      await self.generateBundles(modules);
     },
     writeBundles: async () => {
       const bundleAmount = bundles.length;
@@ -234,7 +233,7 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
       }
       try {
         const manifestFile = path.join(outputConfig.distRoot, `manifest-${ctx.config.target}.json`);
-        await writeFile(manifestFile, JSON.stringify(manifest));
+        await writeFile(manifestFile, JSON.stringify(manifest, null, 2));
         return manifestFile;
       } catch (err) {
         return;

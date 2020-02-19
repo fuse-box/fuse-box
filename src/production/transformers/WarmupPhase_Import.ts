@@ -39,7 +39,21 @@ export function Phase_1_ImportLink(): ITransformer {
         return !!dynamicImport && !!dynamicImport.source && !!refs[dynamicImport.source];
       }
 
-      function shouldStyleImportRemove(node: ASTNode) {
+      function shouldStyleImportRemove(node: ASTNode, parent?: ASTNode) {
+        if (node.type === ASTType.ExpressionStatement) {
+          if (node.expression && node.expression.type === ASTType.CallExpression) {
+            if (node.expression.callee && node.expression.callee.name === 'require') {
+              const source = node.expression.arguments[0];
+              return source && !!refs[source.value];
+            }
+          }
+        }
+        if (node.arguments && node.arguments[0]) {
+          const target = refs[node.arguments[0].value];
+          if (target && target.isStylesheet && parent.type !== ASTType.VariableDeclarator) {
+            return true;
+          }
+        }
         if (node.type === ASTType.ImportDeclaration && node.specifiers.length === 0) {
           const target = refs[node.source.value];
           return target && target.isStylesheet;
@@ -52,20 +66,26 @@ export function Phase_1_ImportLink(): ITransformer {
             return;
           }
 
-          const { node } = visit;
+          const { node, parent } = visit;
 
           if (isEligibleDynamicImport(node) || isEligibleRequire(node)) {
             tree.importReferences.register({ module, productionContext, visit });
           }
+          if (shouldStyleImportRemove(node, parent)) {
+            return { removeNode: true };
+          }
         },
         onTopLevelTraverse: (visit: IVisit) => {
-          const { node } = visit;
+          const { node, parent } = visit;
           if (isEligibleImportOrExport(node) || isEligibleRequire(node)) {
             tree.importReferences.register({ module, productionContext, visit });
-            // we don't need the references in the code
-            // those will become real css files
-            // however, tracking should happen above (for css code splitting)
-            if (shouldStyleImportRemove(node)) return { removeNode: true };
+          }
+
+          // we don't need the references in the code
+          // those will become real css files
+          // however, tracking should happen above (for css code splitting)
+          if (shouldStyleImportRemove(node, parent)) {
+            return { removeNode: true };
           }
         },
       };

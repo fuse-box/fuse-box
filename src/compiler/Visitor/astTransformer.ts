@@ -1,4 +1,4 @@
-import { ASTNode } from '../interfaces/AST';
+import { ASTNode, ASTType } from '../interfaces/AST';
 import { IFastVisit, IVisit } from './Visitor';
 
 export function astTransformer() {
@@ -10,17 +10,13 @@ export function astTransformer() {
   let appendedToBody: Array<{ target: IVisit; nodes: Array<ASTNode> }>;
   let onCompletCallbacks: Array<() => void>;
   const methods = {
-    replaceLater: (target: IVisit, nodes: Array<ASTNode>) => {
-      if (!replaces) replaces = [];
-      replaces.push({ target, nodes });
-    },
-    removeLater: (target: IVisit) => {
-      if (!removes) removes = [];
-      removes.push({ target });
+    appendToBody: (target: IVisit, nodes: Array<ASTNode>) => {
+      if (!appendedToBody) appendedToBody = [];
+      appendedToBody.push({ nodes, target });
     },
     insertAfter: (target: IVisit, nodes: Array<ASTNode>) => {
       if (!insertions) insertions = [];
-      insertions.push({ target, nodes });
+      insertions.push({ nodes, target });
     },
     onComplete: (cb: () => void) => {
       if (!onCompletCallbacks) onCompletCallbacks = [];
@@ -28,17 +24,17 @@ export function astTransformer() {
     },
     prependToBody: (target: IVisit, nodes: Array<ASTNode>) => {
       if (!prependedToBody) prependedToBody = [];
-      prependedToBody.push({ target, nodes });
+      prependedToBody.push({ nodes, target });
     },
-    appendToBody: (target: IVisit, nodes: Array<ASTNode>) => {
-      if (!appendedToBody) appendedToBody = [];
-      appendedToBody.push({ target, nodes });
+    removeLater: (target: IVisit) => {
+      if (!removes) removes = [];
+      removes.push({ target });
+    },
+    replaceLater: (target: IVisit, nodes: Array<ASTNode>) => {
+      if (!replaces) replaces = [];
+      replaces.push({ nodes, target });
     },
 
-    whenFinished: (fn: (node: ASTNode) => {}) => {
-      if (!whenFinsihedCallbacks) whenFinsihedCallbacks = [];
-      whenFinsihedCallbacks.push(fn);
-    },
     onCompletCallbacks: onCompletCallbacks,
     finalise: (props: IFastVisit) => {
       if (replaces) {
@@ -109,6 +105,10 @@ export function astTransformer() {
           }
         }
       }
+    },
+    whenFinished: (fn: (node: ASTNode) => {}) => {
+      if (!whenFinsihedCallbacks) whenFinsihedCallbacks = [];
+      whenFinsihedCallbacks.push(fn);
     },
   };
 

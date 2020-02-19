@@ -120,6 +120,7 @@ export function createContext(props: ICreateContextProps): Context {
   };
 
   const runProps: IRunProps = props.runProps || {};
+
   let publicConfig = props.publicConfig;
 
   let publicPath: string;

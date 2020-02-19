@@ -20,13 +20,12 @@ export const createBuild = async (props: IBuildProps): Promise<IRunResponse> => 
   const { bundleContext, ctx, entries, modules, rebundle, splitEntries } = props;
 
   const router = createBundleRouter({ ctx, entries });
+  await router.init(modules);
   router.generateBundles(modules);
 
   if (splitEntries && splitEntries.entries.length > 0) {
     router.generateSplitBundles(splitEntries.entries);
   }
-
-  await ctx.ict.resolve();
 
   const bundles = await router.writeBundles();
   let server: IServerProcess;
