@@ -4,18 +4,16 @@ class Context {
   runServer;
   getConfig = () =>
     fusebox({
-      target: 'browser',
+      cache: true,
+      devServer: this.runServer,
       entry: 'src/index.ts',
+      target: 'browser',
       webIndex: {
-        publicPath: '.',
         template: 'src/index.html',
       },
-      cache: false,
-      watch: true,
-      devServer: this.runServer,
     });
 }
-const { task, rm, exec } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;
@@ -31,6 +29,7 @@ task('preview', async ctx => {
   await fuse.runProd({ uglify: false });
 });
 task('dist', async ctx => {
+  rm('./dist');
   ctx.runServer = false;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();

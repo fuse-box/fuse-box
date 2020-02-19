@@ -54,6 +54,7 @@ export interface IPublicConfig {
 
 export interface IConfig {
   cache?: ICacheProps;
+  cleanCSS?: any;
   compilerOptions?: ICompilerOptions;
   dependencies?: IDependencies;
   devServer?: IDevServerProps;

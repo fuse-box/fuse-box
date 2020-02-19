@@ -7,7 +7,8 @@ class Context {
     return fusebox({
       cache: { enabled: true, root: './.cache' },
       devServer: { httpServer: { port: 3000 } },
-      entry: 'src/index.tsx',
+      //entry: 'src/index.tsx',
+      entry: 'src/edges.ts',
       hmr: true,
       logging: {
         level: 'succinct',

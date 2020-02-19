@@ -1,6 +1,6 @@
 import { IVisit, IVisitorMod } from '../../compiler/Visitor/Visitor';
 import { getDynamicImport } from '../../compiler/helpers/importHelpers';
-import { ASTType } from '../../compiler/interfaces/AST';
+import { ASTNode, ASTType } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
 
 const NODES_OF_INTEREST = {
@@ -39,6 +39,13 @@ export function Phase_1_ImportLink(): ITransformer {
         return !!dynamicImport && !!dynamicImport.source && !!refs[dynamicImport.source];
       }
 
+      function shouldStyleImportRemove(node: ASTNode) {
+        if (node.type === ASTType.ImportDeclaration && node.specifiers.length === 0) {
+          const target = refs[node.source.value];
+          return target && target.isStylesheet;
+        }
+      }
+
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
           if (!visit.parent || visit.parent.type === ASTType.Program) {
@@ -55,6 +62,10 @@ export function Phase_1_ImportLink(): ITransformer {
           const { node } = visit;
           if (isEligibleImportOrExport(node) || isEligibleRequire(node)) {
             tree.importReferences.register({ module, productionContext, visit });
+            // we don't need the references in the code
+            // those will become real css files
+            // however, tracking should happen above (for css code splitting)
+            if (shouldStyleImportRemove(node)) return { removeNode: true };
           }
         },
       };

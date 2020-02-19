@@ -1,9 +1,11 @@
 import { ITarget } from '../config/ITarget';
 import { IModule } from '../moduleResolver/module';
+import { DistWriter } from '../output/distWriter';
 import { Concat, fastHash, getFileModificationTime } from '../utils/utils';
 import { BUNDLE_RUNTIME_NAMES, ICodeSplittingMap } from './bundleRuntimeCore';
 
 export interface IBundleSourceProps {
+  isCSS?: boolean;
   isProduction?: boolean;
   target: ITarget;
   withSourcemaps?: boolean;
@@ -23,6 +25,7 @@ export type BundleSource = {
   modules: Array<IModule>;
   generate: (opts: IBundleGenerateProps) => Concat;
   generateHash: () => string;
+  writeSourceMap: (bundleWriter: DistWriter) => void;
 };
 
 const FuseName = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ;
@@ -30,6 +33,24 @@ const BundleFN = FuseName + '.' + BUNDLE_RUNTIME_NAMES.BUNDLE_FUNCTION;
 const ReqFn = FuseName + '.' + BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
 
 export function createBundleSource(props: IBundleSourceProps): BundleSource {
+  function generateCSS(self: BundleSource, opts: IBundleGenerateProps): Concat {
+    const concat = new Concat(true, '', '\n');
+    const totalAmount = self.modules.length;
+    let index = 0;
+    while (index < totalAmount) {
+      const module = self.modules[index];
+      const cssData = module.css;
+
+      if (cssData) {
+        concat.add(module.publicPath, cssData.css, module.isSourceMapRequired ? cssData.map : undefined);
+        if (module.isSourceMapRequired && cssData.map) {
+          self.containsMaps = true;
+        }
+      }
+      index++;
+    }
+    return concat;
+  }
   const self: BundleSource = {
     containsMaps: false,
     entries: [],
@@ -39,6 +60,7 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
 
     modules: [],
     generate: (opts: IBundleGenerateProps) => {
+      if (props.isCSS) return generateCSS(self, opts);
       const concat = new Concat(true, '', '\n');
 
       // start the wrapper for the entire bundle if required

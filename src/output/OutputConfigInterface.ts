@@ -43,6 +43,7 @@ export interface IPublicOutputConfig {
     target: IOutputBundleConfig;
   }>;
   serverEntry?: string;
+  styles?: IOutputBundleConfigAdvanced;
   vendor?: IOutputBundleConfig;
 }
 
@@ -104,5 +105,6 @@ export interface IOutputConfig {
     target: IOutputBundleConfigAdvanced;
   }>;
   serverEntry?: string;
+  styles?: IOutputBundleConfigAdvanced;
   vendor?: IOutputBundleConfigAdvanced;
 }

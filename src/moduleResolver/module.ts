@@ -140,16 +140,18 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       self.isEntry = false;
       self.isSplit = false;
 
-      let isCSSSourceMapRequired = true;
       const config = props.ctx.config;
-      if (config.sourceMap.css === false) {
-        isCSSSourceMapRequired = false;
-      }
-      if (props.pkg && props.pkg.type === PackageType.USER_PACKAGE && !config.sourceMap.vendor) {
-        isCSSSourceMapRequired = false;
+      if (self.isStylesheet) {
+        let isCSSSourceMapRequired = true;
+        if (config.sourceMap.css === false) {
+          isCSSSourceMapRequired = false;
+        }
+        if (props.pkg && props.pkg.type === PackageType.EXTERNAL_PACKAGE && !config.sourceMap.vendor) {
+          isCSSSourceMapRequired = false;
+        }
+        self.isCSSSourceMapRequired = isCSSSourceMapRequired;
       }
 
-      self.isCSSSourceMapRequired = isCSSSourceMapRequired;
       self.props.fuseBoxPath = makePublicPath(self.absPath);
       self.publicPath = self.props.fuseBoxPath;
 

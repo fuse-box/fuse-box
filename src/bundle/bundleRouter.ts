@@ -11,6 +11,7 @@ import { Bundle, BundleType, createBundle, IBundleWriteResponse } from './bundle
 export interface IBundleRouter {
   generateBundles: (modules: Array<IModule>) => void;
   generateSplitBundles: (entries: Array<ISplitEntry>) => void;
+  init: (modules: Array<IModule>) => void;
   writeBundles: () => Promise<Array<IBundleWriteResponse>>;
   writeManifest: (bundles: Array<IBundleWriteResponse>) => Promise<string>;
 }
@@ -32,6 +33,7 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
     b: {},
   };
   let mainBundle: Bundle;
+  let cssBundle: Bundle;
   let vendorBundle: Bundle;
 
   function generateSplitFileName(relativePath: string): string {
@@ -44,11 +46,20 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
     return fileName;
   }
 
+  function createCSSBundle(name?: string) {
+    cssBundle = createBundle({
+      bundleConfig: outputConfig.styles,
+      ctx: ctx,
+      type: BundleType.CSS_APP,
+    });
+    bundles.push(cssBundle);
+  }
+
   function createMainBundle() {
     mainBundle = createBundle({
       bundleConfig: outputConfig.app,
       ctx: ctx,
-      priority: 2,
+      priority: 1,
       type: BundleType.JS_APP,
     });
     bundles.push(mainBundle);
@@ -58,17 +69,10 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
     vendorBundle = createBundle({
       bundleConfig: outputConfig.vendor,
       ctx: ctx,
-      priority: 1,
+      priority: 2,
       type: BundleType.JS_VENDOR,
     });
     bundles.push(vendorBundle);
-  }
-
-  function dispatch(bundle: Bundle, module: IModule) {
-    if (!module.isCached) {
-      ict.sync('bundle_resolve_module', { module: module });
-    }
-    bundle.source.modules.push(module);
   }
 
   let codeSplittingIncluded = false;
@@ -93,12 +97,16 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
         // we skip this module
         if (module.isSplit) {
           continue;
+        } else if (ctx.config.isProduction && module.css) {
+          // special treatement for production styles
+          if (!cssBundle) createCSSBundle();
+          cssBundle.source.modules.push(module);
         } else if (module.pkg.type === PackageType.EXTERNAL_PACKAGE && hasVendorConfig) {
           if (!vendorBundle) createVendorBundle();
-          dispatch(vendorBundle, module);
+          vendorBundle.source.modules.push(module);
         } else {
           if (!mainBundle) createMainBundle();
-          dispatch(mainBundle, module);
+          mainBundle.source.modules.push(module);
         }
       }
     },
@@ -117,16 +125,50 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
           type: BundleType.JS_SPLIT,
           webIndexed: false,
         });
-        for (const module of modules) dispatch(splitBundle, module);
+
+        let currentCSSBundle: Bundle;
+
+        for (const module of modules) {
+          if (ctx.config.isProduction && module.css) {
+            if (!currentCSSBundle) {
+              const cssFileName = generateSplitFileName(entry.publicPath.replace(/\.(\w+)$/, '.css'));
+              currentCSSBundle = createBundle({
+                bundleConfig: {
+                  path: outputConfig.styles.codeSplitting.path,
+                  publicPath: outputConfig.styles.codeSplitting.publicPath,
+                },
+                ctx,
+                fileName: cssFileName,
+                type: BundleType.CSS_SPLIT,
+                webIndexed: false,
+              });
+              bundles.push(currentCSSBundle);
+            }
+            currentCSSBundle.source.modules.push(module);
+          } else {
+            splitBundle.source.modules.push(module);
+          }
+        }
 
         const bundleConfig = splitBundle.prepare();
         // update a json object with entry for the API
         codeSplittingMap.b[entry.id] = {
           p: bundleConfig.browserPath,
         };
+        if (currentCSSBundle) {
+          const cssSplitConfig = currentCSSBundle.prepare();
+          codeSplittingMap.b[entry.id].s = cssSplitConfig.browserPath;
+        }
         codeSplittingIncluded = true;
         bundles.push(splitBundle);
       }
+    },
+    init: async (modules: Array<IModule>) => {
+      for (const m of modules) {
+        if (!m.isCached) ict.sync('bundle_resolve_module', { module: m });
+      }
+      await ict.resolve();
+      await self.generateBundles(modules);
     },
     writeBundles: async () => {
       const bundleAmount = bundles.length;
@@ -137,12 +179,14 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
       const writers = [];
       let lastWebIndexed: Bundle;
 
+      bundles.sort((a, b) => a.priority - b.priority);
+
       while (index < bundleAmount) {
         const bundle = bundles[index];
         let writerProps = {};
-        if (bundle.webIndexed) {
+        if (bundle.webIndexed && !bundle.isCSSType) {
           lastWebIndexed = bundle;
-          if (!apiInserted) {
+          if (!apiInserted && bundle.priority === 1) {
             apiInserted = true;
             bundle.containsAPI = true;
             writerProps = { runtimeCore: createRuntimeCore() };
@@ -152,6 +196,7 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
         writers.push(() => bundle.generate(writerProps));
         index++;
       }
+
       if (lastWebIndexed) {
         lastWebIndexed.containsApplicationEntryCall = true;
         lastWebIndexed.entries = entries;

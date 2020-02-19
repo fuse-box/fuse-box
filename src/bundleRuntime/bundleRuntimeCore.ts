@@ -17,7 +17,7 @@ export function createGlobalModuleCall(moduleId: number) {
 }
 
 export type ICodeSplittingMap = {
-  b: Record<number, { p: string }>;
+  b: Record<number, { p: string; s?: string }>;
 };
 
 export interface IBundleRuntimeCore {

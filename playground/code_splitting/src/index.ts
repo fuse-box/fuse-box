@@ -1,7 +1,12 @@
+console.log('foo');
+import './main.scss';
+console.log('bar');
+
 async function loadStuff() {
-  const foo = await import('./foo/Foo');
-  const bar = await import('./bar/Bar');
-  console.log(foo, bar);
+  const { Foo } = await import('./foo/Foo');
+  Foo();
+  const { Bar } = await import('./bar/Bar');
+  Bar();
 }
 
 loadStuff();
