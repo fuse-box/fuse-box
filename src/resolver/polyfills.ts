@@ -1,5 +1,6 @@
 const SERVER_POLYFILL = new Set<string>([
   'assert',
+  'async_hooks',
   'buffer',
   'child_process',
   'cluster',
