@@ -6,6 +6,8 @@ import { Application } from './components/application/Application';
 import { some } from './foo';
 // import stuff from 'stuff/Stuff';
 // console.log(stuff);
+import * as whitespaces from './whitespaces';
+console.log('whitespaces', whitespaces);
 
 import something from './something';
 console.log('oi', some);

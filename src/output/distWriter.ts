@@ -78,7 +78,7 @@ export function distWriter(props: IOuputParserProps): DistWriter {
       const relativePath = ensureFuseBoxPath(path.relative(root, absPath));
 
       // fix non trailing slashes in configuration
-      const sep = relativePath.charAt(0) !== '/' && !options.publicPath.endsWith('/') ? '/' : '';
+      const sep = relativePath.charAt(0) !== '/' && options.publicPath && !options.publicPath.endsWith('/') ? '/' : '';
       const browserPath = options.publicPath ? options.publicPath + sep + relativePath : relativePath;
 
       return {

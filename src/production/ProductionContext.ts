@@ -30,6 +30,8 @@ export function createProductionContext(ctx): IProductionContext {
 
   for (const module of modules) {
     if (module.isExecutable) {
+      // reset the contents
+      module.contents = undefined;
       module.read();
       module.parse();
     }

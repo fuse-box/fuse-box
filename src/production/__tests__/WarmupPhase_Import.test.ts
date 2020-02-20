@@ -5,15 +5,18 @@ import { createTestEnvironment, ITestEnvironment } from './testUtils';
 
 let environment: ITestEnvironment;
 function getProductionContext(code: string): IProductionContext {
-  environment = createTestEnvironment({ entry: 'index.ts' }, {
-    'foo.ts': `
+  environment = createTestEnvironment(
+    { entry: 'index.ts' },
+    {
+      'foo.ts': `
       console.log('foo');
     `,
-    'index.ts': code,
-  });
+      'index.ts': code,
+    },
+  );
   environment.run([WarmupPhase]);
   return environment.productionContext;
-};
+}
 
 function getReferences(code: string): Array<IImport> {
   const context = getProductionContext(code);

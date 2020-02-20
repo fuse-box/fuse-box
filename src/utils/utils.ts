@@ -65,6 +65,15 @@ export function beautifyBundleName(absPath: string, maxLength?: number) {
     .toLowerCase();
 }
 
+export const listDirectory = (dir, filelist = []) => {
+  fs.readdirSync(dir).forEach(file => {
+    filelist = fs.statSync(path.join(dir, file)).isDirectory()
+      ? listDirectory(path.join(dir, file), filelist)
+      : filelist.concat(path.join(dir, file));
+  });
+  return filelist;
+};
+
 export function offsetLines(obj: any, amount: number) {
   return offsetLinesModule(obj, amount);
 }

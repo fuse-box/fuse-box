@@ -1,20 +1,68 @@
-import { EnvironmentType } from '../../config/EnvironmentType';
-import {
-  EnvironmentTypesTestable,
-  createTestWorkspace,
-  testBrowser,
-  testServer,
-  ITestWorkspace,
-} from '../../testUtils/integrationTest';
+import { EnvironmentType } from '../config/EnvironmentType';
+import { runBrowserTest, runServerTest } from '../testUtils/integrationHelper';
+import { EnvironmentTypesTestable, ITestWorkspace } from '../testUtils/integrationTest';
 
 describe('User dependencies test', () => {
+  describe('Electron cases', () => {
+    for (const env of EnvironmentTypesTestable) {
+      it(`should polyfill path depenedency [ ${EnvironmentType[env]} ] `, async () => {
+        const { response } = await runBrowserTest({
+          config: {
+            target: 'electron',
+          },
+          env,
+          files: {
+            'index.ts': `
+            import * as path from "path"
+            export function test(){
+              return path.join("a", "b")
+            }
+          `,
+          },
+        });
+
+        const data = response.eval();
+        const fnRes = data.entry().test();
+        expect(fnRes).toEqual('a/b');
+      });
+
+      it(`should not polyfill path depenedency [ ${EnvironmentType[env]} ] `, async () => {
+        const { response } = await runBrowserTest({
+          config: {
+            target: 'electron',
+            electron: { nodeIntegration: true },
+          },
+          env,
+          files: {
+            'index.ts': `
+            import * as path from "path"
+            export function test(){
+              return path.join("a", "b")
+            }
+          `,
+          },
+        });
+
+        const data = response.eval({
+          extendGlobal: {
+            require: target => {
+              if (target === 'path') return { join: () => 'mocked' };
+              return {};
+            },
+          },
+        });
+        const fnRes = data.entry().test();
+        expect(fnRes).toEqual('mocked');
+      });
+    }
+  });
   describe('Manually including dependencies', () => {
-    let workspace: ITestWorkspace;
-
-    afterEach(() => workspace && workspace.destroy());
-
     it('should include package foo', async () => {
-      workspace = createTestWorkspace({
+      const { response } = await runBrowserTest({
+        config: {
+          dependencies: { include: ['foo'] },
+        },
+        env: EnvironmentType.DEVELOPMENT,
         files: {
           'index.ts': `export function something(){}`,
         },
@@ -25,31 +73,19 @@ describe('User dependencies test', () => {
           },
         },
       });
-      const response = await testBrowser({
-        workspace,
-        type: EnvironmentType.DEVELOPMENT,
-        config: {
-          dependencies: { include: ['foo'] },
-        },
-      });
-
       const packagePresent = response.runResponse.modules.find(m => /that_external_package/.test(m.contents));
       expect(packagePresent).toBeTruthy();
     });
 
     it('should include an extra file that is relative', async () => {
-      workspace = createTestWorkspace({
+      const { response } = await runBrowserTest({
+        config: {
+          dependencies: { include: ['./oi'] },
+        },
+        env: EnvironmentType.DEVELOPMENT,
         files: {
           'index.ts': `export function something(){}`,
           'oi.ts': `export function that_new_oi_file()`,
-        },
-      });
-
-      const response = await testBrowser({
-        workspace,
-        type: EnvironmentType.DEVELOPMENT,
-        config: {
-          dependencies: { include: ['./oi'] },
         },
       });
 
@@ -59,7 +95,11 @@ describe('User dependencies test', () => {
 
     for (const env of EnvironmentTypesTestable) {
       it(`should exlude and ignore all external deps env :[ ${EnvironmentType[env]} ] `, async () => {
-        workspace = createTestWorkspace({
+        const { response } = await runServerTest({
+          config: {
+            dependencies: { serverIgnoreExternals: true },
+          },
+          env: env,
           files: {
             'foo.ts': 'export const foo = "foo"',
             'index.ts': `
@@ -76,19 +116,11 @@ describe('User dependencies test', () => {
           },
         });
 
-        const x = await testServer({
-          workspace,
-          type: env,
-          config: {
-            dependencies: { serverIgnoreExternals: true },
-          },
-        });
-
         // index and foo
-        expect(x.runResponse.modules).toHaveLength(2);
+        expect(response.runResponse.modules).toHaveLength(2);
 
         const requires = [];
-        x.eval({
+        response.eval({
           onServerRequire: args => {
             // this should be called on a "real" nodejs require module which is mocked
             // we're jsut returning some object
@@ -101,7 +133,11 @@ describe('User dependencies test', () => {
       });
 
       it('Should exclude specific module', async () => {
-        workspace = createTestWorkspace({
+        const { response } = await runServerTest({
+          config: {
+            dependencies: { ignore: ['second_package'], serverIgnoreExternals: false },
+          },
+          env: env,
           files: {
             'foo.ts': 'export const foo = "foo"',
             'index.ts': `
@@ -122,15 +158,8 @@ describe('User dependencies test', () => {
           },
         });
 
-        const x = await testServer({
-          workspace,
-          type: env,
-          config: {
-            dependencies: { serverIgnore: ['second_package'], serverIgnoreExternals: false },
-          },
-        });
         const logs = [];
-        x.eval({
+        response.eval({
           onConsoleLog: args => logs.push(args),
           onServerRequire: args => {
             // this should be called on a "real" nodejs require module which is mocked

@@ -8,7 +8,7 @@ const testTranspile = (props: { code: string; fileName?: string; target?: ITarge
   return initCommonTransform({
     props: {
       ctx: { config: { target: props.target || 'browser' } },
-      module: { props: { fuseBoxPath: props.fileName || '/test/file.js' } },
+      module: { publicPath: props.fileName || '/test/file.js' },
     },
 
     compilerOptions: {

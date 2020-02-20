@@ -8,7 +8,6 @@ interface IPathsLookupProps {
   baseURL: string;
   cachePaths?: boolean;
   configLocation?: string;
-  homeDir: string;
   isDev?: boolean;
   paths?: ITypescriptPaths;
   target: string;
