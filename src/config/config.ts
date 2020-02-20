@@ -40,8 +40,8 @@ export function Configuration(ctx: Context): IConfig {
       if (ESSENTIAL_DEPENDENCIES.includes(name)) return false;
       if (self.target === 'server') {
         if (self.dependencies.serverIgnoreExternals) return true;
-        if (self.dependencies.serverIgnore && self.dependencies.serverIgnore.includes(name)) return true;
       }
+      if (self.dependencies.ignore && self.dependencies.ignore.includes(name)) return true;
       return false;
     },
     supportsStylesheet: () => self.target === 'browser' || self.target === 'electron',
@@ -266,6 +266,10 @@ export function createConfig(props: {
     if (config.isDevelopment) config.env.NODE_ENV = 'development';
     if (config.isProduction) config.env.NODE_ENV = 'production';
   }
+
+  if (publicConfig.electron) config.electron = publicConfig.electron;
+  else config.electron = {};
+  if (config.electron.nodeIntegration === undefined) config.electron.nodeIntegration = false;
 
   return config;
 }

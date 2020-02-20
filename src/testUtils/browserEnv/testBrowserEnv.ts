@@ -2,16 +2,10 @@ import { IRunResponse } from '../../core/IRunResponse';
 import { ITestWorkspace } from '../integrationTest';
 import { MockedWindow, createMockedWindow, IMockedWindowProps } from './window';
 
-export interface IBrowserEvalProps {
-  onConsoleError?: (args: Array<any>) => void;
-  onConsoleLog?: (args: Array<any>) => void;
-  onConsoleWarn?: (args: Array<any>) => void;
-}
-
 export interface ITestBrowserResponse {
   __fuse?: any;
   runResponse?: IRunResponse;
-  eval: (props?: IBrowserEvalProps) => MockedWindow;
+  eval: (props?: IMockedWindowProps) => MockedWindow;
 }
 
 export function createTestBrowserEnv(workspace: ITestWorkspace, runResponse: IRunResponse) {

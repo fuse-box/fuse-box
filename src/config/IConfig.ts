@@ -14,6 +14,7 @@ import { IStyleSheetProps } from './IStylesheetProps';
 import { ITarget } from './ITarget';
 
 import { IDependencies } from './IDependencies';
+import { IElectronOptions } from './IElectronOptions';
 import { IWatcherPublicConfig } from './IWatcher';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 
@@ -23,6 +24,8 @@ export interface IPublicConfig {
 
   logging?: IFuseLoggerProps;
   modules?: Array<string>;
+
+  electron?: IElectronOptions;
 
   cache?: ICacheProps | boolean;
   dependencies?: IDependencies;
@@ -58,6 +61,7 @@ export interface IConfig {
   compilerOptions?: ICompilerOptions;
   dependencies?: IDependencies;
   devServer?: IDevServerProps;
+  electron?: IElectronOptions;
   entries?: Array<string>;
   hmr?: IHMRProps;
   homeDir?: string;

@@ -2,10 +2,11 @@ import * as path from 'path';
 import { ITarget } from '../config/ITarget';
 import { path2Regex } from '../utils/utils';
 import { handleBrowserField } from './browserField';
+import { NODE_BUILTIN_MODULES } from './built-inModules';
 import { TsConfigAtPath, fileLookup, ILookupResult } from './fileLookup';
 import { isNodeModule, nodeModuleLookup, INodeModuleLookup } from './nodeModuleLookup';
 import { pathsLookup } from './pathsLookup';
-import { isElectronPolyfill, isServerPolyfill } from './polyfills';
+
 export enum ImportType {
   REQUIRE,
   FROM,
@@ -21,6 +22,7 @@ export interface ITypescriptPathsConfig {
 export interface IResolverProps {
   buildTarget?: ITarget;
   cachePaths?: boolean;
+  electronNodeIntegration?: boolean;
   filePath?: string;
   homeDir?: string;
   importType?: ImportType;
@@ -147,12 +149,13 @@ export function resolveModule(props: IResolverProps): IResolver {
     let moduleParsed = target && isNodeModule(target);
     if (moduleParsed) {
       // first check if we need to bundle it at all;
-      if (isServerBuild && isServerPolyfill(moduleParsed.name)) {
+      if (
+        (isServerBuild || (isElectronBuild && props.electronNodeIntegration)) &&
+        NODE_BUILTIN_MODULES.includes(moduleParsed.name)
+      ) {
         return { skip: true };
       }
-      if (isElectronBuild && isElectronPolyfill(moduleParsed.name)) {
-        return { skip: true };
-      }
+
       if (browserFieldLookup) {
         if (props.packageMeta.browser[moduleParsed.name] === false) {
           moduleParsed = { name: 'fuse-empty-package' };

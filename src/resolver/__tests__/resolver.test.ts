@@ -454,39 +454,39 @@ describe('Resolver test', () => {
       });
     });
 
-    describe('Server/electron polyfill should not be bundled', () => {
-      const filePath = path.join(homeDir, 'foo.js');
-      it('Should skip fs (server)', () => {
-        const info = resolveModule({
-          buildTarget: 'server',
-          filePath: filePath,
-          homeDir: homeDir,
-          target: 'fs',
-        });
-        expect(info.skip).toEqual(true);
-      });
+    // describe('Server/electron polyfill should not be bundled', () => {
+    //   const filePath = path.join(homeDir, 'foo.js');
+    //   it('Should skip fs (server)', () => {
+    //     const info = resolveModule({
+    //       buildTarget: 'server',
+    //       filePath: filePath,
+    //       homeDir: homeDir,
+    //       target: 'fs',
+    //     });
+    //     expect(info.skip).toEqual(true);
+    //   });
 
-      it('Should skip fs (electron)', () => {
-        const info = resolveModule({
-          buildTarget: 'electron',
-          filePath: filePath,
-          homeDir: homeDir,
-          target: 'fs',
-        });
-        expect(info.skip).toEqual(true);
-      });
+    //   it('Should skip fs (electron)', () => {
+    //     const info = resolveModule({
+    //       buildTarget: 'electron',
+    //       filePath: filePath,
+    //       homeDir: homeDir,
+    //       target: 'fs',
+    //     });
+    //     expect(info.skip).toEqual(true);
+    //   });
 
-      it('Should not skip fs (browser)', () => {
-        const info = resolveModule({
-          buildTarget: 'browser',
-          filePath: filePath,
-          homeDir: homeDir,
-          modules: [customModules],
-          target: 'fs',
-        });
-        expect(info.skip).toBeFalsy();
-        expect(info.package.targetAbsPath).toMatchFilePath('cases/_modules/fs/index.js$');
-      });
-    });
+    //   it('Should not skip fs (browser)', () => {
+    //     const info = resolveModule({
+    //       buildTarget: 'browser',
+    //       filePath: filePath,
+    //       homeDir: homeDir,
+    //       modules: [customModules],
+    //       target: 'fs',
+    //     });
+    //     expect(info.skip).toBeFalsy();
+    //     expect(info.package.targetAbsPath).toMatchFilePath('cases/_modules/fs/index.js$');
+    //   });
+    // });
   });
 });

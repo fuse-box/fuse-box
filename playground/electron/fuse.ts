@@ -4,10 +4,7 @@ class Context {
   runServer;
   getMainConfig() {
     return fusebox({
-      cache: {
-        enabled: true,
-        root: '.cache/main',
-      },
+      cache: true,
       dependencies: { serverIgnoreExternals: true },
       entry: 'src/main/main.ts',
       homeDir: 'src/main',
@@ -19,10 +16,7 @@ class Context {
 
   getRendererConfig() {
     return fusebox({
-      cache: {
-        enabled: false,
-        root: '.cache/renderer',
-      },
+      cache: true,
       devServer: {
         hmrServer: { port: 7878 },
         httpServer: false,

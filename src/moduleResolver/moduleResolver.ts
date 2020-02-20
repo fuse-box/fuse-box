@@ -56,7 +56,14 @@ export function createRuntimeRequireStatement(props: {
     }
   }
   // prevert require for production to matter what
-  if (ctx.config.target === 'server' && typeof requireModuleId !== 'number') return item.statement;
+  const notResolved = typeof requireModuleId !== 'number';
+  if (notResolved) {
+    // the statement should be untouched
+    if (ctx.config.target === 'server' || (ctx.config.target === 'electron' && ctx.config.electron.nodeIntegration))
+      return item.statement;
+  }
+
+  if (ctx.config.target === 'electron' && typeof requireModuleId !== 'number') return item.statement;
 
   item.statement.callee.name = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION;
   item.statement.arguments = [
@@ -88,6 +95,7 @@ export function resolve(props: {
     alias: config.alias,
     buildTarget: config.target,
     cachePaths: !env.isTest, // should be always on, since that's the internal caching
+    electronNodeIntegration: config.electron.nodeIntegration,
     filePath: props.parent.absPath,
     homeDir: config.homeDir,
     importType: props.importType,

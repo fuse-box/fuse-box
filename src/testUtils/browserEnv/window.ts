@@ -2,6 +2,7 @@ import { ITestWorkspace } from '../integrationTest';
 import { createDocument } from './document';
 
 export interface IMockedWindowProps {
+  extendGlobal?: Record<string, any>;
   onConsoleError?: (args) => void;
   onConsoleLog?: (args) => void;
   onConsoleWarn?: (args) => void;
@@ -10,7 +11,13 @@ export interface IMockedWindowProps {
 export function evalJavascript(scope, contents) {}
 
 export class MockedWindow {
-  constructor(public workspace: ITestWorkspace, public props: IMockedWindowProps) {}
+  constructor(public workspace: ITestWorkspace, public props: IMockedWindowProps) {
+    if (this.props.extendGlobal) {
+      for (const key in this.props.extendGlobal) {
+        this[key] = this.props.extendGlobal[key];
+      }
+    }
+  }
 
   $createdDOMElements = [];
   $loadedCSSFiles = [];
@@ -20,6 +27,8 @@ export class MockedWindow {
     fn = fn.bind(this, this.$scope);
     fn(contents);
   };
+
+  Array = Array;
 
   $scope = new Proxy(this, {
     get(obj, key) {
