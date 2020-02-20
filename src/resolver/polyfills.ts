@@ -31,7 +31,7 @@ const SERVER_POLYFILL = new Set<string>([
   'zlib',
 ]);
 
-const ELECTRON_POLYFILL = new Set<string>([...SERVER_POLYFILL, 'electron']);
+const ELECTRON_POLYFILL = new Set<string>(['electron']);
 
 export function isServerPolyfill(name: string) {
   return SERVER_POLYFILL.has(name);

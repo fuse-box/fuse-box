@@ -31,17 +31,24 @@ function getAbsPath(ctx: Context, bundles: Array<IBundleWriteResponse>) {
   return entry;
 }
 
-export const createServerProcess = (ctx: Context, bundles: Array<IBundleWriteResponse>): IServerProcess => {
+export const createServerProcess = (props: {
+  bundles: Array<IBundleWriteResponse>;
+  ctx: Context;
+  processName: string;
+}): IServerProcess => {
+  const { bundles, ctx, processName } = props;
   let server: ChildProcess;
   if (ctx.serverProcess) return ctx.serverProcess;
 
   let entry = getAbsPath(ctx, bundles);
 
+  //const electronPath = require('electron');
+
   const self = {
     start: (cliArgs?: Array<string>): ChildProcess => {
       cliArgs = cliArgs || [];
       ctx.log.info('server', `spawn ${entry}`);
-      server = spawn('node', [entry, ...cliArgs], {
+      server = spawn(processName, [entry, ...cliArgs], {
         env: {
           ...process.env,
           ...ctx.config.env,

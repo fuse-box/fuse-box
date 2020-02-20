@@ -48,10 +48,10 @@ export const createBuild = async (props: IBuildProps): Promise<IRunResponse> => 
 
   const onCompleteHandler: IRunOnCompleteHandler = {
     get electron() {
-      return createServerProcess(ctx, bundles);
+      return createServerProcess({ bundles, ctx, processName: require('electron') });
     },
     get server() {
-      return createServerProcess(ctx, bundles);
+      return createServerProcess({ bundles, ctx, processName: 'node' });
     },
   };
 
