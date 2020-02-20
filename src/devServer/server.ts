@@ -1,5 +1,4 @@
-import { ChildProcess, fork } from 'child_process';
-import { spawn } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import { BundleType, IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/context';
 import { onExit } from '../utils/exit';

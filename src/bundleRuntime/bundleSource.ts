@@ -1,6 +1,5 @@
 import { ITarget } from '../config/ITarget';
 import { IModule } from '../moduleResolver/module';
-import { DistWriter } from '../output/distWriter';
 import { Concat, fastHash, getFileModificationTime } from '../utils/utils';
 import { BUNDLE_RUNTIME_NAMES, ICodeSplittingMap } from './bundleRuntimeCore';
 
@@ -18,14 +17,13 @@ export interface IBundleGenerateProps {
 
 export type BundleSource = {
   codeSplittingMap?: ICodeSplittingMap;
-  containsMaps: boolean;
+  containsMaps?: boolean;
   entries: Array<IModule>;
   expose?: Array<{ name: string; moduleId: number }>;
   injection?: Array<string>;
   modules: Array<IModule>;
   generate: (opts: IBundleGenerateProps) => Concat;
   generateHash: () => string;
-  writeSourceMap: (bundleWriter: DistWriter) => void;
 };
 
 const FuseName = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ;

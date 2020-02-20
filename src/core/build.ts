@@ -1,6 +1,6 @@
 import { BundleType } from '../bundle/bundle';
 import { createBundleRouter } from '../bundle/bundleRouter';
-import { createServerProcess, IServerProcess } from '../devServer/server';
+import { createServerProcess } from '../devServer/server';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
 import { createServerEntry } from '../production/module/ServerEntry';

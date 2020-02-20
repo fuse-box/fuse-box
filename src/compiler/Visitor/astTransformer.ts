@@ -1,4 +1,4 @@
-import { ASTNode, ASTType } from '../interfaces/AST';
+import { ASTNode } from '../interfaces/AST';
 import { IFastVisit, IVisit } from './Visitor';
 
 export function astTransformer() {
