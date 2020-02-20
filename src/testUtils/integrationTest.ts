@@ -61,8 +61,8 @@ export const EnvironmentTypesTestable = [EnvironmentType.DEVELOPMENT, Environmen
 
 export function createDevSandbox(props: { ctx: Context; response: IRunResponse; workspace: ITestWorkspace }) {
   const self = {
-    runBrowser: () => createTestBrowserEnv(props.response),
-    runServer: () => createTestServerEnv(props.response)(),
+    runBrowser: () => createTestBrowserEnv(props.workspace, props.response),
+    runServer: () => createTestServerEnv(props.workspace, props.response)(),
   };
   return self;
 }

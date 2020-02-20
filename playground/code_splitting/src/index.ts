@@ -7,6 +7,9 @@ async function loadStuff() {
   Foo();
   const { Bar } = await import('./bar/Bar');
   Bar();
+
+  const { Baz } = await import('./baz/baz');
+  Baz();
 }
 
 loadStuff();

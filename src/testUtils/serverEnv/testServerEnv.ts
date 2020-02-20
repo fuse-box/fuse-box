@@ -1,4 +1,5 @@
 import { IRunResponse } from '../../core/IRunResponse';
+import { ITestWorkspace } from '../integrationTest';
 import { MockedServer, createMockedServer, IMockedServerProps } from './ServerTestEnv';
 
 export interface ITestServerResponse {
@@ -8,7 +9,7 @@ export interface ITestServerResponse {
   eval: (props?: IMockedServerProps) => MockedServer;
 }
 
-export function createTestServerEnv(runResponse: IRunResponse) {
+export function createTestServerEnv(workspace: ITestWorkspace, runResponse: IRunResponse) {
   return (): ITestServerResponse => {
     let contents = '\n';
     for (const bundle of runResponse.bundles) {
@@ -21,7 +22,7 @@ export function createTestServerEnv(runResponse: IRunResponse) {
     return {
       runResponse,
       eval: (props: IMockedServerProps): MockedServer => {
-        const server = createMockedServer(props);
+        const server = createMockedServer(workspace, props);
         server.$eval(contents);
         return server;
       },

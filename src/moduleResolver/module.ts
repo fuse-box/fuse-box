@@ -28,6 +28,7 @@ export interface IModule {
   errored?: boolean;
   extension?: string;
   id?: number;
+  ignore?: boolean;
   isCSSModule?: boolean;
   isCSSSourceMapRequired?: boolean;
   isCSSText?: boolean;

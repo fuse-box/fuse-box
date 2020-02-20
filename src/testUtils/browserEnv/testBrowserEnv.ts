@@ -1,4 +1,5 @@
 import { IRunResponse } from '../../core/IRunResponse';
+import { ITestWorkspace } from '../integrationTest';
 import { MockedWindow, createMockedWindow, IMockedWindowProps } from './window';
 
 export interface IBrowserEvalProps {
@@ -13,7 +14,7 @@ export interface ITestBrowserResponse {
   eval: (props?: IBrowserEvalProps) => MockedWindow;
 }
 
-export function createTestBrowserEnv(runResponse: IRunResponse) {
+export function createTestBrowserEnv(workspace: ITestWorkspace, runResponse: IRunResponse) {
   let contents = '\n';
   for (const bundle of runResponse.bundles) {
     if (bundle.bundle.webIndexed && !bundle.bundle.isCSSType) {
@@ -26,7 +27,7 @@ export function createTestBrowserEnv(runResponse: IRunResponse) {
     runResponse,
     eval: (props: IMockedWindowProps): MockedWindow => {
       props = props || {};
-      const window = createMockedWindow(props);
+      const window = createMockedWindow(workspace, props);
       window.$eval(contents);
       return window;
     },

@@ -62,7 +62,7 @@ function getCodeSplittingFunction(target: ITarget) {
   if (target === 'server') {
     return `function lb(id, conf) {
 return new Promise(function(resolve, reject) {
-  require(require('path').resolve(__dirname, conf.p));
+  require(require('path').join(__dirname, conf.p));
 if (modules[id]) {
   return resolve(f.r(id));
 } else reject('Resolve error of module ' + id + ' at path ' + conf.p);

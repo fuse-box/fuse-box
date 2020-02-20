@@ -95,7 +95,7 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
     generateBundles: (modules: Array<IModule>) => {
       for (const module of modules) {
         // we skip this module
-        if (module.isSplit) {
+        if (module.isSplit || module.ignore) {
           continue;
         } else if (ctx.config.isProduction && ctx.config.supportsStylesheet() && module.css) {
           // special treatement for production styles

@@ -1,6 +1,7 @@
 import './Foo.scss';
 
 export function Foo() {
+  if (typeof document === 'undefined') return;
   const root = document.querySelector('#root');
   let fooEl = root.querySelector('.Foo');
 

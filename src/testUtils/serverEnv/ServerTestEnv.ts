@@ -1,21 +1,26 @@
+import * as path from 'path';
+import { readFile } from '../../utils/utils';
+import { ITestWorkspace } from '../integrationTest';
 export interface IMockedServerProps {
   onConsoleError?: (args) => void;
 
   onConsoleLog?: (args: Array<any>) => void;
   onConsoleWarn?: (args) => void;
-  onServerRequire?: (args: Array<any>) => void;
+  onServerRequire?: (args: Array<any>) => any;
 }
 
 export function evalJavascript(scope, contents) {}
 
 export class MockedServer {
-  constructor(public props: IMockedServerProps) {}
+  constructor(public workspace: ITestWorkspace, public props: IMockedServerProps) {}
 
   $eval = (contents: string) => {
-    var fn = new Function('GLOBAL_OBJECT', 'with (GLOBAL_OBJECT) { ' + contents + '}');
+    var fn = new Function('GLOBAL_OBJECT', 'with (GLOBAL_OBJECT) { \n' + contents + '\n}');
     fn = fn.bind(this, this.$scope);
     fn(contents);
   };
+
+  __dirname = this.workspace.distRoot;
 
   $scope = new Proxy(this, {
     get(obj, key) {
@@ -54,7 +59,12 @@ export class MockedServer {
   global = {};
 
   require = (...args) => {
-    if (this.props.onServerRequire) return this.props.onServerRequire(args);
+    if (this.props.onServerRequire) {
+      const userResponse = this.props.onServerRequire(args);
+      if (userResponse) return userResponse;
+    }
+    if (args[0] === 'path') return path;
+    if (path.isAbsolute(args[0])) return this.$eval(readFile(args[0]));
   };
 
   get fuse(): any {
@@ -64,6 +74,6 @@ export class MockedServer {
   entry = () => this.fuse.r(1);
 }
 
-export function createMockedServer(props?: IMockedServerProps): MockedServer {
-  return new MockedServer(props || {});
+export function createMockedServer(workspace: ITestWorkspace, props?: IMockedServerProps): MockedServer {
+  return new MockedServer(workspace, props || {});
 }

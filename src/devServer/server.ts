@@ -1,41 +1,55 @@
 import { ChildProcess, fork } from 'child_process';
-
+import { spawn } from 'child_process';
 import { BundleType, IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/context';
+import { onExit } from '../utils/exit';
 
 export interface IServerProcess {
-  start: (cliArgs: Array<string>) => ChildProcess;
+  start: (cliArgs?: Array<string>) => ChildProcess;
   stop: () => void;
+}
+
+function getAbsPath(ctx: Context, bundles: Array<IBundleWriteResponse>) {
+  let entry: string;
+  let resolved = false;
+  for (const bundle of bundles) {
+    if (bundle.bundle.type === BundleType.JS_SERVER_ENTRY) {
+      resolved = true;
+      entry = bundle.absPath;
+      break;
+    } else {
+      if (bundle.bundle.type === BundleType.JS_APP) {
+        resolved = true;
+        entry = bundle.absPath;
+      }
+    }
+  }
+
+  if (!resolved) {
+    ctx.fatal('server', ['Failed to resolve server entry']);
+  }
+
+  return entry;
 }
 
 export const createServerProcess = (ctx: Context, bundles: Array<IBundleWriteResponse>): IServerProcess => {
   let server: ChildProcess;
-  let entry: string;
-  if (bundles.length === 1) {
-    entry = bundles[0].absPath;
-  } else {
-    let resolved = false;
-    for (const bundle of bundles) {
-      if (bundle.bundle.type === BundleType.JS_SERVER_ENTRY) {
-        resolved = true;
-        entry = bundle.absPath;
-        break;
-      }
-    }
-    if (!resolved) {
-      throw new Error('No serverEntry file found!!');
-    }
-  }
+  if (ctx.serverProcess) return ctx.serverProcess;
 
-  return {
-    start: (cliArgs: Array<string> = []): ChildProcess => {
-      server = fork(entry, cliArgs, {
+  let entry = getAbsPath(ctx, bundles);
+
+  const self = {
+    start: (cliArgs?: Array<string>): ChildProcess => {
+      cliArgs = cliArgs || [];
+      ctx.log.info('server', `spawn ${entry}`);
+      server = spawn('node', [entry, ...cliArgs], {
         env: {
           ...process.env,
           ...ctx.config.env,
         },
         stdio: 'inherit',
       });
+
       server.on('close', code => {
         if (code === 8) {
           console.error('Error detected, waiting for changes...');
@@ -44,7 +58,23 @@ export const createServerProcess = (ctx: Context, bundles: Array<IBundleWriteRes
       return server;
     },
     stop: () => {
-      server.kill();
+      if (server) {
+        server.kill();
+        ctx.log.info('server', `Killed ${entry}`);
+      }
     },
   };
+  onExit('ServerProcess', () => {
+    self.stop();
+  });
+
+  ctx.ict.on('rebundle', props => {
+    entry = getAbsPath(ctx, props.bundles);
+    self.stop();
+    self.start();
+  });
+
+  ctx.serverProcess = self;
+
+  return self;
 };

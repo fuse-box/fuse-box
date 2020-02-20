@@ -1,5 +1,6 @@
 import './Bar.scss';
 export function Bar() {
+  if (typeof document === 'undefined') return;
   const root = document.querySelector('#root');
   let fooEl = root.querySelector('.Bar');
   if (!fooEl) {

@@ -2,7 +2,7 @@ import { EnvironmentType } from '../config/EnvironmentType';
 import { runBrowserTest, runServerTest } from '../testUtils/integrationHelper';
 import { readFile } from '../utils/utils';
 
-describe('Production integration test', () => {
+describe('CSS integration test', () => {
   describe('CSS', () => {
     describe('Browser', () => {
       it('should have js css during development', async () => {
@@ -170,7 +170,7 @@ describe('Production integration test', () => {
       });
 
       it('should ignore css for production (require) nested', async () => {
-        const env = await runBrowserTest({
+        const env = await runServerTest({
           env: EnvironmentType.PRODUCTION,
           files: {
             'index.ts': `
@@ -179,9 +179,6 @@ describe('Production integration test', () => {
             }
           `,
             'main.css': 'body { color: red }',
-          },
-          config: {
-            target: 'browser',
           },
         });
 

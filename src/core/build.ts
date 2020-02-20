@@ -1,10 +1,11 @@
+import { BundleType } from '../bundle/bundle';
 import { createBundleRouter } from '../bundle/bundleRouter';
 import { createServerProcess, IServerProcess } from '../devServer/server';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
 import { createServerEntry } from '../production/module/ServerEntry';
 import { ISplitEntries } from '../production/module/SplitEntries';
-import { IRunResponse } from './IRunResponse';
+import { IRunOnCompleteHandler, IRunResponse } from './IRunResponse';
 import { Context } from './context';
 
 interface IBuildProps {
@@ -28,14 +29,15 @@ export const createBuild = async (props: IBuildProps): Promise<IRunResponse> => 
   }
 
   const bundles = await router.writeBundles();
-  let server: IServerProcess;
-  let electron: IServerProcess;
 
   // create a server bundle if we have more than 1 bundle in a server setup
   if (ctx.config.target === 'server' || ctx.config.target === 'electron') {
-    if (bundles.length > 1) bundles.push(await createServerEntry(ctx, bundles));
-    if (ctx.config.target === 'server') server = createServerProcess(ctx, bundles);
-    if (ctx.config.target === 'electron') electron = createServerProcess(ctx, bundles);
+    const indexedTypes = [BundleType.JS_APP, BundleType.JS_VENDOR];
+    let indexedAmount = 0;
+    for (const item of bundles) {
+      if (indexedTypes.includes(item.bundle.type)) indexedAmount++;
+    }
+    if (indexedAmount > 1) bundles.push(await createServerEntry(ctx, bundles));
   }
 
   // write the manifest
@@ -44,17 +46,22 @@ export const createBuild = async (props: IBuildProps): Promise<IRunResponse> => 
   if (bundleContext.cache && ctx.config.isDevelopment) await bundleContext.cache.write();
   ctx.isWorking = false;
 
+  const onCompleteHandler: IRunOnCompleteHandler = {
+    get electron() {
+      return createServerProcess(ctx, bundles);
+    },
+    get server() {
+      return createServerProcess(ctx, bundles);
+    },
+  };
+
   const response: IRunResponse = {
     bundleContext,
     bundles,
     entries,
     manifest,
     modules,
-    onComplete: handler =>
-      handler({
-        electron,
-        server,
-      }),
+    onComplete: handler => handler(onCompleteHandler),
   };
 
   ctx.ict.sync(rebundle ? 'rebundle' : 'complete', response);

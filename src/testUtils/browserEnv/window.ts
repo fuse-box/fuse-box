@@ -1,3 +1,4 @@
+import { ITestWorkspace } from '../integrationTest';
 import { createDocument } from './document';
 
 export interface IMockedWindowProps {
@@ -9,12 +10,13 @@ export interface IMockedWindowProps {
 export function evalJavascript(scope, contents) {}
 
 export class MockedWindow {
-  constructor(public props: IMockedWindowProps) {}
+  constructor(public workspace: ITestWorkspace, public props: IMockedWindowProps) {}
 
   $createdDOMElements = [];
+  $loadedCSSFiles = [];
 
   $eval = (contents: string) => {
-    var fn = new Function('GLOBAL_OBJECT', 'with (GLOBAL_OBJECT) { ' + contents + '}');
+    var fn = new Function('GLOBAL_OBJECT', 'with (GLOBAL_OBJECT) { \n' + contents + '\n}');
     fn = fn.bind(this, this.$scope);
     fn(contents);
   };
@@ -60,6 +62,6 @@ export class MockedWindow {
   entry = () => this.window['__fuse'].r(1);
 }
 
-export function createMockedWindow(props: IMockedWindowProps): MockedWindow {
-  return new MockedWindow(props);
+export function createMockedWindow(workspace: ITestWorkspace, props: IMockedWindowProps): MockedWindow {
+  return new MockedWindow(workspace, props);
 }

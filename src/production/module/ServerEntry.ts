@@ -17,8 +17,13 @@ export async function createServerEntry(ctx: Context, bundles: Array<IBundleWrit
   const sorted = bundles.sort((a, b) => a.bundle.priority - b.bundle.priority);
   const bundlesLength = bundles.length;
   let index = 0;
+
+  const indexedSet = [BundleType.JS_APP, BundleType.JS_VENDOR];
   while (index < bundlesLength) {
-    serverEntry.contents += `require("./${sorted[index].relativePath}");\n`;
+    const item = sorted[index];
+    if (indexedSet.includes(item.bundle.type)) {
+      serverEntry.contents += `require("./${sorted[index].relativePath}");\n`;
+    }
     index++;
   }
   return await serverEntry.write();
