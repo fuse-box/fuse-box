@@ -9,6 +9,7 @@ import { IConfig, IPublicConfig } from '../config/IConfig';
 import { IRunProps } from '../config/IRunProps';
 import { createConfig } from '../config/config';
 import { createDevServer, IDevServerActions } from '../devServer/devServer';
+import { IServerProcess } from '../devServer/server';
 import { env } from '../env';
 import { FuseBoxLogAdapter, createFuseLogger } from '../fuseLog/FuseBoxLogAdapter';
 import { createHMR } from '../hmr/hmr';
@@ -50,6 +51,7 @@ export interface Context {
   linkedReferences?: LinkedReferences;
   log?: FuseBoxLogAdapter;
   outputConfig?: IOutputConfig;
+  serverProcess?: IServerProcess;
   // a list of of system dependencies with names and ids
   // storable to cache
   systemDependencies?: Record<string, number>;
@@ -79,7 +81,6 @@ export function createContext(props: ICreateContextProps): Context {
     linkedReferences: {},
     systemDependencies: {},
     fatal: (header: string, messages?: Array<string>) => {
-      self.log.clearConsole();
       self.log.fuseFatal(header, messages);
       process.exit(1);
     },
@@ -121,6 +122,7 @@ export function createContext(props: ICreateContextProps): Context {
   };
 
   const runProps: IRunProps = props.runProps || {};
+
   let publicConfig = props.publicConfig;
 
   let publicPath: string;

@@ -40,8 +40,8 @@ export function Configuration(ctx: Context): IConfig {
       if (ESSENTIAL_DEPENDENCIES.includes(name)) return false;
       if (self.target === 'server') {
         if (self.dependencies.serverIgnoreExternals) return true;
-        if (self.dependencies.serverIgnore && self.dependencies.serverIgnore.includes(name)) return true;
       }
+      if (self.dependencies.ignore && self.dependencies.ignore.includes(name)) return true;
       return false;
     },
     supportsStylesheet: () => self.target === 'browser' || self.target === 'electron',
@@ -65,7 +65,8 @@ export function createConfig(props: {
     if (!config.tsHelpersPath) config.tsHelpersPath = path.join(env.FUSE_MODULES, 'ts_config_helpers/tslib.js');
   }
 
-  if (publicConfig.homeDir) config.homeDir = publicConfig.homeDir || env.APP_ROOT;
+  if (runProps.cleanCSS !== undefined) config.cleanCSS = runProps.cleanCSS;
+  else config.cleanCSS = true;
 
   config.isDevelopment = props.envType === EnvironmentType.DEVELOPMENT;
   config.isProduction = props.envType === EnvironmentType.PRODUCTION;
@@ -193,6 +194,8 @@ export function createConfig(props: {
   }
   if (!config.cache.strategy) config.cache.strategy = 'fs';
 
+  if (config.isProduction) config.cache.enabled = false;
+
   config.stylesheet = {};
 
   if (publicConfig.stylesheet) {
@@ -261,6 +264,10 @@ export function createConfig(props: {
     if (config.isDevelopment) config.env.NODE_ENV = 'development';
     if (config.isProduction) config.env.NODE_ENV = 'production';
   }
+
+  if (publicConfig.electron) config.electron = publicConfig.electron;
+  else config.electron = {};
+  if (config.electron.nodeIntegration === undefined) config.electron.nodeIntegration = false;
 
   return config;
 }

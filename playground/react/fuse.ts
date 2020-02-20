@@ -8,6 +8,7 @@ class Context {
       cache: { enabled: true, root: './.cache' },
       devServer: { httpServer: { port: 3000 } },
       entry: 'src/index.tsx',
+      //entry: 'src/edges.ts',
       hmr: true,
       logging: {
         level: 'succinct',
@@ -28,7 +29,7 @@ task('default', async ctx => {
   await fuse.runDev({
     bundles: {
       distRoot: path.join(__dirname, 'dist'),
-      app: 'app.js',
+      app: { path: 'app.js', publicPath: '/static' },
     },
   });
 });

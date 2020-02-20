@@ -289,6 +289,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
 
     for (const depId of meta.dependencies) {
       const target = modules[depId];
+      if (!target) return;
       const pkg = packages[target.packageId];
       if (pkg && pkg.isExternalPackage) {
         if (!restorePackage(pkg, mrc)) {

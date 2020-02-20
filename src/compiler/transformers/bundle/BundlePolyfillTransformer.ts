@@ -39,8 +39,8 @@ export function BundlePolyfillTransformer(): ITransformer {
 
       const VariablesInserted = {};
       const RequireStatementsInserted = {};
-      const fileName = props.module.props.fuseBoxPath;
-      const dirName = ensureFuseBoxPath(path.dirname(props.module.props.fuseBoxPath));
+      const fileName = props.module.publicPath;
+      const dirName = ensureFuseBoxPath(path.dirname(props.module.publicPath));
 
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
