@@ -68,8 +68,6 @@ export function createConfig(props: {
   if (runProps.cleanCSS !== undefined) config.cleanCSS = runProps.cleanCSS;
   else config.cleanCSS = true;
 
-  if (publicConfig.homeDir) config.homeDir = publicConfig.homeDir || env.APP_ROOT;
-
   config.isDevelopment = props.envType === EnvironmentType.DEVELOPMENT;
   config.isProduction = props.envType === EnvironmentType.PRODUCTION;
   config.isTest = props.envType === EnvironmentType.TEST;

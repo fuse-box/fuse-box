@@ -20,8 +20,6 @@ import { IWebWorkerConfig } from './IWebWorkerConfig';
 
 export interface IPublicConfig {
   compilerOptions?: ICompilerOptions;
-  homeDir?: string;
-
   logging?: IFuseLoggerProps;
   modules?: Array<string>;
 
@@ -64,7 +62,6 @@ export interface IConfig {
   electron?: IElectronOptions;
   entries?: Array<string>;
   hmr?: IHMRProps;
-  homeDir?: string;
   isDevelopment?: boolean;
   isProduction?: boolean;
   isTest?: boolean;

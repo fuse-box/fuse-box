@@ -24,7 +24,6 @@ export interface IResolverProps {
   cachePaths?: boolean;
   electronNodeIntegration?: boolean;
   filePath?: string;
-  homeDir?: string;
   importType?: ImportType;
   isDev?: boolean;
   javascriptFirst?: boolean;
@@ -135,7 +134,6 @@ export function resolveModule(props: IResolverProps): IResolver {
       baseURL: props.typescriptPaths.baseURL,
       cachePaths: props.cachePaths,
       configLocation: props.typescriptPaths.tsconfigPath,
-      homeDir: props.homeDir,
       isDev: props.isDev,
       paths: props.typescriptPaths.paths,
       target: target,

@@ -16,7 +16,6 @@ export interface IPublicConfig {
 		ignorePackages?: Array<string>;
 		ignoreAllExternal?: boolean;
 	};
-	homeDir?: string; //default: fuse.ts directory
   modules?: Array<string>;
   compilerOptions?:  ICompilerOptions = {
     baseUrl?: string;

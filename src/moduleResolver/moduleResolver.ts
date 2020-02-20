@@ -97,7 +97,6 @@ export function resolve(props: {
     cachePaths: !env.isTest, // should be always on, since that's the internal caching
     electronNodeIntegration: config.electron.nodeIntegration,
     filePath: props.parent.absPath,
-    homeDir: config.homeDir,
     importType: props.importType,
     isDev: props.ctx.config.isDevelopment,
     javascriptFirst: props.parent.isJavaScript,
