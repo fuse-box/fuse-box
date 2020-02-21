@@ -22,7 +22,6 @@ export class ContextTaskManager {
 
   private async perform() {
     const promises = [];
-    console.log('perform');
     for (const original in this.copyFilesTask) {
       const target = this.copyFilesTask[original];
       this.ctx.log.verbose('copy', 'from $original to $target', { original, target });
