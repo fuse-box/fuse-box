@@ -29,7 +29,7 @@ task('default', async ctx => {
   await fuse.runDev({
     bundles: {
       distRoot: path.join(__dirname, 'dist'),
-      app: { path: 'app.js', publicPath: '/static' },
+      app: { path: 'app.js' },
     },
   });
 });
