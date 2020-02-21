@@ -17,7 +17,7 @@ describe('Code Splitting test', () => {
   let cachedModule: ISplitEntry;
 
   const getProductionContext = async (files: Record<string, string>): Promise<IProductionContext> => {
-    environment = createTestEnvironment({ entry: 'index.ts' }, files);
+    environment = await createTestEnvironment({ entry: 'index.ts' }, files);
     const context = await environment.run([WarmupPhase, CodeSplittingPhase]);
     return context;
   };

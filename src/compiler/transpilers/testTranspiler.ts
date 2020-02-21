@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import { ICompilerOptions } from '../../compilerOptions/interfaces';
 import { EnvironmentType } from '../../config/EnvironmentType';
 import { ITarget } from '../../config/ITarget';
@@ -9,7 +10,6 @@ import { generate } from '../generator/generator';
 import { ASTNode } from '../interfaces/AST';
 import { parseJavascript, parseTypeScript } from '../parser';
 import { transformCommonVisitors } from '../transformer';
-
 export interface ICompileModuleProps {
   code?: string;
 
@@ -48,8 +48,14 @@ export function testTranspile(props: ICompileModuleProps) {
   });
 
   module.ast = ast as ASTNode;
-
-  transformCommonVisitors(module, props.compilerOptions);
+  const targetFileName = props.fileName || __filename;
+  transformCommonVisitors(
+    {
+      compilerOptions: ctx.compilerOptions,
+      module: { absPath: targetFileName, extension: path.extname(targetFileName), publicPath: targetFileName },
+    },
+    ast,
+  );
 
   const res = generate(ast, {});
 

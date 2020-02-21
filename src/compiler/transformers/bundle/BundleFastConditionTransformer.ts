@@ -12,8 +12,10 @@ export interface IBundleFastConditionTransformer {
 export function BundleFastConditionUnwrapper(): ITransformer {
   return {
     commonVisitors: props => {
-      const compilerOptions = props.compilerOptions;
+      const transformationContext = props.transformationContext;
+      const compilerOptions = transformationContext.compilerOptions;
       const env = compilerOptions.processEnv;
+
       const isBrowser = compilerOptions.buildTarget === 'browser';
       const isServer = compilerOptions.buildTarget === 'server';
 

@@ -40,7 +40,9 @@ export function ExportTransformer(): ITransformer {
   return {
     commonVisitors: props => {
       const definedLocallyProcessed: Record<string, number> = {};
-      const compilerOptions = props.compilerOptions;
+      const {
+        transformationContext: { compilerOptions },
+      } = props;
 
       return {
         onEachNode: (visit: IVisit) => {

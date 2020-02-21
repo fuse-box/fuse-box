@@ -1,8 +1,8 @@
-import { ICompilerOptions } from '../../compilerOptions/interfaces';
 import { Context } from '../../core/context';
 import { IModule } from '../../moduleResolver/module';
 import { IProductionContext } from '../../production/ProductionContext';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
+import { ISerializableTransformationContext } from '../transformer';
 import { ASTNode } from './AST';
 import { ImportType } from './ImportType';
 
@@ -17,9 +17,7 @@ export interface IRequireStatementModuleOptions {
   breakDependantsCache?: boolean;
 }
 export interface ITransformerCommon {
-  compilerOptions: ICompilerOptions;
-  ctx: Context;
-  module: IModule;
+  transformationContext: ISerializableTransformationContext;
   onRequireCallExpression?: (
     importType: ImportType,
     node: ASTNode,

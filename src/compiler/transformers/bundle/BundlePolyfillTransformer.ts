@@ -1,6 +1,4 @@
 import * as path from 'path';
-
-import { ITarget } from '../../../config/ITarget';
 import { ensureFuseBoxPath } from '../../../utils/utils';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import { createRequireStatement } from '../../Visitor/helpers';
@@ -10,15 +8,7 @@ import { ITransformer } from '../../interfaces/ITransformer';
 import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
 import { ImportType } from '../../interfaces/ImportType';
 
-export interface IBundleEssentialProps {
-  isBrowser?: boolean;
-  isServer?: boolean;
-  moduleFileName?: string;
-  target?: ITarget;
-  env?: { [key: string]: any };
-}
-
-export type IBundleEssntialTransformerOptions = IBundleEssentialProps & ITransformerSharedOptions;
+export type IBundleEssntialTransformerOptions = ITransformerSharedOptions;
 
 export const PolyfillEssentialConfig = {
   Buffer: 'buffer',
@@ -32,15 +22,21 @@ export const PolyfillEssentialConfig = {
 export function BundlePolyfillTransformer(): ITransformer {
   return {
     commonVisitors: props => {
-      const compilerOptions = props.compilerOptions;
+      const {
+        transformationContext: {
+          compilerOptions,
+          module: { publicPath },
+        },
+      } = props;
+
       const isBrowser = compilerOptions.buildTarget === 'browser';
       const isWebWorker = compilerOptions.buildTarget === 'web-worker';
       if (!(isBrowser || isWebWorker)) return;
 
       const VariablesInserted = {};
       const RequireStatementsInserted = {};
-      const fileName = props.module.publicPath;
-      const dirName = ensureFuseBoxPath(path.dirname(props.module.publicPath));
+
+      const dirName = ensureFuseBoxPath(path.dirname(publicPath));
 
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
@@ -55,7 +51,7 @@ export function BundlePolyfillTransformer(): ITransformer {
 
             switch (name) {
               case '__dirname':
-                return { replaceWith: { type: 'Literal', value: fileName } };
+                return { replaceWith: { type: 'Literal', value: publicPath } };
               case '__filename':
                 return { replaceWith: { type: 'Literal', value: dirName } };
               case 'global':

@@ -18,7 +18,7 @@ function runWarmupPhase(productionContext: IProductionContext, module: IModule) 
 
   const transformers = [];
   for (const transformer of List) {
-    if (transformer.productionWarmupPhase && isTransformerEligible(module, transformer)) {
+    if (transformer.productionWarmupPhase && isTransformerEligible(module.absPath, transformer)) {
       transformers.push(
         transformer.productionWarmupPhase({ ctx: ctx, module: module, productionContext: productionContext }),
       );

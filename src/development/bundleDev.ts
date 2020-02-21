@@ -10,7 +10,7 @@ export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Pr
   ctx.log.flush();
   ctx.isWorking = true;
 
-  const { bundleContext, entries, modules } = ModuleResolver(ctx, ctx.config.entries);
+  const { bundleContext, entries, modules } = await ModuleResolver(ctx, ctx.config.entries);
   if (modules) {
     return await createBuild({
       bundleContext,

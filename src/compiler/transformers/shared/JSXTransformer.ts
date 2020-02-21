@@ -85,9 +85,12 @@ export function JSXTransformer(): ITransformer {
   return {
     commonVisitors: props => {
       const {
-        compilerOptions: { jsxFactory },
-        module: { extension },
+        transformationContext: {
+          compilerOptions: { jsxFactory },
+          module: { extension },
+        },
       } = props;
+
       // we don't need this for normal TypeScript files
       if (extension === '.ts') return;
 
