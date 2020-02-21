@@ -18,7 +18,8 @@ export type IBrowserProcessTransform = BrowserProcessTransformProps & ITransform
 export function BrowserProcessTransformer(): ITransformer {
   return {
     commonVisitors: props => {
-      const compilerOptions = props.compilerOptions;
+      const compilerOptions = props.transformationContext.compilerOptions;
+
       if (compilerOptions.buildTarget !== 'browser') return;
 
       const env = compilerOptions.processEnv;

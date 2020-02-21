@@ -25,7 +25,7 @@ export interface ITestEnvironment {
   run: (phases: Array<(IProductionContext) => void>) => Promise<IProductionContext>;
 }
 
-export function createTestEnvironment(customConfig: Record<string, string>, files: Record<string, string>) {
+export async function createTestEnvironment(customConfig: Record<string, string>, files: Record<string, string>) {
   // setup folder structure
   const sourceFolder = fastHash(Math.random() + '-' + new Date().getTime());
   const rootDir = path.join(appRoot.path, '.tmp', sourceFolder);
@@ -36,7 +36,6 @@ export function createTestEnvironment(customConfig: Record<string, string>, file
   const config: IPublicConfig = {
     cache: false,
     devServer: false,
-    homeDir: sourceDir,
     target: 'browser',
     watcher: false,
     ...customConfig,
@@ -51,7 +50,7 @@ export function createTestEnvironment(customConfig: Record<string, string>, file
 
   const context = createContext({ envType: EnvironmentType.TEST, publicConfig: config });
 
-  const productionContext = createProductionContext(context);
+  const productionContext = await createProductionContext(context);
 
   return {
     context,
@@ -95,19 +94,3 @@ export function customWarmupPhase(
     transformers: customTransformers,
   });
 }
-
-// function getProductionContext(code: string): IProductionContext {
-//   const environment = createTestEnvironment({ entry: 'index.ts' }, {
-//     'foo.ts': `
-//       console.log('foo');
-//     `,
-//     'index.ts': code,
-//   });
-//   const CustomPhase = () => customWarmupPhase(
-//     environment.productionContext,
-//     environment.productionContext.modules[0],
-//     [Phase_1_ExportLink()]
-//   );
-//   environment.run([CustomPhase]);
-//   return environment.productionContext;
-// };

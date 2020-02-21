@@ -14,7 +14,9 @@ function injectEsModuleStatementIntoBody(props: IProgramProps) {
 export function ImportTransformer(): ITransformer {
   return {
     commonVisitors: props => {
-      const compilerOptions = props.compilerOptions;
+      const {
+        transformationContext: { compilerOptions },
+      } = props;
       const esModuleInterop = compilerOptions.esModuleInterop;
 
       return {

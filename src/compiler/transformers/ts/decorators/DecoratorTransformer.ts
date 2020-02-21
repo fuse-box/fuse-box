@@ -25,7 +25,10 @@ export function DecoratorTransformer(): ITransformer {
     commonVisitors: props => {
       let helperInserted = false;
 
-      const compilerOptions = props.compilerOptions;
+      const {
+        transformationContext: { compilerOptions },
+      } = props;
+
       if (!compilerOptions.experimentalDecorators) return;
 
       const emitDecoratorMetadata = compilerOptions.emitDecoratorMetadata;

@@ -17,8 +17,8 @@ export interface IProductionContext {
   splitEntries?: ISplitEntries;
 }
 
-export function createProductionContext(ctx): IProductionContext {
-  const { bundleContext, entries, modules } = ModuleResolver(ctx, ctx.config.entries);
+export async function createProductionContext(ctx): Promise<IProductionContext> {
+  const { bundleContext, entries, modules } = await ModuleResolver(ctx, ctx.config.entries);
   const productionContext: IProductionContext = {
     bundleContext,
     ctx,
