@@ -1,12 +1,13 @@
 import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { generate } from './generator/generator';
 import { ASTNode } from './interfaces/AST';
-import { ITransformer } from './interfaces/ITransformer';
+import { ITransformer, ITransformerCommon } from './interfaces/ITransformer';
 import { ITransformerRequireStatementCollection } from './interfaces/ITransformerRequireStatements';
 import { ImportType } from './interfaces/ImportType';
 import { parseTypeScript } from './parser';
 import { createGlobalContext } from './program/GlobalContext';
 import { transpileModule } from './program/transpileModule';
+import { ISerializableTransformationContext } from './transformer';
 import { GlobalContextTransformer } from './transformers/GlobalContextTransformer';
 
 function cleanupForTest(node) {
@@ -18,7 +19,7 @@ export function initCommonTransform(props: {
   code: string;
   compilerOptions?: ICompilerOptions;
   jsx?: boolean;
-  props?: any;
+  props?: ISerializableTransformationContext;
   transformers: Array<ITransformer>;
 }) {
   const requireStatementCollection: ITransformerRequireStatementCollection = [];
@@ -33,13 +34,16 @@ export function initCommonTransform(props: {
       requireStatementCollection.push({ importType, statement });
     }
   }
-  const compilerOptions = props.compilerOptions || {};
 
   const ast = parseTypeScript(props.code, { jsx: props.jsx });
-  const tranformers = [GlobalContextTransformer().commonVisitors(props.props)];
+  const userProps: ISerializableTransformationContext = props.props || {};
+  userProps.compilerOptions = props.compilerOptions || {};
+  const visitorProps: ITransformerCommon = { onRequireCallExpression, transformationContext: userProps };
+
+  const tranformers = [GlobalContextTransformer().commonVisitors(visitorProps)];
   for (const t of props.transformers) {
     if (t.commonVisitors) {
-      tranformers.push(t.commonVisitors({ ...props.props, compilerOptions, onRequireCallExpression }));
+      tranformers.push(t.commonVisitors(visitorProps));
     }
   }
   transpileModule({

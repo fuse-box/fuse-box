@@ -6,7 +6,7 @@ describe('ModuleTree test', () => {
   let environment: ITestEnvironment;
 
   const getProductionContext = async (files: Record<string, string>): Promise<IProductionContext> => {
-    environment = createTestEnvironment({ entry: 'index.ts' }, files);
+    environment = await createTestEnvironment({ entry: 'index.ts' }, files);
     const context = environment.run([WarmupPhase]);
     return context;
   };

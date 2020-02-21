@@ -56,7 +56,9 @@ Otherwise pass a javascript object (it will be converting to AST automatically)
 export function BuildEnvTransformer(): ITransformer {
   return {
     commonVisitors: props => {
-      const buildEnv = props.compilerOptions.buildEnv;
+      const compilerOptions = props.transformationContext.compilerOptions;
+      const buildEnv = compilerOptions.buildEnv;
+
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
           const { node } = visit;

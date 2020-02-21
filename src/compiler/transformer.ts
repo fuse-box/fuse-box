@@ -1,8 +1,14 @@
+import * as path from 'path';
 import { ICompilerOptions } from '../compilerOptions/interfaces';
-import { IModule } from '../moduleResolver/module';
+import { TS_EXTENSIONS } from '../config/extensions';
 import { ASTNode } from './interfaces/AST';
 import { ITransformerResult } from './interfaces/ITranformerResult';
-import { IRequireStatementModuleOptions, ITransformer, ITransformerVisitors } from './interfaces/ITransformer';
+import {
+  IRequireStatementModuleOptions,
+  ITransformer,
+  ITransformerCommon,
+  ITransformerVisitors,
+} from './interfaces/ITransformer';
 import { ITransformerRequireStatementCollection } from './interfaces/ITransformerRequireStatements';
 import { ImportType } from './interfaces/ImportType';
 import { createGlobalContext } from './program/GlobalContext';
@@ -24,6 +30,7 @@ import { EnumTransformer } from './transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from './transformers/ts/NameSpaceTransformer';
 import { DecoratorTransformer } from './transformers/ts/decorators/DecoratorTransformer';
 
+export const USER_CUSTOM_TRANSFORMERS: Record<string, ITransformer> = {};
 /**
  * Order of those transformers MATTER!
  */
@@ -55,9 +62,8 @@ export const BASE_TRANSFORMERS: Array<ITransformer> = [
   ExportTransformer(),
 ];
 
-export function isTransformerEligible(module: IModule, transformer: ITransformer) {
-  const absPath = module.absPath;
-  const isTypescript = module.isTypeScript;
+export function isTransformerEligible(absPath: string, transformer: ITransformer) {
+  const isTypescript = TS_EXTENSIONS.includes(path.extname(absPath));
   if (transformer.target) {
     if (transformer.target.type) {
       if (transformer.target.type === 'js_ts') return true;
@@ -71,8 +77,21 @@ export function isTransformerEligible(module: IModule, transformer: ITransformer
   return true;
 }
 
-export function transformCommonVisitors(module: IModule, compilerOptions?: ICompilerOptions): ITransformerResult {
-  compilerOptions = compilerOptions || {};
+export interface ISerializableTransformationContext {
+  compilerOptions?: ICompilerOptions;
+  userTransformers?: Array<ITransformer>;
+  module?: {
+    absPath?: string;
+    extension?: string;
+    publicPath?: string;
+  };
+}
+
+export function registerTransformer(name: string, transformer: ITransformer) {
+  USER_CUSTOM_TRANSFORMERS[name] = transformer;
+}
+
+export function transformCommonVisitors(props: ISerializableTransformationContext, ast: ASTNode): ITransformerResult {
   const requireStatementCollection: ITransformerRequireStatementCollection = [];
   function onRequireCallExpression(
     importType: ImportType,
@@ -85,33 +104,31 @@ export function transformCommonVisitors(module: IModule, compilerOptions?: IComp
       requireStatementCollection.push({ importType, moduleOptions, statement });
     }
   }
+  const userTransformers = props.userTransformers || [];
 
-  const ctx = module.ctx;
   const commonVisitors: Array<ITransformerVisitors> = [];
 
-  const userTransformers = module.ctx.userTransformers;
-
   let index = 0;
-  const visitorProps = { compilerOptions, ctx, module, onRequireCallExpression };
+  const visitorProps: ITransformerCommon = { onRequireCallExpression, transformationContext: props };
   while (index < BASE_TRANSFORMERS.length) {
     const transformer = BASE_TRANSFORMERS[index];
     // user transformer need to be executed after the first transformers
     if (index === 1) {
       for (const userTransformer of userTransformers) {
-        if (userTransformer.commonVisitors && isTransformerEligible(module, userTransformer))
+        if (userTransformer.commonVisitors && isTransformerEligible(props.module.absPath, userTransformer))
           commonVisitors.push(userTransformer.commonVisitors(visitorProps));
       }
     }
-    if (transformer.commonVisitors && isTransformerEligible(module, transformer))
+    if (transformer.commonVisitors && isTransformerEligible(props.module.absPath, transformer))
       commonVisitors.push(transformer.commonVisitors(visitorProps));
     index++;
   }
 
   transpileModule({
-    ast: module.ast as ASTNode,
+    ast: ast,
     globalContext: createGlobalContext(),
     transformers: commonVisitors,
   });
 
-  return { ast: module.ast, requireStatementCollection };
+  return { ast, requireStatementCollection };
 }

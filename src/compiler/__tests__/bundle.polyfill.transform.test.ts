@@ -7,7 +7,6 @@ import { RequireStatementInterceptor } from '../transformers/bundle/RequireState
 const testTranspile = (props: { code: string; fileName?: string; target?: ITarget }) => {
   return initCommonTransform({
     props: {
-      ctx: { config: { target: props.target || 'browser' } },
       module: { publicPath: props.fileName || '/test/file.js' },
     },
 
