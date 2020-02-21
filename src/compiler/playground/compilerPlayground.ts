@@ -1,4 +1,3 @@
-import * as prettier from 'prettier';
 import { testTranspile } from '../transpilers/testTranspiler';
 
 let file;
@@ -12,10 +11,11 @@ const code = testTranspile({
   },
   fileName: __dirname + '/sample1.tsx',
 });
-console.log('here');
-//console.log(code);
-const res = prettier.format(code, {});
-console.log(res);
+console.log(code);
+// console.log('here');
+// //console.log(code);
+// const res = prettier.format(code, {});
+// console.log(res);
 // //file = readFileSync(__dirname + '/source_test/angular_1.ts').toString();
 // file = readFileSync(__dirname + '/sample1.ts').toString();
 // const result = testTranspile({

@@ -5,13 +5,15 @@ import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
 import { PackageType } from '../moduleResolver/package';
 import { ISplitEntry } from '../production/module/SplitEntries';
-import { beautifyBundleName } from '../utils/utils';
+import { beautifyBundleName, writeFile } from '../utils/utils';
 import { Bundle, BundleType, createBundle, IBundleWriteResponse } from './bundle';
 
 export interface IBundleRouter {
   generateBundles: (modules: Array<IModule>) => void;
   generateSplitBundles: (entries: Array<ISplitEntry>) => void;
+  init: (modules: Array<IModule>) => void;
   writeBundles: () => Promise<Array<IBundleWriteResponse>>;
+  writeManifest: (bundles: Array<IBundleWriteResponse>) => Promise<string>;
 }
 
 export interface IBundleRouteProps {
@@ -20,7 +22,7 @@ export interface IBundleRouteProps {
   entries: Array<IModule>;
 }
 
-export function createBundleRouter(props: IBundleRouteProps) {
+export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
   const { ctx, entries } = props;
   const ict = ctx.ict;
   const outputConfig = ctx.outputConfig;
@@ -31,6 +33,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
     b: {},
   };
   let mainBundle: Bundle;
+  let cssBundle: Bundle;
   let vendorBundle: Bundle;
 
   function generateSplitFileName(relativePath: string): string {
@@ -43,11 +46,20 @@ export function createBundleRouter(props: IBundleRouteProps) {
     return fileName;
   }
 
+  function createCSSBundle(name?: string) {
+    cssBundle = createBundle({
+      bundleConfig: outputConfig.styles,
+      ctx: ctx,
+      type: BundleType.CSS_APP,
+    });
+    bundles.push(cssBundle);
+  }
+
   function createMainBundle() {
     mainBundle = createBundle({
       bundleConfig: outputConfig.app,
       ctx: ctx,
-      priority: 2,
+      priority: 1,
       type: BundleType.JS_APP,
     });
     bundles.push(mainBundle);
@@ -57,17 +69,10 @@ export function createBundleRouter(props: IBundleRouteProps) {
     vendorBundle = createBundle({
       bundleConfig: outputConfig.vendor,
       ctx: ctx,
-      priority: 1,
+      priority: 2,
       type: BundleType.JS_VENDOR,
     });
     bundles.push(vendorBundle);
-  }
-
-  function dispatch(bundle: Bundle, module: IModule) {
-    if (!module.isCached) {
-      ict.sync('bundle_resolve_module', { module: module });
-    }
-    bundle.source.modules.push(module);
   }
 
   let codeSplittingIncluded = false;
@@ -90,14 +95,18 @@ export function createBundleRouter(props: IBundleRouteProps) {
     generateBundles: (modules: Array<IModule>) => {
       for (const module of modules) {
         // we skip this module
-        if (module.isSplit) {
+        if (module.isSplit || module.ignore) {
           continue;
+        } else if (ctx.config.isProduction && ctx.config.supportsStylesheet() && module.css) {
+          // special treatement for production styles
+          if (!cssBundle) createCSSBundle();
+          cssBundle.source.modules.push(module);
         } else if (module.pkg.type === PackageType.EXTERNAL_PACKAGE && hasVendorConfig) {
           if (!vendorBundle) createVendorBundle();
-          dispatch(vendorBundle, module);
+          vendorBundle.source.modules.push(module);
         } else {
           if (!mainBundle) createMainBundle();
-          dispatch(mainBundle, module);
+          mainBundle.source.modules.push(module);
         }
       }
     },
@@ -116,16 +125,49 @@ export function createBundleRouter(props: IBundleRouteProps) {
           type: BundleType.JS_SPLIT,
           webIndexed: false,
         });
-        for (const module of modules) dispatch(splitBundle, module);
+
+        let currentCSSBundle: Bundle;
+
+        for (const module of modules) {
+          if (ctx.config.isProduction && module.css) {
+            if (!currentCSSBundle) {
+              const cssFileName = generateSplitFileName(entry.publicPath.replace(/\.(\w+)$/, '.css'));
+              currentCSSBundle = createBundle({
+                bundleConfig: {
+                  path: outputConfig.styles.codeSplitting.path,
+                  publicPath: outputConfig.styles.codeSplitting.publicPath,
+                },
+                ctx,
+                fileName: cssFileName,
+                type: BundleType.CSS_SPLIT,
+                webIndexed: false,
+              });
+              bundles.push(currentCSSBundle);
+            }
+            currentCSSBundle.source.modules.push(module);
+          } else {
+            splitBundle.source.modules.push(module);
+          }
+        }
 
         const bundleConfig = splitBundle.prepare();
         // update a json object with entry for the API
         codeSplittingMap.b[entry.id] = {
           p: bundleConfig.browserPath,
         };
+        if (currentCSSBundle) {
+          const cssSplitConfig = currentCSSBundle.prepare();
+          codeSplittingMap.b[entry.id].s = cssSplitConfig.browserPath;
+        }
         codeSplittingIncluded = true;
         bundles.push(splitBundle);
       }
+    },
+    init: async (modules: Array<IModule>) => {
+      for (const m of modules) {
+        if (!m.isCached) ict.sync('bundle_resolve_module', { module: m });
+      }
+      await ict.resolve();
     },
     writeBundles: async () => {
       const bundleAmount = bundles.length;
@@ -136,12 +178,14 @@ export function createBundleRouter(props: IBundleRouteProps) {
       const writers = [];
       let lastWebIndexed: Bundle;
 
+      bundles.sort((a, b) => a.priority - b.priority);
+
       while (index < bundleAmount) {
         const bundle = bundles[index];
         let writerProps = {};
-        if (bundle.webIndexed) {
+        if (bundle.webIndexed && !bundle.isCSSType) {
           lastWebIndexed = bundle;
-          if (!apiInserted) {
+          if (!apiInserted && bundle.priority === 1) {
             apiInserted = true;
             bundle.containsAPI = true;
             writerProps = { runtimeCore: createRuntimeCore() };
@@ -151,6 +195,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
         writers.push(() => bundle.generate(writerProps));
         index++;
       }
+
       if (lastWebIndexed) {
         lastWebIndexed.containsApplicationEntryCall = true;
         lastWebIndexed.entries = entries;
@@ -160,6 +205,39 @@ export function createBundleRouter(props: IBundleRouteProps) {
           return write();
         }),
       );
+    },
+    writeManifest: async (bundles: Array<IBundleWriteResponse>): Promise<string> => {
+      const manifest = [];
+      for (const bundle of bundles) {
+        let type: string;
+        switch (bundle.bundle.type) {
+          case BundleType.CSS_APP:
+          case BundleType.CSS_SPLIT:
+            type = 'css';
+            break;
+          case BundleType.JS_APP:
+          case BundleType.JS_SERVER_ENTRY:
+          case BundleType.JS_SPLIT:
+          case BundleType.JS_VENDOR:
+          default:
+            type = 'js';
+            break;
+        }
+        manifest.push({
+          absPath: bundle.absPath,
+          browserPath: bundle.browserPath,
+          relativePath: bundle.relativePath,
+          type,
+          webIndexed: bundle.bundle.webIndexed,
+        });
+      }
+      try {
+        const manifestFile = path.join(outputConfig.distRoot, `manifest-${ctx.config.target}.json`);
+        await writeFile(manifestFile, JSON.stringify(manifest, null, 2));
+        return manifestFile;
+      } catch (err) {
+        return;
+      }
     },
   };
   return self;

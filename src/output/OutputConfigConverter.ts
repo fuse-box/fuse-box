@@ -43,6 +43,8 @@ export function outputConfigConverter(props: IOutputConfigProps): IOutputConfig 
     if (userConfig.vendor) config.vendor = ensureBundleConfig(userConfig.vendor, defaultPublicPath);
     if (userConfig.codeSplitting) config.codeSplitting = userConfig.codeSplitting;
     if (userConfig.serverEntry) config.serverEntry = userConfig.serverEntry;
+    if (userConfig.styles) config.styles = userConfig.styles;
+
     if (userConfig.mapping) {
       config.mapping = [];
       for (const item of userConfig.mapping) {
@@ -69,6 +71,18 @@ export function outputConfigConverter(props: IOutputConfigProps): IOutputConfig 
   if (!config.codeSplitting) config.codeSplitting = {};
   if (!config.codeSplitting.path) config.codeSplitting.path = 'dynamic/$name.$hash.js';
   if (config.codeSplitting.publicPath === undefined) config.codeSplitting.publicPath = defaultPublicPath;
+
+  const DEFAULT_STYLES_DIR = 'styles';
+  // styles configuration
+  if (!config.styles) {
+    config.styles = {
+      path: DEFAULT_STYLES_DIR + '/styles.$hash.css',
+    };
+  }
+  if (!config.styles.publicPath) config.styles.publicPath = defaultPublicPath;
+  if (!config.styles.codeSplitting) config.styles.codeSplitting = {};
+  if (!config.styles.codeSplitting.path) config.styles.codeSplitting.path = 'dynamic/$name.$hash.css';
+  if (!config.styles.codeSplitting.publicPath) config.styles.codeSplitting.publicPath = defaultPublicPath;
 
   return config;
 }

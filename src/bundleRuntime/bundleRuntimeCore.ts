@@ -17,7 +17,7 @@ export function createGlobalModuleCall(moduleId: number) {
 }
 
 export type ICodeSplittingMap = {
-  b: Record<number, { p: string }>;
+  b: Record<number, { p: string; s?: string }>;
 };
 
 export interface IBundleRuntimeCore {
@@ -37,15 +37,24 @@ function getCodeSplittingFunction(target: ITarget) {
   return new Promise(function(resolve, reject) {
     if (!conf.fns) {
       conf.fns = [resolve];
-      var script = document.createElement('script');
-      document.head.appendChild(script);
-      script.onload = function() {
-        if (modules[id]) {
-          conf.fns.map(x => x(f.r(id)));
-        } else reject('Resolve error of module ' + id + ' at path ' + conf.p);
-        conf.fns = void 0;
-      };
-      script.src = conf.p;
+      function loadJS(){
+        var script = document.createElement('script');
+        document.head.appendChild(script);
+        script.onload = function() {
+          if (modules[id]) {
+            conf.fns.map(x => x(f.r(id)));
+          } else reject('Resolve error of module ' + id + ' at path ' + conf.p);
+          conf.fns = void 0;
+        };
+        script.src = conf.p;
+      }
+      if( conf.s ){
+        var link = document.createElement('link');
+        link.rel = "stylesheet";
+        link.onload = loadJS;
+        link.href = conf.s
+        document.head.appendChild(link);
+      } else loadJS();
     } else conf.fns.push(resolve);
   });
 }`;
@@ -53,7 +62,7 @@ function getCodeSplittingFunction(target: ITarget) {
   if (target === 'server') {
     return `function lb(id, conf) {
 return new Promise(function(resolve, reject) {
-  require(require('path').resolve(__dirname, conf.p));
+  require(require('path').join(__dirname, conf.p));
 if (modules[id]) {
   return resolve(f.r(id));
 } else reject('Resolve error of module ' + id + ' at path ' + conf.p);
@@ -80,7 +89,7 @@ export function bundleRuntimeCore(props: IBundleRuntimeCore) {
 
   let optional = '';
   if (props.interopRequireDefault) {
-    optional += `f.${INTEROP_DEFAULT} = function (x) { return x !== undefined && x.default !== undefined ? x.default : x; };\n`;
+    optional += `f.${INTEROP_DEFAULT} = function (x) { return x && x.__esModule ? x : { "default": x }; };\n`;
   }
   if (props.codeSplittingMap) {
     optional += `\nvar cs = ${JSON.stringify(props.codeSplittingMap)};`;

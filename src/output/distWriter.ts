@@ -76,7 +76,10 @@ export function distWriter(props: IOuputParserProps): DistWriter {
       if (userString.indexOf('$name') > -1) userString = userString.replace(/\$name/g, options.fileName);
       const absPath = ensureAbsolutePath(userString, root);
       const relativePath = ensureFuseBoxPath(path.relative(root, absPath));
-      const browserPath = options.publicPath ? options.publicPath + relativePath : relativePath;
+
+      // fix non trailing slashes in configuration
+      const sep = relativePath.charAt(0) !== '/' && options.publicPath && !options.publicPath.endsWith('/') ? '/' : '';
+      const browserPath = options.publicPath ? options.publicPath + sep + relativePath : relativePath;
 
       return {
         absPath,

@@ -16,8 +16,7 @@ export function ImportTransformer(): ITransformer {
     commonVisitors: props => {
       const compilerOptions = props.compilerOptions;
       const esModuleInterop = compilerOptions.esModuleInterop;
-      let injectEsModuleStatement = compilerOptions.esModuleStatement;
-      let esModuleStatementInjected = !injectEsModuleStatement;
+
       return {
         onTopLevelTraverse: (visit: IVisit) => {
           const node = visit.node;
@@ -47,6 +46,7 @@ export function ImportTransformer(): ITransformer {
                   injectDefaultInterop = variable + 'd';
                   replacement = {
                     first: injectDefaultInterop,
+                    second: 'default',
                   };
                 } else {
                   replacement = {
@@ -74,6 +74,7 @@ export function ImportTransformer(): ITransformer {
 
             return {
               onComplete: (programProps: IProgramProps) => {
+                const canInjectExportStatement = compilerOptions.esModuleStatement && !global.esModuleStatementInjected;
                 const reqStatement = createRequireStatement(node.source.value, node.specifiers.length && variable);
                 // when everything is finished we need to check if those variables have been used at all
                 // they were all unused we need remove the require/import statement at all
@@ -90,8 +91,8 @@ export function ImportTransformer(): ITransformer {
                     }
                     parent[property].splice(index, 1, reqStatement.statement);
                   }
-                  if (!esModuleStatementInjected) {
-                    esModuleStatementInjected = true;
+                  if (canInjectExportStatement) {
+                    global.esModuleStatementInjected = true;
                     injectEsModuleStatementIntoBody(programProps);
                   }
                   return;
@@ -123,8 +124,8 @@ export function ImportTransformer(): ITransformer {
 
                     parent[property].splice(index, 1, ...statements);
 
-                    if (!esModuleStatementInjected) {
-                      esModuleStatementInjected = true;
+                    if (canInjectExportStatement) {
+                      global.esModuleStatementInjected = true;
                       injectEsModuleStatementIntoBody(programProps);
                     }
                     if (props.onRequireCallExpression) {

@@ -45,7 +45,7 @@ async function createCSSModule(props: ICreateCSSModule): Promise<{ json: any; cs
 }
 export function cssContextHandler(props: ICSSContextHandler) {
   const { ctx, processor, shared } = props;
-  const supported = props.ctx.config.supportsStylesheet() || shared.asText;
+  const supported = props.ctx.config.supportsStylesheet() || shared.asText || shared.asModule;
   if (!supported) {
     props.module.contents = 'module.exports = {}';
     return;
@@ -59,6 +59,7 @@ export function cssContextHandler(props: ICSSContextHandler) {
       return;
     }
   }
+
   ctx.ict.promise(async () => {
     try {
       // reset errored status

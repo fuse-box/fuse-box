@@ -4,6 +4,7 @@ import { IProgramProps } from './transpileModule';
 
 export interface GlobalContext {
   completeCallbacks?: Array<() => void>;
+  esModuleStatementInjected?: boolean;
   jsxFactory?: string;
   namespace?: string;
   programProps?: IProgramProps;
@@ -41,9 +42,7 @@ export function createGlobalContext(userContext?: { [key: string]: any }): Globa
     namespace: 'exports',
     sourceReferences: {},
     getModuleName: source => generateModuleNameFromSource(source, essentialContext.sourceReferences),
-    getNextSystemVariable: () => {
-      return `_${++VARIABLE_COUNTER}_`;
-    },
+    getNextSystemVariable: () => `_${[++VARIABLE_COUNTER]}_`,
   };
   if (userContext) {
     for (const key in userContext) {

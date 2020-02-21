@@ -7,6 +7,9 @@ import { IModule } from '../moduleResolver/module';
 import { IOutputBundleConfigAdvanced } from '../output/OutputConfigInterface';
 import { distWriter, IWriterConfig } from '../output/distWriter';
 import { Concat } from '../utils/utils';
+
+import * as CleanCSS from 'clean-css';
+
 export interface Bundle {
   config: IWriterConfig;
   containsAPI?: boolean;
@@ -14,6 +17,7 @@ export interface Bundle {
   contents: string;
   data: Concat;
   entries?: Array<IModule>;
+  isCSSType?: boolean;
   priority: number;
   source: BundleSource;
   type: BundleType;
@@ -26,11 +30,12 @@ export interface Bundle {
 }
 
 export enum BundleType {
-  JS_APP,
-  JS_VENDOR,
-  JS_SPLIT,
-  CSS_APP,
-  CSS_SPLIT,
+  CSS_APP = 1,
+  CSS_SPLIT = 2,
+  JS_APP = 3,
+  JS_SERVER_ENTRY = 4,
+  JS_SPLIT = 5,
+  JS_VENDOR = 6,
 }
 
 export interface IBundleProps {
@@ -57,19 +62,44 @@ export function createBundle(props: IBundleProps): Bundle {
 
   const bundleWriter = distWriter({ hashEnabled: isProduction, root: outputConfig.distRoot });
 
-  const source = createBundleSource({ isProduction: props.ctx.config.isProduction, target });
+  const isCSS = type === BundleType.CSS_APP || type === BundleType.CSS_SPLIT;
+  const source = createBundleSource({
+    isCSS: isCSS,
+    isProduction: props.ctx.config.isProduction,
+    target,
+  });
+
+  const shouldCleanCSS = !!ctx.config.cleanCSS;
+  function optimizeCSS(self: Bundle) {
+    let userProps = {};
+    if (typeof ctx.config.cleanCSS === 'object') userProps = ctx.config.cleanCSS;
+    const response = new CleanCSS({
+      ...userProps,
+      sourceMap: source.containsMaps,
+      sourceMapInlineSources: true,
+    }).minify(self.data.content.toString(), self.data.sourceMap);
+    self.data = ({ sourceMap: response.sourceMap, content: response.styles } as unknown) as Concat;
+  }
 
   const self: Bundle = {
     config: null,
     contents: null,
     data: null,
+    isCSSType: isCSS,
     priority,
     source,
     type,
     webIndexed,
     createSourceMap: async () => {
       const sourceMapName = path.basename(self.config.relativePath) + '.map';
-      self.contents += `\n//# sourceMappingURL=${sourceMapName}`;
+      if (isCSS) {
+        // just in case remove the existing sourcemap references
+        // some css preprocessors add it
+        self.contents = self.contents.replace(/\/\*#\ssourceMappingURL.*$/g, '');
+        self.contents += `\n/*#  sourceMappingURL=${sourceMapName} */`;
+      } else {
+        self.contents += `\n//# sourceMappingURL=${sourceMapName}`;
+      }
       const targetDir = path.dirname(self.config.absPath);
       const sourceMapFile = path.join(targetDir, sourceMapName);
 
@@ -82,7 +112,11 @@ export function createBundle(props: IBundleProps): Bundle {
 
       ctx.ict.sync('before_bundle_write', { bundle: self });
       self.data = source.generate({ isIsolated: bundleConfig.isolatedApi, runtimeCore: opts.runtimeCore });
+
+      if (isCSS && shouldCleanCSS) optimizeCSS(self);
+
       self.contents = self.data.content.toString();
+
       // writing source maps
       if (source.containsMaps) await self.createSourceMap();
       // write the bundle to fs

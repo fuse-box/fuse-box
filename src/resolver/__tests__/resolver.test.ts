@@ -70,7 +70,7 @@ describe('Resolver test', () => {
     it('Should resolve index.js', () => {
       const info = resolveModule({
         filePath: filePath,
-        homeDir: homeDir,
+
         target: './some1',
       });
 
@@ -81,7 +81,7 @@ describe('Resolver test', () => {
     it('Should resolve index.jsx', () => {
       const info = resolveModule({
         filePath: filePath,
-        homeDir: homeDir,
+
         target: './some2',
       });
       expect(info.extension).toEqual('.jsx');
@@ -91,7 +91,7 @@ describe('Resolver test', () => {
     it('Should resolve index.ts', () => {
       const info = resolveModule({
         filePath: filePath,
-        homeDir: homeDir,
+
         target: './some3',
       });
       expect(info.extension).toEqual('.ts');
@@ -101,7 +101,7 @@ describe('Resolver test', () => {
     it('Should resolve index.tsx', () => {
       const info = resolveModule({
         filePath: filePath,
-        homeDir: homeDir,
+
         target: './some4',
       });
       expect(info.extension).toEqual('.tsx');
@@ -111,7 +111,7 @@ describe('Resolver test', () => {
     it('Should resolve with importType DYNAMIC', () => {
       const info = resolveModule({
         filePath: filePath,
-        homeDir: homeDir,
+
         importType: ImportType.DYNAMIC,
         target: './some4',
       });
@@ -131,7 +131,7 @@ describe('Resolver test', () => {
           gibberish$: './some5',
         },
         filePath: filePath,
-        homeDir: homeDir,
+
         target: 'gibberish',
       });
       expect(info.absPath).toMatchFilePath('cases/src1/some5/foo.js$');
@@ -143,7 +143,7 @@ describe('Resolver test', () => {
           ololo$: './some1',
         },
         filePath: filePath,
-        homeDir: homeDir,
+
         target: 'ololo',
       });
 
@@ -156,7 +156,7 @@ describe('Resolver test', () => {
           react: 'resolver-test_a',
         },
         filePath: filePath,
-        homeDir: homeDir,
+
         target: 'react',
       });
       expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/index.js');
@@ -168,7 +168,7 @@ describe('Resolver test', () => {
           ololo$: './some1',
         },
         filePath: filePath,
-        homeDir: homeDir,
+
         target: './some1',
       });
       expect(info.absPath).toMatchFilePath('some1/index.js$');
@@ -181,7 +181,7 @@ describe('Resolver test', () => {
     it('Should resolve with ts paths and just baseURL', () => {
       const info = resolveModule({
         filePath: filePath,
-        homeDir: homeDir,
+
         target: 'bar/Bar',
         typescriptPaths: {
           baseURL: homeDir,
@@ -194,7 +194,7 @@ describe('Resolver test', () => {
     it('Should resolve with ts paths and custom paths 1', () => {
       const result = resolveModule({
         filePath: filePath,
-        homeDir: homeDir,
+
         target: '@app/Foo',
         typescriptPaths: {
           baseURL: homeDir,
@@ -210,7 +210,7 @@ describe('Resolver test', () => {
     it('Should resolve with ts paths and custom paths 2', () => {
       const result = resolveModule({
         filePath: filePath,
-        homeDir: homeDir,
+
         target: '@app/AnotherFile',
         typescriptPaths: {
           baseURL: homeDir,
@@ -231,7 +231,7 @@ describe('Resolver test', () => {
       it('should resolve a simple package', () => {
         const info = resolveModule({
           filePath: filePath,
-          homeDir: homeDir,
+
           target: 'resolver-test_a',
         });
 
@@ -250,7 +250,7 @@ describe('Resolver test', () => {
         const info = resolveModule({
           buildTarget: 'browser',
           filePath: filePath,
-          homeDir: homeDir,
+
           target: 'resolver-test_a',
         });
 
@@ -265,7 +265,7 @@ describe('Resolver test', () => {
       it('should partially resolve package', () => {
         const info = resolveModule({
           filePath: filePath,
-          homeDir: homeDir,
+
           target: 'resolver-test_a/foobar',
         });
 
@@ -283,7 +283,7 @@ describe('Resolver test', () => {
       it('should partially resolve package (with ext)', () => {
         const info = resolveModule({
           filePath: filePath,
-          homeDir: homeDir,
+
           target: 'resolver-test_a/foobar.js',
         });
 
@@ -300,7 +300,7 @@ describe('Resolver test', () => {
       it('should partially resolve package (subfile with package.json)', () => {
         const info = resolveModule({
           filePath: filePath,
-          homeDir: homeDir,
+
           target: 'resolver-test_a/sub',
         });
 
@@ -321,7 +321,7 @@ describe('Resolver test', () => {
             '^oi': 'resolver-test_a',
           },
           filePath: filePath,
-          homeDir: homeDir,
+
           target: 'oi/sub',
         });
 
@@ -340,7 +340,7 @@ describe('Resolver test', () => {
     describe('From existing package', () => {
       const packageInfo = resolveModule({
         filePath: filePath,
-        homeDir: homeDir,
+
         target: 'resolver-test_a',
       });
 
@@ -348,7 +348,7 @@ describe('Resolver test', () => {
       it('should resolve a file being in a package', () => {
         const info = resolveModule({
           filePath: packageInfo.package.targetAbsPath,
-          homeDir: homeDir,
+
           packageMeta: pkg.meta,
           target: './components/MyComponent',
         });
@@ -360,7 +360,7 @@ describe('Resolver test', () => {
       it('should resolve a file being in a package 2', () => {
         const info = resolveModule({
           filePath: packageInfo.package.targetAbsPath,
-          homeDir: homeDir,
+
           packageMeta: pkg.meta,
           target: './sub',
         });
@@ -373,13 +373,13 @@ describe('Resolver test', () => {
     describe('resolution with browser field', () => {
       const packageInfoB = resolveModule({
         filePath: filePath,
-        homeDir: homeDir,
+
         target: 'resolver-test_b',
       });
       it('should resolve a file being in a package 2 (build target uknown)', () => {
         const info = resolveModule({
           filePath: packageInfoB.package.targetAbsPath,
-          homeDir: homeDir,
+
           packageMeta: packageInfoB.package.meta,
           target: './foobar',
         });
@@ -391,7 +391,7 @@ describe('Resolver test', () => {
         const info = resolveModule({
           buildTarget: 'browser',
           filePath: __dirname,
-          homeDir: homeDir,
+
           target: 'resolver-test_cc',
         });
         expect(info.package.targetAbsPath).toMatchFilePath('browser-index.js');
@@ -403,7 +403,7 @@ describe('Resolver test', () => {
         const info = resolveModule({
           buildTarget: 'browser',
           filePath: packageInfoB.package.targetAbsPath,
-          homeDir: homeDir,
+
           packageMeta: packageInfoB.package.meta,
           target: './foobar',
         });
@@ -417,7 +417,7 @@ describe('Resolver test', () => {
         const info = resolveModule({
           buildTarget: 'browser',
           filePath: filePath,
-          homeDir: homeDir,
+
           packageMeta: packageInfoB.package.meta,
           target: '../foobar',
         });
@@ -429,7 +429,7 @@ describe('Resolver test', () => {
         const info = resolveModule({
           buildTarget: 'browser',
           filePath: __filename,
-          homeDir: homeDir,
+
           packageMeta: packageInfoB.package.meta,
           target: 'resolver-test_b/foobar',
         });
@@ -443,7 +443,7 @@ describe('Resolver test', () => {
         const info = resolveModule({
           buildTarget: 'browser',
           filePath: packageInfoB.package.targetAbsPath,
-          homeDir: homeDir,
+
           modules: [customModules],
           packageMeta: packageInfoB.package.meta,
           target: 'oops',
@@ -451,41 +451,6 @@ describe('Resolver test', () => {
 
         expect(info.package.meta.name).toEqual('fuse-empty-package');
         expect(info.package.targetAbsPath).toMatchFilePath('cases/_modules/fuse-empty-package/index.js$');
-      });
-    });
-
-    describe('Server/electron polyfill should not be bundled', () => {
-      const filePath = path.join(homeDir, 'foo.js');
-      it('Should skip fs (server)', () => {
-        const info = resolveModule({
-          buildTarget: 'server',
-          filePath: filePath,
-          homeDir: homeDir,
-          target: 'fs',
-        });
-        expect(info.skip).toEqual(true);
-      });
-
-      it('Should skip fs (electron)', () => {
-        const info = resolveModule({
-          buildTarget: 'electron',
-          filePath: filePath,
-          homeDir: homeDir,
-          target: 'fs',
-        });
-        expect(info.skip).toEqual(true);
-      });
-
-      it('Should not skip fs (browser)', () => {
-        const info = resolveModule({
-          buildTarget: 'browser',
-          filePath: filePath,
-          homeDir: homeDir,
-          modules: [customModules],
-          target: 'fs',
-        });
-        expect(info.skip).toBeFalsy();
-        expect(info.package.targetAbsPath).toMatchFilePath('cases/_modules/fs/index.js$');
       });
     });
   });

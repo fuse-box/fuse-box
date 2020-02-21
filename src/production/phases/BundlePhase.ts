@@ -1,7 +1,6 @@
-import { createBundleRouter } from '../../bundle/bundleRouter';
+import { createBuild } from '../../core/build';
 import { createRuntimeRequireStatement } from '../../moduleResolver/moduleResolver';
 import { IProductionContext } from '../ProductionContext';
-import { createServerEntry } from '../module/ServerEntry';
 
 export async function BundlePhase(productionContext: IProductionContext) {
   const { ctx, entries, modules } = productionContext;
@@ -25,26 +24,12 @@ export async function BundlePhase(productionContext: IProductionContext) {
   }
 
   if (modules) {
-    const router = createBundleRouter({ ctx, entries });
-    router.generateBundles(modules);
-    if (productionContext.splitEntries.entries.length > 0) {
-      router.generateSplitBundles(productionContext.splitEntries.entries);
-    }
-    await ctx.ict.resolve();
-    const bundles = await router.writeBundles();
-
-    productionContext.runResponse = {
+    productionContext.runResponse = await createBuild({
       bundleContext: productionContext.bundleContext,
-      bundles: bundles,
-      entries: entries,
+      entries,
       modules: productionContext.modules,
       splitEntries: productionContext.splitEntries,
-    };
-
-    // create a server bundle if we have more than 1 bundle in a server setup
-    if (ctx.config.target === 'server' && bundles.length > 1) bundles.push(await createServerEntry(ctx, bundles));
-
-    ctx.log.stopStreaming();
-    ctx.ict.sync('complete', productionContext.runResponse);
+      ctx,
+    });
   }
 }

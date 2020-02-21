@@ -1,2 +1,2 @@
-const add = function() {};
-export default add;
+import some from 'some';
+console.log(some);

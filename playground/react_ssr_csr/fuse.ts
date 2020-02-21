@@ -32,7 +32,7 @@ class Context {
       link: { useDefault: true },
       target: 'browser',
       webIndex: {
-        publicPath: '/assets',
+        publicPath: '/',
         template: 'src/client/index.html'
       }
     });
@@ -40,6 +40,21 @@ class Context {
 }
 
 const { rm, task } = sparky<Context>(Context);
+const clientBundleOutput = {
+  bundles: {
+    app: 'app.js',
+    distRoot: path.join(__dirname, 'dist/client'),
+    vendor: 'vendor.js'
+  }
+};
+
+const serverBundleOutput = {
+  bundles: {
+    app: 'server.js',
+    distRoot: path.join(__dirname, 'dist/server'),
+    serverEntry: 'myAwesomeServer.js'
+  }
+};
 
 task('default', async ctx => {
   await rm('./dist');
@@ -47,10 +62,14 @@ task('default', async ctx => {
   ctx.isProduction = false;
 
   const client = ctx.getClient();
-  await client.runDev();
+  await client.runDev(clientBundleOutput);
 
   const server = ctx.getServer();
-  await server.runDev();
+  const { onComplete } = await server.runDev(serverBundleOutput);
+  onComplete(({ server }) => {
+    server.start([]);
+    // electron.start();
+  });
 });
 
 task('dist', async ctx => {
@@ -60,18 +79,11 @@ task('dist', async ctx => {
   ctx.isProduction = true;
 
   const client = ctx.getClient();
-  await client.runProd({
-    bundles: {
-      distRoot: path.join(__dirname, 'dist')
-    }
-  });
+  await client.runProd(clientBundleOutput);
 
   const server = ctx.getServer();
-  await server.runProd({
-    bundles: {
-      distRoot: path.join(__dirname, 'dist'),
-      app: 'server.js'
-      // serverEntry: 'myAwesomeServer.js'
-    }
+  const { onComplete } = await server.runProd(serverBundleOutput);
+  onComplete(props => {
+    console.log(props);
   });
 });

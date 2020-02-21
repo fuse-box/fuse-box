@@ -14,6 +14,7 @@ export function pluginCSS(a?: ICSSPluginProps | RegExp | string, b?: ICSSPluginP
   if (!matcher) matcher = /\.(css)$/;
   return (ctx: Context) => {
     opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
+
     if (!ctx.config.isProduction && ctx.config.supportsStylesheet()) {
       ctx.ict.on('module_init', props => {
         const { module } = props;

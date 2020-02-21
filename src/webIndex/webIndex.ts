@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { IBundleWriteResponse } from '../bundle/bundle';
+import { BundleType, IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/context';
 import { env } from '../env';
 import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
@@ -79,9 +79,15 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
       const scriptTags = [];
       const cssTags = [];
 
+      bundles.sort((a, b) => a.bundle.priority - b.bundle.priority);
       bundles.forEach(item => {
+        const isCSS = item.bundle.type === BundleType.CSS_APP;
         if (item.bundle.webIndexed) {
-          scriptTags.push(htmlStrings.scriptTag(item.browserPath));
+          if (isCSS) {
+            cssTags.push(htmlStrings.cssTag(item.browserPath));
+          } else {
+            scriptTags.push(htmlStrings.scriptTag(item.browserPath));
+          }
         }
       });
       let fileContents = opts.templateContent;

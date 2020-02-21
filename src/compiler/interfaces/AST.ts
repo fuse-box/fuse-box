@@ -17,12 +17,14 @@ export interface ASTNode {
   chain?: ASTNode;
   consequent?: ASTNode;
   decorators?: Array<ASTNode>;
+  definite?: boolean;
   elementTypes?: Array<ASTNode>;
   elements?: Array<ASTNode>;
   expressions?: Array<ASTNode>;
   initializer?: ASTNode;
   literal?: ASTNode;
   moduleReference?: ASTNode;
+  optional?: boolean;
   prefix?: boolean;
   returnType?: ASTNode;
   scope?: IASTScope;
@@ -167,8 +169,8 @@ export const ASTType = {
   NewExpression: 'NewExpression',
   ObjectExpression: 'ObjectExpression',
   ObjectPattern: 'ObjectPattern',
-  OptionalChain: 'OptionalChain',
-  OptionalExpression: 'OptionalExpression',
+  OptionalCallExpression: 'OptionalCallExpression',
+  OptionalMemberExpression: 'OptionalMemberExpression',
   Program: 'Program',
   Property: 'Property',
   RestElement: 'RestElement',

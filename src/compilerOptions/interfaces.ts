@@ -4,6 +4,8 @@ export type ITypeScriptPaths = { [key: string]: Array<string> };
 
 export type IJavaScriptTarget = 'ES2015' | 'ES2016' | 'ES2017' | 'ES2019' | 'ES3' | 'ES5' | 'ES6' | 'ESNext';
 
+export type ICompilerParserType = 'meriyah' | 'ts';
+
 export interface ICompilerOptions {
   baseUrl?: string;
   buildEnv?: Record<string, any>;
@@ -16,6 +18,7 @@ export interface ICompilerOptions {
   paths?: ITypeScriptPaths;
   processEnv?: Record<string, string>;
   tsConfig?: string;
+  jsParser?: { nodeModules?: ICompilerParserType; project?: ICompilerParserType };
 }
 
 export interface IPrivateCompilerOptions {
