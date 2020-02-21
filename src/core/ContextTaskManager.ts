@@ -5,11 +5,12 @@ export class ContextTaskManager {
   private copyFilesTask: { [key: string]: string };
   constructor(private ctx: Context) {
     this.copyFilesTask = {};
+
     ctx.ict.on('complete', props => {
       this.perform();
       return props;
     });
-    ctx.ict.on('rebundle_complete', props => {
+    ctx.ict.on('rebundle', props => {
       this.perform();
       return props;
     });
@@ -21,6 +22,7 @@ export class ContextTaskManager {
 
   private async perform() {
     const promises = [];
+    console.log('perform');
     for (const original in this.copyFilesTask) {
       const target = this.copyFilesTask[original];
       this.ctx.log.verbose('copy', 'from $original to $target', { original, target });
