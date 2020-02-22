@@ -251,6 +251,10 @@ function addExtraDepednencies(props: { bundleContext: IBundleContext; ctx: Conte
       parent: entryModule,
       statement,
     });
+    if (!targetModule) {
+      throw new Error(`Unable to resolve configured dependency module: "${statement}"`);
+    }
+
     // when a plugin injects dependencies it will most likely want to have the reference
     // the easiest way is to store them to the bundle context for later retrieval
     bundleContext.injectedDependencies[statement] = targetModule;
