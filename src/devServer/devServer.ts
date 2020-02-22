@@ -57,7 +57,7 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
   app.use('/', express.static(props.root));
 
   app.use('*', (req, res) => {
-    res.sendFile(props.fallback);
+    res.status(404).sendFile(props.fallback);
   });
 
   const server = app.listen(props.port, () => {
