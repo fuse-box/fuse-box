@@ -2,11 +2,11 @@ import { IFastAnalysis, fastAnalysis } from '../analysis/fastAnalysis';
 import { IModuleCacheBasics } from '../cache/cache';
 import { testPath } from '../plugins/pluginUtils';
 import { ProductionModule } from '../production/ProductionModule';
+import { EXECUTABLE_EXTENSIONS } from '../config/extensions';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { createConcat, extractFuseBoxPath, joinFuseBoxPath, readFile, fastHash } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
-const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IModuleProps {
   ctx: Context;

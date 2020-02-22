@@ -1,6 +1,6 @@
 # Logging
 
-Logging in FuseBox can switched from `succinct` to `verbose` mode
+Logging in FuseBox can switched between `'succinct'`, `'verbose'`, and `'disabled'` modes.
 
 ```ts
 fusebox({
@@ -10,7 +10,8 @@ fusebox({
 
 ## Tweak logging messages
 
-Some old style packages might use something like this:
+Sometimes you'd like to ignore specific logs.  For instance,
+one of the dependencies of `antd` has code like this:
 
 ```ts
 try {
@@ -19,13 +20,9 @@ try {
   var indexof = require('./indexof-something');
 }
 ```
+For reasons, FuseBox will spit an error message even though the bundle still works.  While it is best habit to put in an issue with the package developer, it's not generally very timely.
 
-This is a very extreme example, however, it's noticed to be present in one of the dependencies of `antd`. FuseBox will
-spit an error message. That doesn't mean that the bundle won't work. It only means that:
-
-- You should contact the developer and ask them to fix this issue
-
-In order to fix the logging and ignore that error, you could add the following flag:
+In order to have the logging ignore errors from something like this, you could add the following flag:
 
 ```ts
 fusebox({

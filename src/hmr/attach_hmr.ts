@@ -2,8 +2,11 @@ import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { Package } from '../core/Package';
 import { fastHash, measureTime } from '../utils/utils';
+import { EXECUTABLE_EXTENSIONS } from '../config/extensions';
 import { WatcherAction } from '../watcher/watcher';
 import { generateHMRContent } from './hmr_content';
+
+const SCRIPT_EXT_REGEX = new RegExp(`\\.(${EXECUTABLE_EXTENSIONS.join('|').replace(/\./g, '')})$`);
 
 function generateUpdateId() {
   return fastHash(new Date().getTime().toString() + Math.random().toString());
@@ -17,7 +20,7 @@ interface IHMRTask {
 
 interface IClientSummary {
   id: string;
-  summary: { [key: string]: Array<string> };
+  summary: Record<string, string[]>;
 }
 export function attachHMR(ctx: Context) {
   const config = ctx.config;
@@ -31,7 +34,7 @@ export function attachHMR(ctx: Context) {
     return;
   }
 
-  const tasks: { [key: string]: IHMRTask } = {};
+  const tasks: Record<string, IHMRTask> = {};
   let lastGeneratedHMR = null;
   let lastPayLoadID = null;
 
@@ -110,14 +113,20 @@ export function attachHMR(ctx: Context) {
 
   // here we recieve an update from client - the entire tree of its modules
   devServer.onClientMessage((event, payload: IClientSummary, ws_instance?: WebSocket) => {
-    if (event === 'summary' && payload.id && tasks[payload.id]) {
-      softProjectUpdate(tasks[payload.id], payload, ws_instance);
+    const task = tasks[payload.id];
+    if (event === 'summary' && payload.id && task) {
+      softProjectUpdate(task, payload, ws_instance);
     }
   });
 
   ctx.ict.on('rebundle_complete', props => {
     const { packages, file } = props;
-    if (file) {
+
+    const hardReloadScripts = ctx.config.hmr.hmrProps.hardReloadScripts;
+    if (hardReloadScripts && SCRIPT_EXT_REGEX.test(file)) {
+      ctx.log.info('reload', 'Reloading webpage');
+      devServer.clientSend('reload', undefined);
+    } else if (file) {
       const project = packages.find(pkg => pkg.isDefaultPackage);
       let target = project.modules.find(module => module.props.absPath === file);
       if (!target) {

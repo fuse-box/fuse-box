@@ -1,7 +1,6 @@
 # Cache
 
-Caching in FuseBox is a powerful mechanism which main goal is to reduce time spent on compiling of modules. It's enabled
-by default.
+The main goal of caching is to reduce time spent on compiling of modules. It's enabled by default.
 
 Your cache is located by default in `node_modules/.fusebox`
 
@@ -29,7 +28,7 @@ fusebox({
 });
 ```
 
-`FTL` won't work with target `server`. Requirements are below
+`FTL` won't work with target `server`. The requirements for `FTL` to work follow:
 
 - webIndex should be enabled
 - Target must be `browser` or `electron`

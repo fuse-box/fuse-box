@@ -55,18 +55,20 @@ export enum WatcherAction {
 }
 
 export function detectAction(file: string, homeDir: string): WatcherAction {
-  const isInsideHomeDir = !/\.\./.test(path.relative(homeDir, file));
-
   if (file === env.SCRIPT_FILE) {
     return WatcherAction.RESTART_PROCESS;
   }
+
   if (path.basename(file) === 'tsconfig.json') {
     return WatcherAction.RELOAD_TS_CONFIG;
   }
-  if (/(package.lock.json|yarn.lock)$/.test(file)) {
+
+  if (/(package-lock\.json|yarn\.lock)$/.test(file)) {
     return WatcherAction.HARD_RELOAD_MODULES;
   }
-  if (!isInsideHomeDir) {
+
+  const isNotInsideHomeDir = /\.\./.test(path.relative(homeDir, file));
+  if (isNotInsideHomeDir) {
     return;
   }
 
@@ -119,7 +121,7 @@ export function createWatcher(props: IWatcherProps, externalProps?: IWatcherExte
   const paths = externalProps.paths ? externalProps.paths : props.ctx.config.homeDir;
 
   if (!externalProps.skipRecommendedIgnoredPaths) {
-    ignored.push('/node_modules/', /(\/|\\)\./, 'dist/', 'build/', props.ctx.writer.outputDirectory);
+    ignored.push('/node_modules/', /(\/|\\)\./, 'dist/', 'build/', /flycheck_/, /~$/, /\#.*\#$/, props.ctx.writer.outputDirectory);
   }
 
   const ignoredRegEx: Array<RegExp> = ignored.map(str => (typeof str === 'string' ? ignoredPath2Regex(str) : str));
