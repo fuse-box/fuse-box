@@ -1,6 +1,6 @@
 import { Context } from '../../core/context';
 import { isNodeModuleInstalled } from '../../utils/utils';
-import { getPackageManagerName } from '../../env';
+import { getPackageManagerData } from '../../env';
 
 /**
  * See https://github.com/asyncLiz/minify-html-literals after source input
