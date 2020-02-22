@@ -1,6 +1,6 @@
 import { Context } from '../../core/context';
 import { isNodeModuleInstalled } from '../../utils/utils';
-import { getPackageManagerName } from '../../env';
+import { getPackageManagerData } from '../../env';
 
 export function pluginConsolidate(engine: string, options: any) {
   return async (ctx: Context) => {
