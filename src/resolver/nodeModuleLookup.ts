@@ -73,6 +73,19 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
     }
   }
 
+  const isPnp = (process.versions as any).pnp;
+
+  // Support for Yarn v2 PnP
+  if (isPnp) {
+    try {
+      const pnp = require('pnpapi');
+      const folder = pnp.resolveToUnqualified(parsed.name, props.filePath, { considerBuiltins: false });
+      return folder;
+    } catch (e) {
+      // Ignore error here, since it will be handled later
+    }
+  }
+
   const paths = parseAllModulePaths(props.filePath);
 
   for (let i = paths.length - 1; i >= 0; i--) {
@@ -106,20 +119,7 @@ export interface INodeModuleLookup {
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
   let folder: string;
 
-  const isPnp = (process.versions as any).pnp;
-
-  // Support for Yarn v2 PnP
-  if (isPnp) {
-    try {
-      const pnp = require('pnpapi');
-      folder = pnp.resolveToUnqualified(parsed.name, props.filePath, { considerBuiltins: false });
-    } catch (e) {
-      // Ignore error here, since it will be handled further down
-    }
-  } else {
-    folder = findTargetFolder(props, parsed);
-  }
-
+  folder = findTargetFolder(props, parsed);
   if (!folder) {
     return { error: `Cannot resolve "${parsed.name}"` };
   }
