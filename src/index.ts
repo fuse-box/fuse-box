@@ -2,6 +2,7 @@ export { fusebox } from './core/fusebox';
 export { pluginAngular } from './plugins/core/plugin_angular';
 export { pluginConsolidate } from './plugins/core/plugin_consolidate';
 export { pluginCSS } from './plugins/core/plugin_css';
+export { pluginCSSInJSX } from './plugins/core/plugin_css_in_jsx';
 export { pluginCustomTransform } from './plugins/core/plugin_customtransform';
 export { pluginJSON } from './plugins/core/plugin_json';
 export { pluginLess } from './plugins/core/plugin_less';

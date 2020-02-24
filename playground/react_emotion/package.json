@@ -1,0 +1,40 @@
+{
+  "author": "Ferry Kobus <ferry@webmonkeys.nl>",
+  "browserslist": [
+    "last 2 versions"
+  ],
+  "dependencies": {
+    "@emotion/core": "^10.0.22",
+    "@emotion/styled": "^10.0.23",
+    "emotion-normalize": "^10.1.0",
+    "emotion-theming": "^10.0.19",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "description": "Emotion playground",
+  "devDependencies": {
+    "@snowcoders/sortier": "^3.0.1",
+    "dotenv": "^8.2.0",
+    "eslint": "^6.7.2",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^1.19.1",
+    "stylelint": "^12.0.0",
+    "stylelint-config-recommended": "^3.0.0"
+  },
+  "license": "MIT",
+  "name": "@fkobus/react_emotion",
+  "scripts": {
+    "build": "ts-node -T fuse.ts dist",
+    "eslint": "eslint --ignore-path .gitignore .",
+    "prod": "node -r dotenv/config ./dist/server/app.js",
+    "sortier": "sortier \"{,!(package-lock.json),!(node_modules|dist|assets)/}**/*.{js,jsx,json}\"",
+    "start": "ts-node -T fuse.ts",
+    "stylelint": "stylelint \"src/**/*\" -s css-in-js",
+    "test": "npm run sortier && npm run stylelint && npm run eslint"
+  },
+  "stylelint": {
+    "extends": "stylelint-config-recommended"
+  },
+  "version": "0.0.0"
+}
