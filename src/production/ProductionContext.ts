@@ -1,9 +1,9 @@
 import { IRunResponse } from '../core/IRunResponse';
 import { Context } from '../core/context';
 import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
+import { asyncModuleResolver } from '../moduleResolver/asyncModuleResolver';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
-import { ModuleResolver } from '../moduleResolver/moduleResolver';
 import { ModuleTree } from './module/ModuleTree';
 import { createSplitEntries, ISplitEntries } from './module/SplitEntries';
 
@@ -18,7 +18,7 @@ export interface IProductionContext {
 }
 
 export async function createProductionContext(ctx): Promise<IProductionContext> {
-  const { bundleContext, entries, modules } = await ModuleResolver(ctx, ctx.config.entries);
+  const { bundleContext, entries, modules } = await asyncModuleResolver(ctx, ctx.config.entries);
   const productionContext: IProductionContext = {
     bundleContext,
     ctx,
@@ -31,8 +31,7 @@ export async function createProductionContext(ctx): Promise<IProductionContext> 
   for (const module of modules) {
     if (module.isExecutable) {
       // reset the contents
-      module.contents = undefined;
-      module.read();
+      if (module.contents === undefined) module.read();
       module.parse();
     }
     module.moduleTree = ModuleTree({ module, productionContext });

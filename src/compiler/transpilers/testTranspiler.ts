@@ -1,15 +1,11 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import { ICompilerOptions } from '../../compilerOptions/interfaces';
 import { EnvironmentType } from '../../config/EnvironmentType';
 import { ITarget } from '../../config/ITarget';
 import { createContext } from '../../core/context';
 import { createModule } from '../../moduleResolver/module';
 import { createPackage } from '../../moduleResolver/package';
-import { generate } from '../generator/generator';
-import { ASTNode } from '../interfaces/AST';
-import { parseJavascript, parseTypeScript } from '../parser';
-import { transformCommonVisitors } from '../transformer';
+import { moduleCompiler } from '../../threading/compile/moduleCompiler';
 export interface ICompileModuleProps {
   code?: string;
 
@@ -20,44 +16,43 @@ export interface ICompileModuleProps {
 }
 
 export function testTranspile(props: ICompileModuleProps) {
-  let contents = props.code;
+  return new Promise((resolve, reject) => {
+    let contents = props.code;
 
-  if (!contents) {
-    contents = fs.readFileSync(props.fileName).toString();
-  }
+    if (!contents) {
+      contents = fs.readFileSync(props.fileName).toString();
+    }
 
-  let ast;
-  if (props.useMeriyah) {
-    ast = parseJavascript(contents, { jsx: true });
-  } else {
-    ast = parseTypeScript(contents, { jsx: true });
-  }
+    const ctx = createContext({
+      envType: EnvironmentType.DEVELOPMENT,
 
-  const ctx = createContext({
-    envType: EnvironmentType.DEVELOPMENT,
+      publicConfig: { cache: false, devServer: false, entry: __filename },
+      runProps: {},
+    });
 
-    publicConfig: { cache: false, devServer: false, entry: __filename },
-    runProps: {},
+    const pkg = createPackage({ meta: {} as any });
+    const module = createModule({
+      absPath: __filename,
+      ctx,
+      pkg,
+    });
+
+    module.init();
+
+    moduleCompiler({
+      contents: contents,
+      context: module.getTransformationContext(),
+      generateCode: true,
+      onError: message => {
+        module.errored = true;
+        ctx.log.warn(message);
+      },
+      onReady: response => {
+        return resolve(response.contents);
+      },
+      onResolve: async data => {
+        return {};
+      },
+    });
   });
-
-  const pkg = createPackage({ meta: {} as any });
-  const module = createModule({
-    absPath: __filename,
-    ctx,
-    pkg,
-  });
-
-  module.ast = ast as ASTNode;
-  const targetFileName = props.fileName || __filename;
-  transformCommonVisitors(
-    {
-      compilerOptions: ctx.compilerOptions,
-      module: { absPath: targetFileName, extension: path.extname(targetFileName), publicPath: targetFileName },
-    },
-    ast,
-  );
-
-  const res = generate(ast, {});
-
-  return res;
 }

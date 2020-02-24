@@ -42,6 +42,7 @@ export function pluginSass(a?: IPluginCommon | RegExp | string, b?: IPluginCommo
       // Accepts postCSS Processor as well
       cssContextHandler({
         ctx,
+        fuseCSSModule: ctx.meta['fuseCSSModule'],
         module: module,
         options: opts.stylesheet,
         processor: sass,

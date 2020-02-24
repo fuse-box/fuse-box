@@ -1,6 +1,8 @@
 export default function(payload, helper) {
-  const { modules, updates } = payload;
+  const { appModules, updates } = payload;
+  console.log(payload);
   helper.updateModules();
+  console.log(appModules);
   if (helper.isStylesheeetUpdate) {
     // console.log(updates[0].content);
     // console.log(payload);

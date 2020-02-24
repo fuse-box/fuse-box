@@ -2,11 +2,9 @@ import * as convertSourceMap from 'convert-source-map';
 import * as offsetLinesModule from 'offset-sourcemap-lines';
 import { createBundle } from '../bundle/bundle';
 import { BUNDLE_RUNTIME_NAMES } from '../bundleRuntime/bundleRuntimeCore';
-import { ImportType } from '../compiler/interfaces/ImportType';
 import { Context } from '../core/context';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
-import { resolve } from '../moduleResolver/moduleResolver';
 import { IHMRModulesUpdate } from '../types/hmr';
 import { Concat, fastHash, fileExists } from '../utils/utils';
 function generateUpdateId() {
@@ -71,26 +69,25 @@ export function createHMR(ctx: Context) {
   const devServer = ctx.devServer;
   const tasks: Record<string, any> = {};
   const config = ctx.config;
-  ict.on('entry_resolve', props => {
+  ict.on('entry_resolve', async props => {
     const module = props.module;
-    if (config.hmr.plugin) {
-      if (!fileExists(config.hmr.plugin)) {
-        ctx.fatal('Failed to resolve HMR plugin file', [
-          config.hmr.plugin,
-          'Make sure to resolve it correctly',
-          'File name should absolute or relative to your fuse file',
-        ]);
+    if (ctx.config.hmr.enabled) {
+      if (config.hmr.plugin) {
+        if (!fileExists(config.hmr.plugin)) {
+          ctx.fatal('Failed to resolve HMR plugin file', [
+            config.hmr.plugin,
+            'Make sure to resolve it correctly',
+            'File name should absolute or relative to your fuse file',
+          ]);
+        }
+        const data = await module.resolve({ statement: config.hmr.plugin });
+        ctx.compilerOptions.buildEnv.hmrModuleId = data.module.id;
       }
-      const { module: hmrModule } = resolve({
-        bundleContext: ctx.bundleContext,
-        ctx,
-        importType: ImportType.RAW_IMPORT,
-        parent: module,
-        statement: config.hmr.plugin,
-      });
-      ctx.compilerOptions.buildEnv.hmrModuleId = hmrModule.id;
+
+      await module.resolve({ statement: 'fuse-box-hot-reload' });
     }
   });
+
   ict.on('rebundle', props => {
     const id = generateUpdateId();
     tasks[id] = true;
