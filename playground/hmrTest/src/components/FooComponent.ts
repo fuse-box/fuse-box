@@ -1,3 +1,2 @@
-const FooComponentString = "FooComponentString"
+const FooComponentString = 'FooComponentString';
 export default FooComponentString;
-

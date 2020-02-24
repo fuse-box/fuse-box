@@ -4,8 +4,9 @@ import * as ts from 'typescript';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
+import { ImportType } from '../compiler/interfaces/ImportType';
 import { parseJavascript, parseTypeScript, ICodeParser } from '../compiler/parser';
-import { transformCommonVisitors } from '../compiler/transformer';
+import { ISerializableTransformationContext } from '../compiler/transformer';
 import { EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, STYLESHEET_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
 import { Context } from '../core/context';
 import { env } from '../env';
@@ -13,6 +14,7 @@ import { ITypescriptTarget } from '../interfaces/TypescriptInterfaces';
 import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { getFileModificationTime, makePublicPath, readFile } from '../utils/utils';
+import { IRelativeResolve } from './asyncModuleResolver';
 import { PackageType, IPackage } from './package';
 export function Module() {}
 
@@ -43,6 +45,7 @@ export interface IModule {
   isTypeScript?: boolean;
   moduleSourceRefs?: Record<string, IModule>;
   moduleTree?: IModuleTree;
+  pending?: Array<Promise<any>>;
   pkg?: IPackage;
   publicPath?: string;
   sourceMap?: string;
@@ -52,10 +55,12 @@ export interface IModule {
   };
   generate?: () => void;
   getMeta?: () => any;
+  getTransformationContext?: () => ISerializableTransformationContext;
   init?: () => void;
   initFromCache?: (meta: IModuleMeta, data: { contents: string; sourceMap: string }) => void;
   parse?: () => ASTNode;
   read?: () => string;
+  resolve?: (props: { importType?: ImportType; statement: string }) => Promise<IRelativeResolve>;
   transpile?: () => ITransformerResult;
   transpileDown?(buildTarget: ITypescriptTarget): void;
 }
@@ -128,6 +133,24 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       if (self.breakDependantsCache) meta.breakDependantsCache = true;
       return meta;
     },
+    getTransformationContext: () => {
+      return {
+        compilerOptions: self.ctx.compilerOptions,
+        config: {
+          electron: {
+            nodeIntegration: self.ctx.config.electron.nodeIntegration,
+          },
+        },
+        module: {
+          absPath: self.absPath,
+          extension: self.extension,
+          isSourceMapRequired: self.isSourceMapRequired,
+          publicPath: self.publicPath,
+        },
+        pkg: { type: self.pkg.type },
+        userTransformers: self.ctx.userTransformers,
+      };
+    },
     init: () => {
       const ext = path.extname(props.absPath);
       self.extension = path.extname(props.absPath);
@@ -137,6 +160,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       self.isExecutable = EXECUTABLE_EXTENSIONS.includes(ext);
       self.absPath = props.absPath;
       self.isCommonsEligible = false;
+      self.pending = [];
       self.moduleSourceRefs = {};
       self.isEntry = false;
       self.isSplit = false;
@@ -233,6 +257,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
     // read the contents
     read: () => {
       if (self.contents !== undefined) return self.contents;
+
       try {
         self.contents = readFile(self.absPath);
       } catch (e) {
@@ -243,22 +268,6 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
         throw e;
       }
       return self.contents;
-    },
-    transpile: () => {
-      let result;
-      try {
-        result = transformCommonVisitors(
-          {
-            compilerOptions: self.ctx.compilerOptions,
-            module: { absPath: self.absPath, extension: self.extension, publicPath: self.publicPath },
-            userTransformers: self.ctx.userTransformers,
-          },
-          self.ast,
-        );
-      } catch (e) {
-        props.ctx.fatal(`Error while transforming ${self.absPath}`, [e.stack]);
-      }
-      return result;
     },
     transpileDown: (buildTarget: ITypescriptTarget) => {
       // we can't support sourcemaps on downtranspiling

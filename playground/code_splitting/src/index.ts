@@ -1,6 +1,8 @@
 console.log('foo');
 import './main.scss';
 console.log('bar');
+//import './oi';
+//import './oi2';
 
 async function loadStuff() {
   const { Foo } = await import('./foo/Foo');
@@ -13,3 +15,4 @@ async function loadStuff() {
 }
 
 loadStuff();
+console.log('INDEX', __build_env.entries);

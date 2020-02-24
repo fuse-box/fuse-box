@@ -41,7 +41,8 @@ export function preflightFusebox(ctx: Context) {
           log.echo(' <yellow><bold> @warning Cache has been cleared</bold> </yellow>');
           log.echo(' <yellow><bold> @warning Exiting the process</bold> </yellow>');
 
-          process.kill(process.pid);
+          //process.kill(process.pid);
+          process.exit(0);
         }
       }
     });

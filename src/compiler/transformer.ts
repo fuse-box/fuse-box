@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { TS_EXTENSIONS } from '../config/extensions';
+import { PackageType } from '../moduleResolver/package';
 import { ASTNode } from './interfaces/AST';
 import { ITransformerResult } from './interfaces/ITranformerResult';
 import {
@@ -80,10 +81,19 @@ export function isTransformerEligible(absPath: string, transformer: ITransformer
 export interface ISerializableTransformationContext {
   compilerOptions?: ICompilerOptions;
   userTransformers?: Array<ITransformer>;
+  config?: {
+    electron?: {
+      nodeIntegration?: boolean;
+    };
+  };
   module?: {
     absPath?: string;
     extension?: string;
+    isSourceMapRequired?: boolean;
     publicPath?: string;
+  };
+  pkg?: {
+    type: PackageType;
   };
 }
 

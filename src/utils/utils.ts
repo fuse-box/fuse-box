@@ -144,6 +144,15 @@ export function readFile(file: string) {
   return fs.readFileSync(file).toString();
 }
 
+export function readFileAsync(file: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, (e, data) => {
+      if (e) return reject(e);
+      return resolve(data.toString());
+    });
+  });
+}
+
 export function readFileAsBuffer(file: string) {
   return fs.readFileSync(file);
 }

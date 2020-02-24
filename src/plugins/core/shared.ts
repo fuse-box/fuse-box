@@ -2,7 +2,7 @@ import * as postcss from 'postcss';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/context';
 import { IModule } from '../../moduleResolver/module';
-import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
+import { cssDevModuleRender, ICSSModuleRender } from '../../stylesheet/cssDevModuleRender';
 import { IStyleSheetProcessor } from '../../stylesheet/interfaces';
 import { isNodeModuleInstalled } from '../../utils/utils';
 import { IPluginCommon } from '../interfaces';
@@ -10,6 +10,7 @@ import { wrapContents } from '../pluginStrings';
 
 export interface ICSSContextHandler {
   ctx: Context;
+  fuseCSSModule: IModule;
   module: IModule;
   options: IStyleSheetProps;
   processor: IStyleSheetProcessor;
@@ -64,9 +65,10 @@ export function cssContextHandler(props: ICSSContextHandler) {
       // reset errored status
       props.module.errored = false;
       const data = await processor.render();
-      const rendererProps = {
+      const rendererProps: ICSSModuleRender = {
         ctx,
         data,
+        fuseCSSModule: props.fuseCSSModule,
         module: props.module,
         options: props.options,
         useDefault: props.shared.useDefault,

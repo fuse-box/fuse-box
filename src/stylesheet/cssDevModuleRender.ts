@@ -10,6 +10,7 @@ import { IStylesheetModuleResponse } from './interfaces';
 export interface ICSSModuleRender {
   ctx: Context;
   data: IStylesheetModuleResponse;
+  fuseCSSModule: IModule;
   module: IModule;
   options: IStyleSheetProps;
   useDefault?: boolean;
@@ -44,13 +45,18 @@ export function cssDevModuleRender(props: ICSSModuleRender) {
     // ctx.writer.write(targetSourceMapPath, data.map);
   }
 
-  const fuseBoxCSSModuleId = ctx.systemDependencies['fuse-box-css'];
-  if (fuseBoxCSSModuleId) {
-    const methodString = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION + '(' + fuseBoxCSSModuleId + ')';
+  const fuseCSSModule = props.fuseCSSModule;
+  if (fuseCSSModule) {
+    const methodString = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION + '(' + fuseCSSModule.id + ')';
     let contents = `${methodString}(${JSON.stringify(filePath)},${JSON.stringify(cssData)})`;
     if (props.data.json) {
       contents += '\n' + wrapContents(JSON.stringify(props.data.json), props.useDefault);
     }
     module.contents = contents;
+  } else {
+    ctx.fatal('Error with fuse-box-css', [
+      'System module "fuse-box-css" was not found in the context meta',
+      'You should report this bug',
+    ]);
   }
 }

@@ -1,25 +1,26 @@
-import { fusebox, sparky } from '../../src';
+import { fusebox, pluginReplace, sparky } from '../../src';
 class Context {
   isProduction;
   runServer;
   getConfig = () =>
     fusebox({
-      target: 'browser',
+      //electron: { nodeIntegration: true },
       entry: 'src/index.ts',
       modules: ['./node_modules'],
+      target: 'browser',
 
+      cache: { enabled: true, root: './.cache' },
+      devServer: this.runServer,
+      watcher: true,
       webIndex: {
         publicPath: '.',
         template: 'src/index.html',
       },
-      cache: { enabled: true, root: './.cache' },
-      watch: true,
-      devServer: this.runServer,
 
-      plugins: [],
+      plugins: [pluginReplace('*', { hello: 'wadup' })],
     });
 }
-const { task, rm } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;

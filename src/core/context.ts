@@ -1,7 +1,6 @@
 import * as path from 'path';
 import { CustomTransformers } from 'typescript';
 import { ITransformer } from '../compiler/interfaces/ITransformer';
-import { ImportType } from '../compiler/interfaces/ImportType';
 import { createCompilerOptions } from '../compilerOptions/compilerOptions';
 import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { EnvironmentType } from '../config/EnvironmentType';
@@ -16,7 +15,6 @@ import { createHMR } from '../hmr/hmr';
 import { MainInterceptor, createInterceptor } from '../interceptor/interceptor';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
-import { resolve } from '../moduleResolver/moduleResolver';
 import { outputConfigConverter } from '../output/OutputConfigConverter';
 import { IOutputConfig } from '../output/OutputConfigInterface';
 import { DistWriter, distWriter } from '../output/distWriter';
@@ -50,6 +48,7 @@ export interface Context {
    */
   linkedReferences?: LinkedReferences;
   log?: FuseBoxLogAdapter;
+  meta?: Record<string, any>;
   outputConfig?: IOutputConfig;
   serverProcess?: IServerProcess;
   // a list of of system dependencies with names and ids
@@ -66,7 +65,6 @@ export interface Context {
   registerTransformer?: (transformer: ITransformer) => void;
   sendPageReload?: (reason?: string) => void;
   setLinkedReference?: (asbPath: string, module: IModule) => void;
-  setPersistantModuleDependency?: (module: IModule, dependencyName: string) => void;
 }
 
 export interface ICreateContextProps {
@@ -109,18 +107,9 @@ export function createContext(props: ICreateContextProps): Context {
       }
       if (!ref.deps.includes(module.id)) ref.deps.push(module.id);
     },
-    setPersistantModuleDependency: (module: IModule, dependencyName: string) => {
-      const { module: dependencyObject } = resolve({
-        bundleContext: self.bundleContext,
-        ctx: self,
-        importType: ImportType.REQUIRE,
-        parent: module,
-        statement: dependencyName,
-      });
-      self.systemDependencies[dependencyName] = dependencyObject.id;
-    },
   };
 
+  self.meta = {};
   const runProps: IRunProps = props.runProps || {};
 
   let publicConfig = props.publicConfig;

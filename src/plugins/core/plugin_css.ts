@@ -19,7 +19,12 @@ export function pluginCSS(a?: ICSSPluginProps | RegExp | string, b?: ICSSPluginP
       ctx.ict.on('module_init', props => {
         const { module } = props;
         if (!module.isStylesheet) return;
-        ctx.setPersistantModuleDependency(module, 'fuse-box-css');
+
+        module.resolve({ statement: 'fuse-box-css' }).then(result => {
+          ctx.meta['fuseCSSModule'] = result.module;
+          return result;
+        });
+
         return props;
       });
     }
@@ -35,6 +40,7 @@ export function pluginCSS(a?: ICSSPluginProps | RegExp | string, b?: ICSSPluginP
 
       cssContextHandler({
         ctx,
+        fuseCSSModule: ctx.meta['fuseCSSModule'],
         module: module,
         options: opts.stylesheet,
         processor: {
