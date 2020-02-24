@@ -1,5 +1,5 @@
 import { CSSInJSXTransformer } from '../../compiler/transformers/shared/CSSInJSXTransformer';
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 
 export interface PluginCSSInJSXOptions {
   autoInject?: boolean;
