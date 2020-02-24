@@ -44,8 +44,7 @@ export function Phase_1_ImportLink(): ITransformer {
           if (node.expression && node.expression.type === ASTType.CallExpression) {
             if (node.expression.callee && node.expression.callee.name === 'require') {
               const source = node.expression.arguments[0];
-              const target = refs[source.value];
-              return source && target && target.isStylesheet;
+              return source && refs[source.value] && refs[source.value].isStylesheet;
             }
           }
         }

@@ -30,6 +30,7 @@ export function pluginLessCapture(props: { ctx: Context; module: IModule; opts: 
   // It also accepts extra properties (like asText) to handle text rendering
   cssContextHandler({
     ctx,
+    fuseCSSModule: ctx.meta['fuseCSSModule'],
     module: module,
     options: opts.stylesheet,
     processor: postCSS,

@@ -1,7 +1,7 @@
 import { IRunResponse } from '../core/IRunResponse';
 import { createBuild } from '../core/build';
 import { Context } from '../core/context';
-import { ModuleResolver } from '../moduleResolver/moduleResolver';
+import { asyncModuleResolver } from '../moduleResolver/asyncModuleResolver';
 
 export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Promise<IRunResponse> {
   const { ctx, rebundle } = props;
@@ -10,7 +10,7 @@ export async function bundleDev(props: { ctx: Context; rebundle?: boolean }): Pr
   ctx.log.flush();
   ctx.isWorking = true;
 
-  const { bundleContext, entries, modules } = await ModuleResolver(ctx, ctx.config.entries);
+  const { bundleContext, entries, modules } = await asyncModuleResolver(ctx, ctx.config.entries);
   if (modules) {
     return await createBuild({
       bundleContext,

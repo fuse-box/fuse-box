@@ -2,16 +2,20 @@ import { testTranspile } from '../transpilers/testTranspiler';
 
 let file;
 
-const code = testTranspile({
-  compilerOptions: {
-    esModuleInterop: true,
-    esModuleStatement: true,
-    experimentalDecorators: true,
-    jsxFactory: 'React.createElement',
-  },
-  fileName: __dirname + '/sample1.tsx',
-});
-console.log(code);
+async function main() {
+  const code = await testTranspile({
+    compilerOptions: {
+      esModuleInterop: true,
+      esModuleStatement: true,
+      experimentalDecorators: true,
+      jsxFactory: 'React.createElement',
+    },
+    fileName: __dirname + '/sample1.tsx',
+  });
+  console.log(code);
+}
+
+main();
 // console.log('here');
 // //console.log(code);
 // const res = prettier.format(code, {});

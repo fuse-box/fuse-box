@@ -6,7 +6,7 @@ class Context {
   target: ITarget = 'browser';
   getConfig = () =>
     fusebox({
-      cache: true,
+      cache: { enabled: true, root: './.cache' },
       devServer: this.runServer,
       entry: 'src/index.ts',
       target: this.target,

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { fusebox } from '../../src/index';
 const fuse = fusebox({
-  cache: true,
+  cache: { enabled: true, root: './.cache' },
   devServer: true,
   entry: 'src/index.ts',
   hmr: { plugin: 'src/hmr.ts' },

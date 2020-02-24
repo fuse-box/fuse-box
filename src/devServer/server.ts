@@ -3,8 +3,14 @@ import { BundleType, IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/context';
 import { onExit } from '../utils/exit';
 
+export interface IServerStartProps {
+  argsAfter?: Array<string>;
+  argsBefore?: Array<string>;
+  options?: Record<string, any>;
+  processName?: string;
+}
 export interface IServerProcess {
-  start: (cliArgs?: Array<string>) => ChildProcess;
+  start: (props?: IServerStartProps) => ChildProcess;
   stop: () => void;
 }
 
@@ -42,18 +48,20 @@ export const createServerProcess = (props: {
 
   let entry = getAbsPath(ctx, bundles);
 
-  //const electronPath = require('electron');
-
   const self = {
-    start: (cliArgs?: Array<string>): ChildProcess => {
-      cliArgs = cliArgs || [];
+    start: (props?: IServerStartProps): ChildProcess => {
+      props = props || {};
+      const userOptions = props.options || {};
       ctx.log.info('server', `spawn ${entry}`);
-      server = spawn(processName, [entry, ...cliArgs], {
+      const argsBefore = props.argsBefore || [];
+      const argsAfter = props.argsAfter || [];
+      server = spawn(props.processName || processName, [...argsBefore, entry, ...argsAfter], {
         env: {
           ...process.env,
           ...ctx.config.env,
         },
         stdio: 'inherit',
+        ...userOptions,
       });
 
       server.on('close', code => {

@@ -3,6 +3,7 @@ import * as proxyMiddleware from 'http-proxy-middleware';
 import * as open from 'open';
 import { createGlobalModuleCall } from '../bundleRuntime/bundleRuntimeCore';
 import { Context } from '../core/context';
+import { IModule } from '../moduleResolver/module';
 import {
   createDevServerConfig,
   IHMRServerProps,
@@ -123,22 +124,23 @@ export function createDevServer(ctx: Context): IDevServerActions {
           clientProps.port = hmrServerProps.port;
         }
       }
-      const INJECTION_MODULE = 'fuse-box-hot-reload';
-
-      ict.on('init', () => {
-        // including the essential development module
-        ctx.config.dependencies.include.push(INJECTION_MODULE);
-      });
-
       ict.on('before_bundle_write', props => {
         const { bundle } = props;
         const bundleContext = ctx.bundleContext;
+
         if (bundle.containsApplicationEntryCall) {
-          //console.log(bundle);
-          const injectedModule = bundleContext.injectedDependencies[INJECTION_MODULE];
-          const requireLine = 'const hmr = ' + createGlobalModuleCall(injectedModule.id);
-          bundle.source.injection.push(requireLine);
-          bundle.source.injection.push(`hmr.connect(${JSON.stringify(clientProps)})`);
+          let fuseBoxHotReload: IModule;
+          for (const absPath in bundleContext.modules) {
+            if (absPath.includes('fuse-box-hot-reload')) {
+              fuseBoxHotReload = bundleContext.modules[absPath];
+              break;
+            }
+          }
+          if (fuseBoxHotReload) {
+            const requireLine = 'const hmr = ' + createGlobalModuleCall(fuseBoxHotReload.id);
+            bundle.source.injection.push(requireLine);
+            bundle.source.injection.push(`hmr.connect(${JSON.stringify(clientProps)})`);
+          }
         }
       });
     }

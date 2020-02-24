@@ -4,7 +4,7 @@ class Context {
   runServer;
   getMainConfig() {
     return fusebox({
-      cache: true,
+      cache: { enabled: true, root: './.cache' },
       dependencies: { serverIgnoreExternals: true },
       entry: 'src/main/main.ts',
       logging: { level: 'succinct' },
@@ -15,11 +15,12 @@ class Context {
 
   getRendererConfig() {
     return fusebox({
-      cache: true,
+      cache: { enabled: true, root: './.cache' },
       devServer: {
         hmrServer: { port: 7878 },
         httpServer: false,
       },
+      electron: { nodeIntegration: true },
       entry: 'src/renderer/index.ts',
       logging: { level: 'succinct' },
       modules: ['node_modules'],

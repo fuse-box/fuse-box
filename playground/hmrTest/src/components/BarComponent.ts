@@ -1,3 +1,2 @@
-const BarComponent = "BarComponentString"
+const BarComponent = 'BarComponentString!!!';
 export default BarComponent;
-
