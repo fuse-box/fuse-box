@@ -27,28 +27,29 @@ describe('CSS in JSX intergation test', () => {
 
     for (const env of EnvironmentTypesTestable) {
       it(`should work correctly ${EnvironmentType[env]}`, async () => {
-        // @todo: fix integration tests
-        // const response = await testBrowser({
-        //   workspace: initWorkspace(),
-        //   type: env,
-        //   config: {
-        //     plugins: [
-        //       pluginCSSInJSX({
-        //         autoInject: true,
-        //         autoLabel: true,
-        //         cssPropOptimization: true,
-        //         emotionCoreAlias: '@emotion/core',
-        //         jsxFactory: 'jsx',
-        //         labelFormat: '[dirname]--[local]',
-        //         sourceMap: true,
-        //         test: /src\/(.*?)\.(js|jsx|ts|tsx)$/,
-        //       }),
-        //     ],
-        //   },
-        // });
-        // const window = await response.eval({});
-        // window.entry();
-        // expect(index).toEqual();
+        const response = await testBrowser({
+          workspace: initWorkspace(),
+          type: env,
+          config: {
+            plugins: [
+              pluginCSSInJSX({
+                autoInject: true,
+                autoLabel: true,
+                cssPropOptimization: true,
+                emotionCoreAlias: '@emotion/core',
+                jsxFactory: 'jsx',
+                labelFormat: '[dirname]--[local]',
+                sourceMap: true,
+                test: /src\/(.*?)\.(js|jsx|ts|tsx)$/,
+              }),
+            ],
+          },
+        });
+
+        const window = await response.eval({});
+        const index = window.entry();
+        // @todo: Fix integration tests for react/this
+        expect(index).toEqual({});
       });
     }
   });
