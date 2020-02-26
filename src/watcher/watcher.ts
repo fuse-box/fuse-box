@@ -44,9 +44,14 @@ export function createWatcher(ctx: Context) {
   let ignorePaths: Array<RegExp> = [];
 
   if (!props.include) {
-    // taking an assumption that the watch directory should be next to the entry point
-    const entryPath = path.dirname(ctx.config.entries[0]);
-    includePaths.push(path2RegexPattern(entryPath));
+    if (props.root) {
+      includePaths = (typeof props.root === "string" ? [props.root] : props.root).map(path2RegexPattern)
+    }
+    else {
+      // taking an assumption that the watch directory should be next to the entry point
+      const entryPath = path.dirname(ctx.config.entries[0]);
+      includePaths.push(path2RegexPattern(entryPath));
+    }
   } else {
     for (const prop of props.include) {
       if (typeof prop === 'string') {
@@ -141,7 +146,8 @@ export function createWatcher(ctx: Context) {
       const userOptions = props.chokidarOptions || {};
       const finalOptions = { ...defaultOpts, ...userOptions };
 
-      var watcher = chokidarWatch(env.APP_ROOT, finalOptions);
+      const root = props.root || [`${env.APP_ROOT}`];
+      const watcher = chokidarWatch(root, finalOptions);
       watcher.on('all', dispatchEvent);
     },
   };

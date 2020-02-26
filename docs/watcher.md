@@ -14,12 +14,25 @@ fusebox({ watcher: true });
 By default the watcher watches the entire application root, but reacts only to the path relative to the first entry
 point.
 
-You can change that by passing `include` property
+You can change what the watcher reacts to by passing an `include` property.
 
 ```ts
 fusebox({
   watcher: {
     include: { "src/" },
+  },
+});
+```
+
+### Overriding the root path
+
+You can override the root that the watcher will watch by setting the `root` property, which can be a path, or an array of paths.
+
+```ts
+const workspace = path.dirname(__dirname)
+fusebox({
+  watcher: {
+    root: workspace, // watch parent folder
   },
 });
 ```
