@@ -1,13 +1,10 @@
 import * as path from 'path';
-import { env } from '../env';
 import { findUp } from '../utils/findUp';
 import { fileExists, makeFuseBoxPath, readFile } from '../utils/utils';
 import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
 import { getFolderEntryPointFromPackageJSON } from './shared';
-
-const PROJECT_NODE_MODULES = path.join(env.APP_ROOT, 'node_modules');
 
 const NODE_MODULE_REGEX = /^(([^\.][\.a-z0-9@\-_]*)(\/)?([_a-z0-9.@-]+)?(\/)?(.*))$/i;
 
@@ -36,29 +33,43 @@ export function isNodeModule(path: string): undefined | IModuleParsed {
   return result;
 }
 
-export function parseAllModulePaths(fileAbsPath: string) {
-  const baseDir = path.dirname(fileAbsPath);
+function parentDir(normalizedPath: string): string | undefined {
+  const parent = path.dirname(normalizedPath);
+  if (parent === normalizedPath)
+    return undefined;
+  return parent;
+}
+
+export function parseAllModulePaths(fileAbsPath: string): string[] {
+  const start = path.normalize(fileAbsPath);
   const paths = [];
-
-  const snippets = baseDir.split(/node_modules/);
-  let current = '';
-  if (snippets.length > 1) {
-    const total = snippets.length - 1;
-    for (let i = 0; i < total; i++) {
-      current = path.join(current, snippets[i], 'node_modules');
-      paths.push(current);
-    }
-
-    const last = snippets[total];
-
-    const matchedLast = last.match(/[\/|\\]([a-z-@0-9_-]+)/gi);
-    if (matchedLast && matchedLast[0]) {
-      paths.push(path.join(paths[paths.length - 1], matchedLast[0], 'node_modules'));
-    }
-    return paths;
+  for (let dir = parentDir(start); dir !== undefined; dir = parentDir(dir)) {
+    const name = path.basename(dir);
+    if (name === "node_modules")
+      continue;
+    paths.unshift(path.join(dir, "node_modules"));
   }
 
-  return [PROJECT_NODE_MODULES];
+  return paths;
+}
+
+const pathExists = new Map<string, boolean>();
+function memoizedExists(absPath: string): boolean {
+  let exists = pathExists.get(absPath);
+  if (exists === undefined) {
+    exists = fileExists(absPath);
+    pathExists.set(absPath, exists);
+  }
+  return exists;
+}
+
+export function parseExistingModulePaths(fileAbsPath: string): string[] {
+  const all = parseAllModulePaths(fileAbsPath);
+  const existing = [];
+  for (let i = 0; i < all.length; i++) {
+    memoizedExists(all[i]) && existing.push(all[i]);
+  }
+  return existing;
 }
 
 const CACHED_LOCAL_MODULES: { [key: string]: string | null } = {};
@@ -86,7 +97,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
     }
   }
 
-  const paths = parseAllModulePaths(props.filePath);
+  const paths = parseExistingModulePaths(props.filePath);
 
   for (let i = paths.length - 1; i >= 0; i--) {
     const attempted = path.join(paths[i], parsed.name);
