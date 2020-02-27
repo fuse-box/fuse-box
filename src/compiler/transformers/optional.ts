@@ -1,0 +1,34 @@
+import { ICompilerOptionTransformer } from '../../compilerOptions/interfaces';
+import { ITransformer } from '../interfaces/ITransformer';
+import { AngularURLTransformer } from './ts/AngularURLTransformer';
+
+const OptionalCoreTransformers: Record<
+  string,
+  { options: ICompilerOptionTransformer; transformer: (props: any) => ITransformer }
+> = {
+  angular: {
+    options: { name: 'angular' },
+    transformer: AngularURLTransformer,
+  },
+};
+
+export function createCoreTransformerOption(name: string, opts: any): ICompilerOptionTransformer {
+  if (OptionalCoreTransformers[name]) {
+    const record = OptionalCoreTransformers[name];
+    return { name: record.options.name, opts };
+  }
+}
+
+export function getCoreTransformer(props: ICompilerOptionTransformer): ITransformer {
+  if (props.name) {
+    const target = OptionalCoreTransformers[props.name];
+    if (target) {
+      return target.transformer(props.opts);
+    }
+  } else if (props.script) {
+    const transformerModule = require(props.script);
+    if (transformerModule.default) {
+      return transformerModule.default(props.opts);
+    }
+  }
+}

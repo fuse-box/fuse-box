@@ -19,6 +19,7 @@ import { outputConfigConverter } from '../output/OutputConfigConverter';
 import { IOutputConfig } from '../output/OutputConfigInterface';
 import { DistWriter, distWriter } from '../output/distWriter';
 import { TsConfigAtPath } from '../resolver/fileLookup';
+import { CompilerHub, createCompilerHub } from '../threading/worker_threads/compilerHub';
 import { getFileModificationTime } from '../utils/utils';
 import { createWatcher } from '../watcher/watcher';
 import { createWebIndex, IWebIndexInterface } from '../webIndex/webIndex';
@@ -34,6 +35,7 @@ export type LinkedReferences = Record<string, ILinkedReference>;
 export interface Context {
   bundleContext?: IBundleContext;
   cache?: Cache;
+  compilerHub?: CompilerHub;
   compilerOptions?: ICompilerOptions;
   config?: IConfig;
   customTransformers?: CustomTransformers;
@@ -158,5 +160,6 @@ export function createContext(props: ICreateContextProps): Context {
 
   if (self.config.hmr.enabled) createHMR(self);
 
+  self.compilerHub = createCompilerHub(self);
   return self;
 }

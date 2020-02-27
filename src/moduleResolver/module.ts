@@ -148,7 +148,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
           publicPath: self.publicPath,
         },
         pkg: { type: self.pkg.type },
-        userTransformers: self.ctx.userTransformers,
+        //userTransformers: self.ctx.userTransformers,
       };
     },
     init: () => {

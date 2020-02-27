@@ -453,4 +453,79 @@ describe('scope test', () => {
     });
     expect(result.code).toMatchSnapshot();
   });
+
+  describe('Spread', () => {
+    it('spread and defined var', () => {
+      const result = testTranspile({
+        code: `
+        import oi from "./oi"
+        function foo(){
+          function boo(){
+            const {foo : { bar : [ oi ] }} = {}
+            function another(){
+              console.log(oi);
+            }
+          }
+          console.log(oi);
+        }
+
+
+      `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('Export spread 1', () => {
+      const result = testTranspile({
+        code: `
+        const [foo, bar] = []
+        export {foo, bar}
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('Export spread 2', () => {
+      const result = testTranspile({
+        code: `
+        const {foo, bar} = {}
+        export {foo, bar}
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('Export spread 3', () => {
+      const result = testTranspile({
+        code: `
+        const {foo : { bar }} = {}
+        export { bar }
+      `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('Export spread 4 (deep)', () => {
+      const result = testTranspile({
+        code: `
+        const {foo : { bar : [ oi ] }} = {}
+        export { oi }
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('Export spread 4 (deep) skip key', () => {
+      const result = testTranspile({
+        code: `
+        const {foo : { bar : [ oi ] }} = {}
+        export { oi, bar }
+      `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+  });
 });

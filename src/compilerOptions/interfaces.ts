@@ -6,6 +6,12 @@ export type IJavaScriptTarget = 'ES2015' | 'ES2016' | 'ES2017' | 'ES2019' | 'ES3
 
 export type ICompilerParserType = 'meriyah' | 'ts';
 
+export interface ICompilerOptionTransformer {
+  name?: string;
+  opts?: Record<string, any>;
+  script?: string;
+}
+
 export interface ICompilerOptions {
   baseUrl?: string;
   buildEnv?: Record<string, any>;
@@ -17,6 +23,7 @@ export interface ICompilerOptions {
   jsxFactory?: string;
   paths?: ITypeScriptPaths;
   processEnv?: Record<string, string>;
+  transformers?: Array<ICompilerOptionTransformer>;
   tsConfig?: string;
   jsParser?: { nodeModules?: ICompilerParserType; project?: ICompilerParserType };
 }

@@ -101,7 +101,7 @@ export function createWatcher(ctx: Context) {
       }
     }
     if (projectFilesChanged) {
-      ctx.log.clearConsole();
+      //ctx.log.clearConsole();
       ctx.log.line();
     }
 

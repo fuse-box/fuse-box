@@ -36,6 +36,7 @@
     "express": "^4.17.1",
     "fs-extra": "^8.1.0",
     "fuse-concat-with-sourcemaps": "^1.0.5",
+    "get-port": "^5.1.1",
     "glob": "^7.1.6",
     "http-proxy-middleware": "^0.20.0",
     "ieee754": "^1.1.13",
@@ -50,7 +51,7 @@
     "source-map-support": "^0.5.16",
     "stream-browserify": "^2.0.2",
     "terser": "^4.5.1",
-    "typescript": "3.7.4",
+    "typescript": "3.8.2",
     "ws": "^7.2.1"
   },
   "description": "Fuse-Box a bundler that does it right",
@@ -137,5 +138,5 @@
     "typecheck": "ts-node -T fuse typecheck"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.310"
+  "version": "4.0.0-alpha.312"
 }

@@ -8,8 +8,9 @@ class Context {
       entry: 'src/index.ts',
       modules: ['./node_modules'],
       target: 'browser',
+      //threading: { threadAmount: 1 },
 
-      cache: { enabled: true, root: './.cache' },
+      cache: { enabled: false, root: './.cache' },
       devServer: this.runServer,
       watcher: true,
       webIndex: {
@@ -17,7 +18,7 @@ class Context {
         template: 'src/index.html',
       },
 
-      plugins: [pluginReplace('*', { hello: 'wadup' })],
+      //plugins: [pluginReplace('*', { hello: 'wadup' })],
     });
 }
 const { rm, task } = sparky<Context>(Context);
