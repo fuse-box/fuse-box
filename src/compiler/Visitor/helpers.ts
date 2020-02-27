@@ -38,12 +38,18 @@ export function isDefinedLocally(node: ASTNode): Array<{ init: boolean; name: st
   if (node.type === 'FunctionDeclaration' || node.type === 'ClassDeclaration') {
     if (node.id) return [{ init: true, name: node.id.name }];
   }
+  if (node.$assign_pattern && node.value && node.value.type === ASTType.Identifier) {
+    return [{ init: true, name: node.value.name }];
+  }
   if (node.type === 'VariableDeclaration') {
     const defined = [];
     if (node.declarations) {
       for (const decl of node.declarations) {
-        if (decl.type === 'VariableDeclarator' && decl.id && decl.id.type === 'Identifier') {
-          defined.push({ init: !!decl.init, name: decl.id.name });
+        if (decl.type === 'VariableDeclarator' && decl.id) {
+          if (decl.id.type === 'Identifier') {
+            defined.push({ init: !!decl.init, name: decl.id.name });
+          } else if (decl.id.type === ASTType.ObjectPattern) {
+          }
         }
       }
       return defined;

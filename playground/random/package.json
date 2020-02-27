@@ -9,6 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "lodash": "^4.17.15",
+    "lodash-es": "^4.17.15",
+    "proj4": "^2.6.0",
+    "ramda": "^0.27.0",
+    "three": "^0.113.2",
     "v8": "^0.1.0",
     "vm": "^0.1.0"
   }

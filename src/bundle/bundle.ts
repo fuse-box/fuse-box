@@ -1,14 +1,14 @@
+import * as CleanCSS from 'clean-css';
 import * as convertSourceMap from 'convert-source-map';
 import * as offsetLinesModule from 'offset-sourcemap-lines';
 import * as path from 'path';
+import * as Terser from 'terser';
 import { BundleSource, createBundleSource } from '../bundleRuntime/bundleSource';
 import { Context } from '../core/context';
 import { IModule } from '../moduleResolver/module';
 import { IOutputBundleConfigAdvanced } from '../output/OutputConfigInterface';
 import { distWriter, IWriterConfig } from '../output/distWriter';
 import { Concat } from '../utils/utils';
-
-import * as CleanCSS from 'clean-css';
 
 export interface Bundle {
   config: IWriterConfig;
@@ -22,7 +22,7 @@ export interface Bundle {
   source: BundleSource;
   type: BundleType;
   webIndexed: boolean;
-  createSourceMap: () => Promise<void>;
+  createSourceMap: (sourceMap: string) => Promise<void>;
   generate: (opts?: { runtimeCore?: string }) => Promise<IBundleWriteResponse>;
   generateHMRUpdate?: () => string;
   prepare: () => IWriterConfig;
@@ -90,7 +90,7 @@ export function createBundle(props: IBundleProps): Bundle {
     source,
     type,
     webIndexed,
-    createSourceMap: async () => {
+    createSourceMap: async (sourceMap: string) => {
       const sourceMapName = path.basename(self.config.relativePath) + '.map';
       if (isCSS) {
         // just in case remove the existing sourcemap references
@@ -103,7 +103,7 @@ export function createBundle(props: IBundleProps): Bundle {
       const targetDir = path.dirname(self.config.absPath);
       const sourceMapFile = path.join(targetDir, sourceMapName);
 
-      await bundleWriter.write(sourceMapFile, self.data.sourceMap);
+      await bundleWriter.write(sourceMapFile, sourceMap);
     },
     generate: async (opts?: { runtimeCore?: string; uglify?: boolean }) => {
       opts = opts || {};
@@ -117,8 +117,24 @@ export function createBundle(props: IBundleProps): Bundle {
 
       self.contents = self.data.content.toString();
 
+      let sourceMap;
+      if (source.containsMaps && self.data.sourceMap) {
+        sourceMap = self.data.sourceMap.toString();
+      }
+
+      if (ctx.config.isProduction && !self.isCSSType && opts.uglify && source.containsMaps) {
+        const terserOpts: any = {
+          sourceMap: {
+            content: self.data.sourceMap,
+            includeSources: true,
+          },
+        };
+        const result = Terser.minify(self.contents, terserOpts);
+        self.contents = result.code;
+        sourceMap = result.map.toString();
+      }
       // writing source maps
-      if (source.containsMaps) await self.createSourceMap();
+      if (source.containsMaps) await self.createSourceMap(sourceMap);
       // write the bundle to fs
       return await self.write();
     },

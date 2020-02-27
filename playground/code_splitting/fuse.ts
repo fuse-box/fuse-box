@@ -6,16 +6,17 @@ class Context {
   target: ITarget = 'browser';
   getConfig = () =>
     fusebox({
-      cache: { enabled: true, root: './.cache' },
+      cache: { enabled: false, root: './.cache' },
       devServer: this.runServer,
       entry: 'src/index.ts',
       target: this.target,
+      threading: { minFileSize: 0, threadAmount: 1 },
       webIndex: {
         template: 'src/index.html',
       },
     });
 }
-const { exec, rm, task } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;

@@ -7,16 +7,16 @@ class Context {
   npmTag: string;
   versionBumpType: IBumpVersionType;
 }
-const { src, rm, task, exec } = sparky(Context);
+const { exec, rm, src, task } = sparky(Context);
 
 function runTypeChecker() {
   const typeChecker = require('fuse-box-typechecker').TypeChecker({
-    tsConfig: './src/tsconfig.json',
     basePath: './',
     name: 'typecheck',
-    throwOnSyntactic: true,
-    throwOnSemantic: true,
     throwOnGlobal: true,
+    throwOnSemantic: true,
+    throwOnSyntactic: true,
+    tsConfig: './src/tsconfig.json',
   });
   // to run it right away
   typeChecker.printSettings();
@@ -50,6 +50,11 @@ task('fix-env', async () => {
     .contentsOf('env.js', str => {
       str = str.replace(/FUSE_ROOT\s*=\s*(appRoot.path)/, 'FUSE_ROOT = __dirname;');
       str = str.replace(/VERSION\s*=\s*[^;]+/, `VERSION = '${package_json.version}'`);
+
+      str = str.replace(
+        /WORKER_THREAD\s*=\s*[^;]+/,
+        `WORKER_THREAD = path.resolve(__filename, './threading/worker_threads/ProcessThread.js')`,
+      );
       return str;
     })
     .write()
@@ -80,7 +85,7 @@ task('copy-various', async () => {
 
 task('publish', async ctx => {
   await exec('dist');
-  console.log('publis', ctx.npmTag);
+
   await npmPublish({ path: 'dist/', tag: ctx.npmTag });
 });
 
@@ -102,6 +107,7 @@ task('public-alpha', async ctx => {
   ctx.npmTag = 'alpha';
   await exec('publish');
 });
+
 task('dist', async ctx => {
   await exec('clean');
   //await exec('typecheck');
@@ -115,16 +121,16 @@ task('dist', async ctx => {
 task('document', async ctx => {
   const TypeDoc = require('typedoc');
   const typedocApp = new TypeDoc.Application({
+    allowJs: false,
+    exclude: '**/*.test.ts',
+    excludeExternals: true,
+    excludePrivate: true,
     experimentalDecorators: true,
+    ignoreCompilerErrors: true,
     logger: 'console',
     mode: 'modules',
     module: 'CommonJS',
     target: 'ES6',
-    ignoreCompilerErrors: true,
-    excludePrivate: true,
-    excludeExternals: true,
-    allowJs: false,
-    exclude: '**/*.test.ts',
   });
 
   const typedocProject = typedocApp.convert(typedocApp.expandInputFiles(['src/core/FuseBox.ts']));
@@ -135,4 +141,19 @@ task('document', async ctx => {
     // Rendered docs
     await typedocApp.generateDocs(typedocProject, outputDir);
   }
+});
+
+task('dev-thread', async ctx => {
+  const { fusebox } = require('./dist');
+  const fuse = fusebox({
+    cache: { enabled: true },
+    dependencies: { serverIgnoreExternals: true },
+    entry: 'src/threading/worker_threads/ProcessThread.ts',
+    logging: { level: 'succinct' },
+    target: 'server',
+  });
+  await fuse.runDev({
+    bundles: { app: 'fuse_thread.js', distRoot: 'dist/dev-threads' },
+  });
+  //onComplete(({ server }) => server.start());
 });

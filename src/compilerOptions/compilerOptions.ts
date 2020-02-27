@@ -104,6 +104,7 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
     options.buildEnv = {};
   }
 
+  if (!options.transformers) options.transformers = [];
   // set default helplers
   options.buildEnv.require = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ + '.' + BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
   options.buildEnv.cachedModules = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ + '.' + BUNDLE_RUNTIME_NAMES.CACHE_MODULES;

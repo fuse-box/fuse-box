@@ -12,6 +12,7 @@ export async function BundlePhase(productionContext: IProductionContext) {
         ast: module.ast,
         context: module.getTransformationContext(),
         generateCode: true,
+        onFatal: reject,
         onError: message => {
           module.errored = true;
           ctx.log.warn(message);
@@ -36,17 +37,6 @@ export async function BundlePhase(productionContext: IProductionContext) {
     if (module.isExecutable) {
       productionContext.log.info('generate', module.publicPath);
       promises.push(compile(module));
-
-      // const transformerResult = module.transpile();
-      // for (const item of transformerResult.requireStatementCollection) {
-      //   item.statement = createRuntimeRequireStatement({ ctx, item, module });
-      // }
-      // module.generate();
-      // if (ctx.config.productionBuildTarget) {
-      //   productionContext.log.info('down transpile', module.publicPath);
-      //   // need to down transpile
-      //   module.transpileDown(ctx.config.productionBuildTarget);
-      // }
     } else {
       productionContext.log.info('add', module.publicPath);
     }

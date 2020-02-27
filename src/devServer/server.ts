@@ -73,7 +73,7 @@ export const createServerProcess = (props: {
     },
     stop: () => {
       if (server) {
-        server.kill();
+        server.kill('SIGINT');
         ctx.log.info('server', `Killed ${entry}`);
       }
     },

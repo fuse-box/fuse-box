@@ -47,6 +47,9 @@ export function testTranspile(props: ICompileModuleProps) {
         module.errored = true;
         ctx.log.warn(message);
       },
+      onFatal: e => {
+        console.error(e);
+      },
       onReady: response => {
         return resolve(response.contents);
       },

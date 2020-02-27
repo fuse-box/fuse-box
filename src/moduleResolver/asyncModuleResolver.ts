@@ -2,8 +2,7 @@ import { ImportType } from '../compiler/interfaces/ImportType';
 import { Context } from '../core/context';
 import { env } from '../env';
 import { resolveModule } from '../resolver/resolver';
-import { moduleCompiler } from '../threading/compile/moduleCompiler';
-import { fileExists, getPublicPath } from '../utils/utils';
+import { fileExists, getPublicPath, readFileAsync } from '../utils/utils';
 import { createBundleContext, IBundleContext } from './bundleContext';
 import { createModule, IModule } from './module';
 import { getModuleResolutionPaths } from './moduleResolutionPaths';
@@ -31,6 +30,7 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
   const compilerOptions = ctx.compilerOptions;
   const buildEnv = compilerOptions.buildEnv;
   if (!buildEnv.entries) buildEnv.entries = [];
+  ctx.compilerHub.launch();
 
   /**
    * Gives an absolute path and a package
@@ -104,11 +104,16 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
         if (cached) {
           if (cached.mrc.modulesRequireResolution.length) {
             for (const item of cached.mrc.modulesRequireResolution) {
-              bundleContext.modules[item.absPath] = undefined;
-              await initModule({ absPath: item.absPath, pkg: item.pkg });
+              if (item.absPath !== absPath) {
+                bundleContext.modules[item.absPath] = undefined;
+
+                await initModule({ absPath: item.absPath, pkg: item.pkg });
+              }
             }
           }
-          if (cached.module) return cached.module;
+          if (cached.module) {
+            return cached.module;
+          }
         }
       }
 
@@ -156,10 +161,12 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
       }
 
       ctx.ict.sync('module_init', { bundleContext, module });
-
+      if (!module.contents) {
+        module.contents = await readFileAsync(module.absPath);
+      }
       if (module.isExecutable) {
         return new Promise((resolve, reject) => {
-          moduleCompiler({
+          ctx.compilerHub.compile({
             absPath: module.absPath,
             contents: module.contents,
             context: module.getTransformationContext(),
@@ -168,11 +175,15 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
               module.errored = true;
               ctx.log.warn(message);
             },
+            onFatal: e => {
+              ctx.fatal('Error while compiling a module', [module.absPath, e.stack || e]);
+            },
             onReady: response => {
               if (ctx.config.isDevelopment) {
                 module.contents = response.contents;
                 module.sourceMap = response.sourceMap;
               }
+
               Promise.all(pending).then(() => {
                 ctx.log.info('compiler', `Completed ${module.publicPath}`);
                 resolve(module);
@@ -218,6 +229,7 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
     const entryModule = await resolveEntry(absPath, userPackage);
     entries.push(entryModule);
   }
+  ctx.compilerHub.terminate();
 
   if (process.argv.includes('--debug-cache')) {
     ctx.log.line();
