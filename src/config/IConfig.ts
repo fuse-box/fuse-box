@@ -15,6 +15,7 @@ import { ITarget } from './ITarget';
 
 import { IDependencies } from './IDependencies';
 import { IElectronOptions } from './IElectronOptions';
+import { IThreadingConfig } from './IThreadingConfig';
 import { IWatcherPublicConfig } from './IWatcher';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 
@@ -22,6 +23,7 @@ export interface IPublicConfig {
   compilerOptions?: ICompilerOptions;
   logging?: IFuseLoggerProps;
   modules?: Array<string>;
+  threading?: IThreadingConfig;
 
   electron?: IElectronOptions;
 
@@ -75,7 +77,9 @@ export interface IConfig {
   resources?: IResourceConfig;
   stylesheet?: IStyleSheetProps;
   target?: ITarget;
+  threading?: IThreadingConfig;
   tsHelpersPath?: string;
+  uglify?: boolean;
   watcher?: IWatcherPublicConfig;
   webIndex?: IWebIndexConfig;
   webWorkers?: IWebWorkerConfig;

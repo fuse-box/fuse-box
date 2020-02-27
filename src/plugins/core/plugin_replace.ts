@@ -25,7 +25,6 @@ export function pluginReplace(a?: IPluginReplaceProps | RegExp | string, b?: IPl
       });
 
       module.read();
-      console.log(expressions);
       for (const items of expressions) {
         module.contents = module.contents.replace(items[0], items[1]);
       }

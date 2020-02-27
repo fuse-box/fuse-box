@@ -20,6 +20,7 @@ import { BuildEnvTransformer } from './transformers/bundle/BuildEnvTransformer';
 import { BundleFastConditionUnwrapper } from './transformers/bundle/BundleFastConditionTransformer';
 import { BundlePolyfillTransformer } from './transformers/bundle/BundlePolyfillTransformer';
 import { RequireStatementInterceptor } from './transformers/bundle/RequireStatementInterceptor';
+import { getCoreTransformer } from './transformers/optional';
 import { OptionalChaningTransformer } from './transformers/optionalChaining/OptionalChainingTransformer';
 import { DynamicImportTransformer } from './transformers/shared/DynamicImportTransformer';
 import { ExportTransformer } from './transformers/shared/ExportTransformer';
@@ -80,7 +81,6 @@ export function isTransformerEligible(absPath: string, transformer: ITransformer
 
 export interface ISerializableTransformationContext {
   compilerOptions?: ICompilerOptions;
-  userTransformers?: Array<ITransformer>;
   config?: {
     electron?: {
       nodeIntegration?: boolean;
@@ -114,7 +114,12 @@ export function transformCommonVisitors(props: ISerializableTransformationContex
       requireStatementCollection.push({ importType, moduleOptions, statement });
     }
   }
-  const userTransformers = props.userTransformers || [];
+  const compilerOptions = props.compilerOptions;
+  const userTransformers: Array<ITransformer> = [];
+
+  for (const transformerOption of compilerOptions.transformers) {
+    userTransformers.push(getCoreTransformer(transformerOption));
+  }
 
   const commonVisitors: Array<ITransformerVisitors> = [];
 

@@ -6,13 +6,13 @@ class Context {
   getConfig = () =>
     fusebox({
       //compilerOptions: { tsConfig: 'sdfsd.json' },
-      entry: 'src/entry.ts',
-      modules: ['./node_modules'],
-      target: 'browser',
-
       cache: { enabled: true, root: './.cache', strategy: 'fs' },
       devServer: this.runServer,
+      entry: 'src/entry.ts',
+      modules: ['./node_modules'],
       sourceMap: { project: true, vendor: false },
+      target: 'browser',
+      //threading: { minFileSize: 2000, threadAmount: 1 },
       watcher: true,
       webIndex: {
         publicPath: '/',

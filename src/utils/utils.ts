@@ -321,6 +321,9 @@ export async function writeFile(name: string, contents) {
   });
 }
 
+export function randomHash() {
+  return fastHash(`${Math.random()}_${Math.random()}`);
+}
 export function fastHash(text: string): string {
   let hash = 0;
   if (text.length == 0) return '';

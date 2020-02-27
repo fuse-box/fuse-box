@@ -122,6 +122,7 @@ export async function tsc(opts?: TscOptions, target?: string) {
   return new Promise((resolve, reject) => {
     const proc = spawn('tsc' + (/^win/.test(process.platform) ? '.cmd' : ''), tscOptions, {
       cwd: env.SCRIPT_PATH,
+      stdio: 'ignore',
     });
     proc.on('close', function(code) {
       if (code === 8) {

@@ -43,3 +43,4 @@ website/yarn.lock
 some\.sh
 
 src/tests/stubs/sparky/foo/e\.json
+playground/random/src/bench

@@ -8,7 +8,7 @@ export function generateModuleNameFromSource(source: string, sourceReferences) {
   if (!/^[a-z]/i.test(variable)) variable = 'a' + variable;
 
   // we have this variable already
-  if (variable in sourceReferences) {
+  if (sourceReferences.hasOwnProperty(variable)) {
     index = sourceReferences[variable].current + 1;
     sourceReferences[variable].current = index;
     sourceReferences[variable].sources[source] = index;

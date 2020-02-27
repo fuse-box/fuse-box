@@ -65,6 +65,9 @@ export function createConfig(props: {
     if (!config.tsHelpersPath) config.tsHelpersPath = path.join(env.FUSE_MODULES, 'ts_config_helpers/tslib.js');
   }
 
+  config.uglify = true;
+  if (runProps.uglify !== undefined) config.uglify = runProps.uglify;
+
   if (runProps.cleanCSS !== undefined) config.cleanCSS = runProps.cleanCSS;
   else config.cleanCSS = true;
 
@@ -269,5 +272,18 @@ export function createConfig(props: {
   else config.electron = {};
   if (config.electron.nodeIntegration === undefined) config.electron.nodeIntegration = false;
 
+  config.threading = {
+    enabled: process.argv.includes('--threading'),
+  };
+  if (publicConfig.threading) {
+    if (typeof publicConfig.threading === 'boolean') {
+      config.threading.enabled = true;
+    } else {
+      config.threading = publicConfig.threading;
+    }
+    if (config.threading.enabled === undefined) config.threading.enabled = true;
+  }
+  if (config.threading.minFileSize === undefined) config.threading.minFileSize = 5000;
+  if (!config.threading.threadAmount) config.threading.threadAmount = 1;
   return config;
 }

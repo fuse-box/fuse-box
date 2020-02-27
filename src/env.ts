@@ -4,19 +4,21 @@ import { readFile } from './utils/utils';
 
 const VERSION = require('./../package.json').version;
 const FUSE_ROOT = appRoot.path;
+const WORKER_THREAD = path.resolve(appRoot.path, './dist/dev-threads/fuse_thread.js');
 export const env = {
-  FUSE_ROOT: FUSE_ROOT,
   APP_ROOT: appRoot.path,
-  VERSION: VERSION,
-  isTest: !!process.env.JEST_TEST,
   CACHE: {
-    ROOT: path.join(appRoot.path, 'node_modules/.fusebox', VERSION),
     PACKAGES: 'packages',
     PROJET_FILES: 'project-files',
+    ROOT: path.join(appRoot.path, 'node_modules/.fusebox', VERSION),
   },
-  SCRIPT_PATH: path.dirname(require.main.filename),
-  SCRIPT_FILE: require.main.filename,
   FUSE_MODULES: path.join(FUSE_ROOT, 'modules'),
+  FUSE_ROOT: FUSE_ROOT,
+  SCRIPT_FILE: require.main.filename,
+  SCRIPT_PATH: path.dirname(require.main.filename),
+  VERSION: VERSION,
+  WORKER_THREAD,
+  isTest: !!process.env.JEST_TEST,
 };
 
 export function getDevelopmentApi() {

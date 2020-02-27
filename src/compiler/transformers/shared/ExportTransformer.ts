@@ -1,10 +1,6 @@
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import {
-  ES_MODULE_EXPRESSION,
-  createExports,
-  createVariableDeclaration,
-  isDefinedLocally,
-} from '../../Visitor/helpers';
+import { ES_MODULE_EXPRESSION, createExports, createVariableDeclaration } from '../../Visitor/helpers';
+import { isLocalDefined } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
@@ -47,26 +43,31 @@ export function ExportTransformer(): ITransformer {
       return {
         onEachNode: (visit: IVisit) => {
           const global = visit.globalContext as GlobalContext;
+          if (!visit.parent || visit.parent.type === ASTType.Program) {
+            return;
+          }
 
           if (global.exportAfterDeclaration) {
             const node = visit.node;
-            const definedLocally = isDefinedLocally(node);
-
-            if (definedLocally && !visit.node.$fuse_visited) {
+            const definedLocally: Array<string> = [];
+            for (const key in global.exportAfterDeclaration) {
+              if (definedLocallyProcessed[key] === 1) continue;
+              if (isLocalDefined(key, visit.scope)) {
+                definedLocally.push(key);
+              }
+            }
+            if (definedLocally.length && !visit.node.$fuse_visited) {
               const newNodes = [];
 
               const response: IVisitorMod = {};
-
               for (const localVar of definedLocally) {
-                // we don't want to add it multiple times
-                if (definedLocallyProcessed[localVar.name]) break;
-                definedLocallyProcessed[localVar.name] = 1;
-                const targetAfter = global.exportAfterDeclaration[localVar.name];
+                definedLocallyProcessed[localVar] = 1;
+                const targetAfter = global.exportAfterDeclaration[localVar];
                 if (targetAfter) {
                   if (!response.appendToBody) response.appendToBody = [];
                   for (const item of targetAfter.targets) {
                     const ast = createExports(global.namespace, item, {
-                      name: localVar.name,
+                      name: localVar,
                       type: 'Identifier',
                     });
                     response.appendToBody.push(ast);

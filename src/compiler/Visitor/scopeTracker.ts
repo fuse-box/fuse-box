@@ -31,6 +31,30 @@ function copy(scope: IASTScope, extra?): IASTScope {
   return { hoisted: scope.hoisted, locals: newLocals };
 }
 
+export function extractDefinedVariables(node: ASTNode, names: Record<string, number>) {
+  if (node.type === ASTType.Identifier) {
+    names[node.name] = 1;
+    return;
+  }
+
+  if (node.type === ASTType.ObjectPattern) {
+    for (const property of node.properties) {
+      let target = property;
+      if (property.type === ASTType.Property) target = property.value;
+      extractDefinedVariables(target, names);
+    }
+  }
+  if (node.type === ASTType.ArrayPattern) {
+    for (const element of node.elements) {
+      if (element) extractDefinedVariables(element, names);
+    }
+  }
+
+  if (node.type === ASTType.RestElement) {
+    return extractDefinedVariables(node.argument, names);
+  }
+}
+
 export function scopeTracker(visitor: IVisit): IASTScope {
   const { node, property } = visitor;
   const type = node.type;
@@ -42,30 +66,7 @@ export function scopeTracker(visitor: IVisit): IASTScope {
       if (scope === undefined) scope = { locals: {} };
       for (const decl of node.declarations) {
         if (decl.type === 'VariableDeclarator' && decl.id) {
-          const id = decl.id;
-          if (id.type === 'Identifier') {
-            scope.locals[id.name] = 1;
-          } else if (id.type === 'ArrayPattern') {
-            if (id.elements) {
-              for (const el of id.elements) {
-                if (el) {
-                  if (el.type === 'Identifier') {
-                    scope.locals[el.name] = 1;
-                  } else if (el.type === 'RestElement') {
-                    scope.locals[el.argument.name] = 1;
-                  }
-                }
-              }
-            }
-          } else if (id.type === 'ObjectPattern' && id.properties) {
-            for (const prop of id.properties) {
-              if (prop.type === 'Property' && prop.key.name === prop.value.name) {
-                scope.locals[prop.key.name] = 1;
-              } else if (prop.type === 'RestElement') {
-                scope.locals[prop.argument.name] = 1;
-              }
-            }
-          }
+          extractDefinedVariables(decl.id, scope.locals);
         }
       }
       // we need to check for the next item on the list (if we are in an array)

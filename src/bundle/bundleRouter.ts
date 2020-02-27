@@ -182,13 +182,13 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
 
       while (index < bundleAmount) {
         const bundle = bundles[index];
-        let writerProps = {};
+        let writerProps: any = { uglify: ctx.config.uglify };
         if (bundle.webIndexed && !bundle.isCSSType) {
           lastWebIndexed = bundle;
           if (!apiInserted && bundle.priority === 1) {
             apiInserted = true;
             bundle.containsAPI = true;
-            writerProps = { runtimeCore: createRuntimeCore() };
+            writerProps.runtimeCore = createRuntimeCore();
           }
         }
 
