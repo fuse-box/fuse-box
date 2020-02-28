@@ -126,6 +126,7 @@ export function createExports(exportsKey: string, exportsVariableName: string, p
       left: {
         computed: false,
         object: {
+          $fuse_exports: true,
           name: exportsKey,
           type: 'Identifier',
         },

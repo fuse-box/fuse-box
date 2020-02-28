@@ -1,12 +1,14 @@
+import { ICompilerOptions } from '../../compilerOptions/interfaces';
 import { ImportType } from '../interfaces/ImportType';
 import { initCommonTransform } from '../testUtils';
 import { ExportTransformer } from '../transformers/shared/ExportTransformer';
 import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
 
-const testTranspile = (props: { code: string; jsx?: boolean }) => {
+const testTranspile = (props: { code: string; compilerOptions?: ICompilerOptions; jsx?: boolean }) => {
   return initCommonTransform({
     code: props.code,
+    compilerOptions: props.compilerOptions || {},
     jsx: props.jsx,
     transformers: [ImportTransformer(), ExportTransformer(), CommonTSfeaturesTransformer()],
   });
@@ -474,6 +476,40 @@ describe('Es exports tests', () => {
           },
         },
       ]);
+    });
+  });
+
+  describe('Default interop', () => {
+    it('should export with interop', () => {
+      const result = testTranspile({
+        code: `export {default} from "./foo"`,
+        compilerOptions: { esModuleInterop: true },
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should export with interop', () => {
+      const result = testTranspile({
+        code: `export {default as oi} from "./foo"`,
+        compilerOptions: { esModuleInterop: true },
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+  });
+
+  describe('Edge cases', () => {
+    describe('Overriden compiler reserved exports', () => {
+      it('User defines a compiler reserved keywors "exports"', () => {
+        const result = testTranspile({
+          code: `
+            var exports = {};
+            export { exports as default };
+            exports.foo = function(){}
+          `,
+        });
+        expect(result.code).toMatchSnapshot();
+      });
     });
   });
 });

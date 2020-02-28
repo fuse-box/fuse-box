@@ -1,5 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Es exports tests Default interop should export with interop 1`] = `
+"var foo_1 = require(\\"./foo\\");
+var foo_1d = __fuse.dt(foo_1);
+exports.default = foo_1d.default;
+"
+`;
+
+exports[`Es exports tests Default interop should export with interop 2`] = `
+"var foo_1 = require(\\"./foo\\");
+var foo_1d = __fuse.dt(foo_1);
+exports.oi = foo_1d.default;
+"
+`;
+
+exports[`Es exports tests Edge cases Overriden compiler reserved exports User defines a compiler reserved keywors "exports" 1`] = `
+"var _1_ = {};
+_1_.foo = function () {};
+exports.default = _1_;
+"
+`;
+
 exports[`Es exports tests Export default declaration Should export obj 1`] = `
 "var core_1 = require(\\"@uirouter/core\\");
 exports.core = core_1;
