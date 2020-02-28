@@ -1,7 +1,7 @@
 var exports = {};
 export { exports as default };
-exports.MERIT = {
-  a: 6378137.0,
-  ellipseName: 'MERIT 1983',
-  rf: 298.257,
+exports.foo = function(exports) {
+  console.log(exports);
 };
+
+export const a = 1;
