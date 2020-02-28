@@ -1,5 +1,11 @@
+import { BUNDLE_RUNTIME_NAMES } from '../../../bundleRuntime/bundleRuntimeCore';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { ES_MODULE_EXPRESSION, createExports, createVariableDeclaration } from '../../Visitor/helpers';
+import {
+  ES_MODULE_EXPRESSION,
+  createEsModuleDefaultInterop,
+  createExports,
+  createVariableDeclaration,
+} from '../../Visitor/helpers';
 import { isLocalDefined } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
@@ -40,11 +46,41 @@ export function ExportTransformer(): ITransformer {
         transformationContext: { compilerOptions },
       } = props;
 
+      let OVERRIDE_COMPILER_RESERVED_EXPORTS = false;
+      let OVERRIDE_EXPORTS_VAR: string;
+
+      const esModuleInterop = compilerOptions.esModuleInterop;
       return {
         onEachNode: (visit: IVisit) => {
           const global = visit.globalContext as GlobalContext;
-          if (!visit.parent || visit.parent.type === ASTType.Program) {
-            return;
+          const node = visit.node;
+          // handle a case where user set his own "exports". We need to change it
+          // this is a very VERY rare case
+          // and we do it because Babel supports (TypeScript will not compile the following code correctly)
+          // var exports = {}
+          // export { exports as default };
+
+          if (visit.parent && visit.parent.type === ASTType.Program) {
+            if (node.type == ASTType.VariableDeclaration && node.declarations) {
+              for (const decl of node.declarations) {
+                if (decl.id && decl.id.name === 'exports') {
+                  OVERRIDE_COMPILER_RESERVED_EXPORTS = true;
+                  OVERRIDE_EXPORTS_VAR = global.getNextSystemVariable();
+                  decl.id.name = OVERRIDE_EXPORTS_VAR;
+                  visit.scope.locals[OVERRIDE_EXPORTS_VAR] = 1;
+                  delete visit.scope.locals['exports'];
+                }
+              }
+            }
+          }
+          // dpn't try this at home
+          if (OVERRIDE_COMPILER_RESERVED_EXPORTS) {
+            const exported = global.exportAfterDeclaration['exports'];
+            if (exported) {
+              delete global.exportAfterDeclaration['exports'];
+              global.exportAfterDeclaration[OVERRIDE_EXPORTS_VAR] = exported;
+            }
+            if (node.name === 'exports' && !node.$fuse_exports) node.name = OVERRIDE_EXPORTS_VAR;
           }
 
           if (global.exportAfterDeclaration) {
@@ -200,14 +236,26 @@ export function ExportTransformer(): ITransformer {
                 type: 'VariableDeclaration',
               },
             ];
-
+            const response: IVisitorMod = { replaceWith: exportedNodes };
             if (type === 'ExportNamedDeclaration') {
               for (const specifier of node.specifiers) {
+                let targetVariable = sourceVariable;
+                if (esModuleInterop && specifier.local.name === 'default') {
+                  targetVariable = targetVariable + 'd';
+                  exportedNodes.push(
+                    createEsModuleDefaultInterop({
+                      helperObjectName: BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ,
+                      helperObjectProperty: BUNDLE_RUNTIME_NAMES.INTEROP_REQUIRE_DEFAULT_FUNCTION,
+                      targetIdentifierName: sourceVariable,
+                      variableName: targetVariable,
+                    }),
+                  );
+                }
                 exportedNodes.push(
                   createExports(global.namespace, specifier.exported.name, {
                     computed: false,
                     object: {
-                      name: sourceVariable,
+                      name: targetVariable,
                       type: 'Identifier',
                     },
                     property: {
@@ -219,7 +267,7 @@ export function ExportTransformer(): ITransformer {
                 );
               }
             }
-            const response: IVisitorMod = { replaceWith: exportedNodes };
+
             // make sure exports.__eModule is injected
             if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
               global.esModuleStatementInjected = true;
