@@ -206,6 +206,10 @@ export function JSXTransformer(): ITransformer {
               return { replaceWith: node };
             case 'JSXMemberExpression':
               node.type = 'MemberExpression';
+              // A member expression should never be translated to a literal
+              // So it isn't a JSXIdentifier at this point, it's just an identifier
+              node.object.type = "Identifier";
+              node.property.type = "Identifier";
               // it's important to replace it, since it will be re-visited and picked up by other transformers
               // for example Import transformer
               return { replaceWith: node };
