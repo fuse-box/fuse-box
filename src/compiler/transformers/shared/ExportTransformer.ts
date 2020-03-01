@@ -1,4 +1,5 @@
 import { BUNDLE_RUNTIME_NAMES } from '../../../bundleRuntime/bundleRuntimeCore';
+import { measureTime } from '../../../utils/utils';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import {
   ES_MODULE_EXPRESSION,
@@ -82,16 +83,19 @@ export function ExportTransformer(): ITransformer {
             }
             if (node.name === 'exports' && !node.$fuse_exports) node.name = OVERRIDE_EXPORTS_VAR;
           }
+          if (visit.parent && visit.parent.type !== ASTType.Program) return;
 
-          if (global.exportAfterDeclaration) {
+          if (global.exportAfterDeclaration && !visit.node.$fuse_visited) {
             const node = visit.node;
             const definedLocally: Array<string> = [];
+
             for (const key in global.exportAfterDeclaration) {
-              if (definedLocallyProcessed[key] === 1) continue;
-              if (isLocalDefined(key, visit.scope)) {
+              if (definedLocallyProcessed[key] === 1) {
+              } else if (isLocalDefined(key, visit.scope)) {
                 definedLocally.push(key);
               }
             }
+
             if (definedLocally.length && !visit.node.$fuse_visited) {
               const newNodes = [];
 
