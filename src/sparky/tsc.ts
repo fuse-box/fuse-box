@@ -103,7 +103,7 @@ export interface TscOptions {
   watch?: boolean;
 }
 
-export async function tsc(opts?: TscOptions, target?: string) {
+export async function tsc(opts?: TscOptions, target?: Array<string> | string) {
   let tscOptions: any = [];
 
   for (const key in opts) {
@@ -116,7 +116,8 @@ export async function tsc(opts?: TscOptions, target?: string) {
     }
   }
   if (target) {
-    tscOptions.push(target);
+    const files = [].concat(target);
+    for (const f of files) tscOptions.push(f);
   }
 
   return new Promise((resolve, reject) => {
