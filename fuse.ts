@@ -32,7 +32,7 @@ task('transpile', async c => {
       target: 'ES2017',
       outDir: 'dist',
     },
-    'src/index.ts',
+    ['src/index.ts', 'src/threading/worker_threads/ProcessThread.ts'],
   );
 });
 
@@ -53,7 +53,7 @@ task('fix-env', async () => {
 
       str = str.replace(
         /WORKER_THREAD\s*=\s*[^;]+/,
-        `WORKER_THREAD = path.resolve(__filename, './threading/worker_threads/ProcessThread.js')`,
+        `WORKER_THREAD = path.resolve(__dirname, 'threading/worker_threads/ProcessThread.js')`,
       );
       return str;
     })
