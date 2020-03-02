@@ -179,6 +179,15 @@ export function ensureDir(dir: string) {
   return dir;
 }
 
+export function ensurePackageJson(dir: string) {
+  fsExtra.ensureDir(dir);
+  const pkgJsonPath = pathJoin(dir, "package.json");
+  if (!fileExists(pkgJsonPath)) {
+    const contents = JSON.stringify({ "name": path.basename(dir) }, null, 4);
+    fs.writeFileSync(pkgJsonPath, contents)
+  }
+}
+
 export function fileStat(file: string) {
   return fs.statSync(file);
 }
