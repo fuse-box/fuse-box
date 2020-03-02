@@ -299,8 +299,8 @@ export function isNodeModuleInstalled(name) {
   }
 }
 
-export function ensureFuseBoxPath(input: string) {
-  return input.replace(/\\/g, '/').replace(/\/$/, '');
+export function ensureFuseBoxPath(input: string | undefined) {
+  return input && input.replace(/\\/g, '/').replace(/\/$/, '');
 }
 
 export function joinFuseBoxPath(...any): string {

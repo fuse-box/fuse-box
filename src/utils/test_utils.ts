@@ -20,15 +20,15 @@ declare global {
 }
 
 expect.extend({
-  toMatchFilePath(expectedPath, comparedPath) {
+  toMatchFilePath(actualPath, expectedPath) {
+    actualPath = ensureFuseBoxPath(actualPath);
     expectedPath = ensureFuseBoxPath(expectedPath);
-    comparedPath = ensureFuseBoxPath(comparedPath);
 
-    const exp = path2RegexPattern(comparedPath);
-    const isMatched = exp.test(expectedPath);
+    const exp = path2RegexPattern(expectedPath);
+    const isMatched = exp.test(actualPath);
     return {
       pass: isMatched,
-      message: () => `Expected ${exp} to match ${expectedPath}`,
+      message: () => `Expected path matching ${exp}, but got: ${actualPath}`,
     };
   },
 });
