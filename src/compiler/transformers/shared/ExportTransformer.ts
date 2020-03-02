@@ -1,5 +1,4 @@
 import { BUNDLE_RUNTIME_NAMES } from '../../../bundleRuntime/bundleRuntimeCore';
-import { measureTime } from '../../../utils/utils';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import {
   ES_MODULE_EXPRESSION,
@@ -47,8 +46,7 @@ export function ExportTransformer(): ITransformer {
         transformationContext: { compilerOptions },
       } = props;
 
-      let OVERRIDE_COMPILER_RESERVED_EXPORTS = false;
-      let OVERRIDE_EXPORTS_VAR: string;
+      let USE_MODULE_EXPORTS = false;
 
       const esModuleInterop = compilerOptions.esModuleInterop;
       return {
@@ -65,24 +63,12 @@ export function ExportTransformer(): ITransformer {
             if (node.type == ASTType.VariableDeclaration && node.declarations) {
               for (const decl of node.declarations) {
                 if (decl.id && decl.id.name === 'exports') {
-                  OVERRIDE_COMPILER_RESERVED_EXPORTS = true;
-                  OVERRIDE_EXPORTS_VAR = global.getNextSystemVariable();
-                  decl.id.name = OVERRIDE_EXPORTS_VAR;
-                  visit.scope.locals[OVERRIDE_EXPORTS_VAR] = 1;
-                  delete visit.scope.locals['exports'];
+                  USE_MODULE_EXPORTS = true;
                 }
               }
             }
           }
-          // dpn't try this at home
-          if (OVERRIDE_COMPILER_RESERVED_EXPORTS) {
-            const exported = global.exportAfterDeclaration['exports'];
-            if (exported) {
-              delete global.exportAfterDeclaration['exports'];
-              global.exportAfterDeclaration[OVERRIDE_EXPORTS_VAR] = exported;
-            }
-            if (node.name === 'exports' && !node.$fuse_exports) node.name = OVERRIDE_EXPORTS_VAR;
-          }
+
           if (visit.parent && visit.parent.type !== ASTType.Program) return;
 
           if (global.exportAfterDeclaration && !visit.node.$fuse_visited) {
@@ -106,10 +92,16 @@ export function ExportTransformer(): ITransformer {
                 if (targetAfter) {
                   if (!response.appendToBody) response.appendToBody = [];
                   for (const item of targetAfter.targets) {
-                    const ast = createExports(global.namespace, item, {
-                      name: localVar,
-                      type: 'Identifier',
+                    const ast = createExports({
+                      exportsKey: global.namespace,
+                      exportsVariableName: item,
+                      property: {
+                        name: localVar,
+                        type: 'Identifier',
+                      },
+                      useModule: USE_MODULE_EXPORTS,
                     });
+
                     response.appendToBody.push(ast);
                   }
                 }
@@ -138,6 +130,20 @@ export function ExportTransformer(): ITransformer {
           const global = visit.globalContext as GlobalContext;
 
           const type = node.type;
+
+          if (node.type == ASTType.VariableDeclaration && node.declarations) {
+            for (const decl of node.declarations) {
+              if (decl.id && decl.id.name === 'exports') {
+                USE_MODULE_EXPORTS = true;
+                // OVERRIDE_COMPILER_RESERVED_EXPORTS = true;
+                // OVERRIDE_EXPORTS_VAR = global.getNextSystemVariable();
+                // decl.id.name = OVERRIDE_EXPORTS_VAR;
+                // visit.scope.locals[OVERRIDE_EXPORTS_VAR] = 1;
+                // delete visit.scope.locals['exports'];
+              }
+            }
+          }
+
           if (!INTERESTED_NODES[type]) return;
 
           // remove export interface
@@ -256,17 +262,22 @@ export function ExportTransformer(): ITransformer {
                   );
                 }
                 exportedNodes.push(
-                  createExports(global.namespace, specifier.exported.name, {
-                    computed: false,
-                    object: {
-                      name: targetVariable,
-                      type: 'Identifier',
-                    },
+                  createExports({
+                    exportsKey: global.namespace,
+                    exportsVariableName: specifier.exported.name,
                     property: {
-                      name: specifier.local.name,
-                      type: 'Identifier',
+                      computed: false,
+                      object: {
+                        name: targetVariable,
+                        type: 'Identifier',
+                      },
+                      property: {
+                        name: specifier.local.name,
+                        type: 'Identifier',
+                      },
+                      type: 'MemberExpression',
                     },
-                    type: 'MemberExpression',
+                    useModule: USE_MODULE_EXPORTS,
                   }),
                 );
               }
@@ -314,9 +325,14 @@ export function ExportTransformer(): ITransformer {
                 const response: IVisitorMod = {
                   replaceWith: [
                     statement,
-                    createExports(global.namespace, 'default', {
-                      name: node.declaration.id.name,
-                      type: 'Identifier',
+                    createExports({
+                      exportsKey: global.namespace,
+                      exportsVariableName: 'default',
+                      property: {
+                        name: node.declaration.id.name,
+                        type: 'Identifier',
+                      },
+                      useModule: USE_MODULE_EXPORTS,
                     }),
                   ],
                 };
@@ -327,8 +343,14 @@ export function ExportTransformer(): ITransformer {
                 }
                 return response;
               }
+
               const response: IVisitorMod = {
-                replaceWith: createExports(global.namespace, 'default', node.declaration),
+                replaceWith: createExports({
+                  exportsKey: global.namespace,
+                  exportsVariableName: 'default',
+                  property: node.declaration,
+                  useModule: USE_MODULE_EXPORTS,
+                }),
               };
               // make sure exports.__eModule is injected
               if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
@@ -361,9 +383,14 @@ export function ExportTransformer(): ITransformer {
                   global.identifierReplacement[specifier.local.name]
                 ) {
                   newNodes.push(
-                    createExports(global.namespace, specifier.exported.name, {
-                      name: specifier.local.name,
-                      type: 'Identifier',
+                    createExports({
+                      exportsKey: global.namespace,
+                      exportsVariableName: specifier.exported.name,
+                      property: {
+                        name: specifier.local.name,
+                        type: 'Identifier',
+                      },
+                      useModule: USE_MODULE_EXPORTS,
                     }),
                   );
                 } else {
@@ -400,12 +427,18 @@ export function ExportTransformer(): ITransformer {
             if (node.declaration) {
               if (node.declaration.id && node.declaration.id.name) {
                 const statement = considerDecorators(node);
+
                 return {
                   replaceWith: [
                     statement,
-                    createExports(global.namespace, node.declaration.id.name, {
-                      name: node.declaration.id.name,
-                      type: 'Identifier',
+                    createExports({
+                      exportsKey: global.namespace,
+                      exportsVariableName: node.declaration.id.name,
+                      property: {
+                        name: node.declaration.id.name,
+                        type: 'Identifier',
+                      },
+                      useModule: USE_MODULE_EXPORTS,
                     }),
                   ],
                 };
@@ -433,7 +466,15 @@ export function ExportTransformer(): ITransformer {
                         // check if there is INIT
                         // we night have something like this:
                         //    export var FooBar;
-                        newNodes.push(createExports(global.namespace, declaration.id.name, declaration.init));
+
+                        newNodes.push(
+                          createExports({
+                            exportsKey: global.namespace,
+                            exportsVariableName: declaration.id.name,
+                            property: declaration.init,
+                            useModule: USE_MODULE_EXPORTS,
+                          }),
+                        );
                       }
                     }
                   }

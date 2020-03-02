@@ -508,6 +508,7 @@ describe('Es exports tests', () => {
             exports.foo = function(){}
           `,
         });
+
         expect(result.code).toMatchSnapshot();
       });
     });
