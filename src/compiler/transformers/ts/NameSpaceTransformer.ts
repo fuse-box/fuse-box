@@ -1,9 +1,9 @@
-import { ASTNode, ASTType } from '../../interfaces/AST';
-import { transpileModule } from '../../program/transpileModule';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { GlobalContext, createGlobalContext } from '../../program/GlobalContext';
 import { createExports } from '../../Visitor/helpers';
+import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
+import { GlobalContext, createGlobalContext } from '../../program/GlobalContext';
+import { transpileModule } from '../../program/transpileModule';
 
 export function NamespaceTransformer(): ITransformer {
   return {
@@ -18,7 +18,7 @@ export function NamespaceTransformer(): ITransformer {
         onTopLevelTraverse: (visit: IVisit): IVisitorMod => {
           let node = visit.node;
           if (node.declare) {
-            return { removeNode: true, ignoreChildren: true };
+            return { ignoreChildren: true, removeNode: true };
           }
           let withExport = false;
           const globalContext = visit.globalContext as GlobalContext;
@@ -38,78 +38,83 @@ export function NamespaceTransformer(): ITransformer {
             transpileModule({
               ...globalContext.programProps,
               ast: nm,
-              namespace: mameSpaceName,
               globalContext: createGlobalContext({
                 namespace: mameSpaceName,
               }),
+              namespace: mameSpaceName,
             });
 
             //node.body.context =
             const Declaration: ASTNode = {
-              type: 'VariableDeclaration',
-              kind: 'var',
               declarations: [
                 {
-                  type: 'VariableDeclarator',
-                  init: null,
                   id: {
-                    type: 'Identifier',
                     name: node.id.name,
+                    type: 'Identifier',
                   },
+                  init: null,
+                  type: 'VariableDeclarator',
                 },
               ],
+              kind: 'var',
+              type: 'VariableDeclaration',
             };
 
             const FunctionBody: ASTNode = {
-              type: 'ExpressionStatement',
               expression: {
-                type: 'CallExpression',
-                callee: {
-                  type: 'FunctionExpression',
-                  params: [
-                    {
-                      type: 'Identifier',
-                      name: mameSpaceName,
-                    },
-                  ],
-                  body: {
-                    type: 'BlockStatement',
-                    body: (node.body as ASTNode).body,
-                  },
-                  async: false,
-                  generator: false,
-                  id: null,
-                },
                 arguments: [
                   {
-                    type: 'LogicalExpression',
                     left: {
-                      type: 'Identifier',
                       name: mameSpaceName,
+                      type: 'Identifier',
                     },
+                    operator: '||',
                     right: {
-                      type: 'AssignmentExpression',
                       left: {
-                        type: 'Identifier',
                         name: mameSpaceName,
+                        type: 'Identifier',
                       },
                       operator: '=',
                       right: {
-                        type: 'ObjectExpression',
                         properties: [],
+                        type: 'ObjectExpression',
                       },
+                      type: 'AssignmentExpression',
                     },
-                    operator: '||',
+                    type: 'LogicalExpression',
                   },
                 ],
+                callee: {
+                  async: false,
+                  body: {
+                    body: (node.body as ASTNode).body,
+                    type: 'BlockStatement',
+                  },
+                  generator: false,
+                  id: null,
+                  params: [
+                    {
+                      name: mameSpaceName,
+                      type: 'Identifier',
+                    },
+                  ],
+                  type: 'FunctionExpression',
+                },
+                type: 'CallExpression',
               },
+              type: 'ExpressionStatement',
             };
 
             const nodes = [Declaration, FunctionBody];
             if (withExport) {
-              const exportDeclaration = createExports(globalContext.namespace, mameSpaceName, {
-                type: 'Identifier',
-                name: mameSpaceName,
+              const exportDeclaration = createExports({
+                exportsKey: globalContext.namespace,
+                exportsVariableName: mameSpaceName,
+                property: {
+                  name: mameSpaceName,
+                  type: 'Identifier',
+                },
+                useModule: false,
               });
               nodes.push(exportDeclaration);
             }

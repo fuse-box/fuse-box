@@ -120,24 +120,44 @@ export function createVariableDeclaration(name: string, node: ASTNode): ASTNode 
 export function createLiteral(value): ASTNode {
   return { type: 'Literal', value };
 }
-export function createExports(exportsKey: string, exportsVariableName: string, property: ASTNode): ASTNode {
+export function createExports(props: {
+  exportsKey: string;
+  exportsVariableName: string;
+  property: ASTNode;
+  useModule?: boolean;
+}): ASTNode {
+  let obj: ASTNode = {
+    name: props.exportsKey,
+    type: 'Identifier',
+  };
+  if (props.useModule && props.exportsKey === 'exports') {
+    obj = {
+      computed: false,
+      object: {
+        name: 'module',
+        optional: false,
+        type: 'Identifier',
+      },
+      property: {
+        name: 'exports',
+        type: 'Identifier',
+      },
+      type: 'MemberExpression',
+    };
+  }
   return {
     expression: {
       left: {
         computed: false,
-        object: {
-          $fuse_exports: true,
-          name: exportsKey,
-          type: 'Identifier',
-        },
+        object: obj,
         property: {
-          name: exportsVariableName,
+          name: props.exportsVariableName,
           type: 'Identifier',
         },
         type: 'MemberExpression',
       },
       operator: '=',
-      right: property,
+      right: props.property,
       type: 'AssignmentExpression',
     },
     type: 'ExpressionStatement',
