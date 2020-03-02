@@ -7,12 +7,13 @@ class Context {
     fusebox({
       //compilerOptions: { tsConfig: 'sdfsd.json' },
       cache: { enabled: false, root: './.cache', strategy: 'fs' },
+      compilerOptions: { jsParser: { nodeModules: 'ts' } },
       devServer: this.runServer,
       entry: 'src/entry.ts',
 
       sourceMap: { project: true, vendor: false },
       target: 'browser',
-      //threading: { minFileSize: 2000, threadAmount: 1 },
+      threading: { minFileSize: 2000, threadAmount: 3 },
       watcher: true,
       webIndex: {
         publicPath: '/',
@@ -46,7 +47,7 @@ task('preview', async ctx => {
   ctx.runServer = true;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: false });
+  await fuse.runProd({ uglify: true, buildTarget: 'ES5' });
 });
 task('dist', async ctx => {
   ctx.runServer = false;

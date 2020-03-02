@@ -122,16 +122,21 @@ export function createBundle(props: IBundleProps): Bundle {
         sourceMap = self.data.sourceMap.toString();
       }
 
-      if (ctx.config.isProduction && !self.isCSSType && opts.uglify && source.containsMaps) {
+      if (ctx.config.isProduction && !self.isCSSType && opts.uglify) {
         const terserOpts: any = {
-          sourceMap: {
-            content: self.data.sourceMap,
-            includeSources: true,
-          },
+          sourceMap: source.containsMaps
+            ? {
+                content: self.data.sourceMap,
+                includeSources: true,
+              }
+            : undefined,
         };
+        ctx.log.info('minify', self.config.absPath);
         const result = Terser.minify(self.contents, terserOpts);
         self.contents = result.code;
-        sourceMap = result.map.toString();
+        if (source.containsMaps && result.map) {
+          sourceMap = result.map.toString();
+        }
       }
       // writing source maps
       if (source.containsMaps) await self.createSourceMap(sourceMap);
