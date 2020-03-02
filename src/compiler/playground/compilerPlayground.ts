@@ -1,8 +1,10 @@
+import { measureTime } from '../../utils/utils';
 import { testTranspile } from '../transpilers/testTranspiler';
 
 let file;
 
 async function main() {
+  const t = measureTime('start');
   const code = await testTranspile({
     compilerOptions: {
       esModuleInterop: true,
@@ -13,6 +15,8 @@ async function main() {
     fileName: __dirname + '/sample1.tsx',
   });
   console.log(code);
+  console.log('');
+  console.log(`:completed in: ${t.end('ms')}`);
 }
 
 main();
