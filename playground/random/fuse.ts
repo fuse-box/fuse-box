@@ -6,8 +6,9 @@ class Context {
     fusebox({
       //electron: { nodeIntegration: true },
       entry: 'src/index.ts',
-      modules: ['./node_modules'],
+      modules: ['modules'],
       target: 'browser',
+
       //threading: { threadAmount: 1 },
 
       cache: { enabled: false, root: './.cache' },
