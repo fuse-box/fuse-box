@@ -101,7 +101,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
 
   for (let i = paths.length - 1; i >= 0; i--) {
     const attempted = path.join(paths[i], parsed.name);
-    if (fileExists(attempted)) {
+    if (fileExists(path.join(attempted, "package.json"))) {
       return attempted;
     }
   }
@@ -113,7 +113,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
 
   if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
     const attempted = path.join(localModuleRoot, parsed.name);
-    if (fileExists(attempted)) {
+    if (fileExists(path.join(attempted, "package.json"))) {
       return attempted;
     }
   }
