@@ -161,7 +161,7 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
       }
 
       ctx.ict.sync('module_init', { bundleContext, module });
-      if (!module.contents) {
+      if (typeof module.contents === "undefined") {
         module.contents = await readFileAsync(module.absPath);
       }
       if (module.isExecutable) {
