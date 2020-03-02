@@ -20,6 +20,11 @@ export async function BundlePhase(productionContext: IProductionContext) {
         onReady: response => {
           module.contents = response.contents;
           module.sourceMap = response.sourceMap;
+
+          if (ctx.config.productionBuildTarget) {
+            ctx.log.info('downTranspile', module.publicPath);
+            module.transpileDown(ctx.config.productionBuildTarget);
+          }
           return resolve();
         },
         onResolve: async data => {
@@ -33,6 +38,7 @@ export async function BundlePhase(productionContext: IProductionContext) {
   }
 
   const promises = [];
+
   for (const module of modules) {
     if (module.isExecutable) {
       productionContext.log.info('generate', module.publicPath);
