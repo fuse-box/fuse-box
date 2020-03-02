@@ -41,7 +41,7 @@
     "http-proxy-middleware": "^0.20.0",
     "ieee754": "^1.1.13",
     "lego-api": "^1.0.8",
-    "meriyah": "1.9.5",
+    "meriyah": "1.9.8",
     "offset-sourcemap-lines": "^1.0.1",
     "open": "^7.0.0",
     "postcss": "^7.0.26",
@@ -138,5 +138,5 @@
     "typecheck": "ts-node -T fuse typecheck"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.317"
+  "version": "4.0.0-alpha.319"
 }
