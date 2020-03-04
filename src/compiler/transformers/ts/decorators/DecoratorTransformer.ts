@@ -151,25 +151,25 @@ export function DecoratorTransformer(): ITransformer {
 
                     if (params && params.length) {
                       collectDecorators({ expressions, helperModule: helperModule, params });
-                      if (expressions.length) {
-                        // method decorators metadata
-                        if (emitDecoratorMetadata) {
-                          const medatadata = createMethodMetadata({ node: item });
-                          expressions.push(medatadata.designType);
-                          expressions.push(medatadata.paramTypes);
-                          expressions.push(medatadata.returnType);
-                        }
-                        statements.push(
-                          createMethodPropertyDecorator({
-                            className: className,
-                            helperModule: helperModule,
-                            isStatic: item.static,
-                            methodName: item.key.name,
-
-                            elements: expressions,
-                          }),
-                        );
+                    }
+                    if (expressions.length) {
+                      // method decorators metadata
+                      if (emitDecoratorMetadata) {
+                        const medatadata = createMethodMetadata({ node: item });
+                        expressions.push(medatadata.designType);
+                        expressions.push(medatadata.paramTypes);
+                        expressions.push(medatadata.returnType);
                       }
+                      statements.push(
+                        createMethodPropertyDecorator({
+                          className: className,
+                          helperModule: helperModule,
+                          isStatic: item.static,
+                          methodName: item.key.name,
+
+                          elements: expressions,
+                        }),
+                      );
                     }
                   }
                 }
