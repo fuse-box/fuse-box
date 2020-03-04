@@ -990,13 +990,6 @@ class State {
     }
     let debug = false;
     if (code && code.length > 0) {
-      const l = code.split(/\n/).length - 1;
-      // if (l > 1) {
-      //   debug = true;
-      //   this.line += l - 1;
-      // }
-
-      //2
       if (this.lineEndSize > 0) {
         if (code.endsWith(this.lineEnd)) {
           this.line += this.lineEndSize;
