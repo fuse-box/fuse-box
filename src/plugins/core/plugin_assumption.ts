@@ -1,10 +1,10 @@
-import * as path from 'path';
 import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { LINK_ASSUMPTION_EXTENSIONS, TEXT_EXTENSIONS } from '../../config/extensions';
 import { Context } from '../../core/context';
 import { pluginJSONHandler } from './plugin_json';
 import { pluginLessCapture } from './plugin_less';
 import { pluginLinkHandler } from './plugin_link';
+import { pluginNodeNativeHandler } from './plugin_node_native';
 import { pluginRawHandler } from './plugin_raw';
 import { pluginStylusCapture } from './plugin_stylus';
 
@@ -12,7 +12,7 @@ export function pluginAssumption() {
   return (ctx: Context) => {
     ctx.ict.on('bundle_resolve_module', props => {
       if (!props.module.captured) {
-        const ext = path.extname(props.module.absPath);
+        const ext = props.module.extension;
         if (ext === '.json') {
           // json handler
           pluginJSONHandler(props.module, {});
@@ -41,6 +41,9 @@ export function pluginAssumption() {
         } else if (TEXT_EXTENSIONS.indexOf(ext) > -1) {
           // Text extensions (like .md or text)
           pluginRawHandler({ ctx, module: props.module, opts: {} });
+        } else if (ext === '.node') {
+          // Node native
+          pluginNodeNativeHandler(props.module);
         }
       }
       return props;
