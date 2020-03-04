@@ -170,8 +170,14 @@ export function isObject(obj: any) {
 export function pathJoin(...args) {
   return path.join(...args);
 }
+export function pathRelative(from: string, to: string) {
+  return path.relative(from, to);
+}
 export function getExtension(file: string) {
   return path.extname(file);
+}
+export function getFilename(file: string) {
+  return path.basename(file);
 }
 
 export function ensureDir(dir: string) {
@@ -181,10 +187,10 @@ export function ensureDir(dir: string) {
 
 export function ensurePackageJson(dir: string) {
   fsExtra.ensureDir(dir);
-  const pkgJsonPath = pathJoin(dir, "package.json");
+  const pkgJsonPath = pathJoin(dir, 'package.json');
   if (!fileExists(pkgJsonPath)) {
-    const contents = JSON.stringify({ "name": path.basename(dir) }, null, 4);
-    fs.writeFileSync(pkgJsonPath, contents)
+    const contents = JSON.stringify({ name: path.basename(dir) }, null, 4);
+    fs.writeFileSync(pkgJsonPath, contents);
   }
 }
 
