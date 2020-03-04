@@ -158,7 +158,8 @@ describe('Decorators test', () => {
         }
     `,
       });
-      expect(res).toMatchSnapshot();
+
+      expect(res.code).toMatchSnapshot();
     });
 
     it('should decorate class static method', () => {
@@ -171,7 +172,7 @@ describe('Decorators test', () => {
     `,
       });
 
-      expect(res).toMatchSnapshot();
+      expect(res.code).toMatchSnapshot();
     });
   });
 

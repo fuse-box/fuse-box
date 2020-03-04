@@ -244,23 +244,21 @@ __fuse_decorate.d([hey, gay, __fuse_decorate.p(0, kukka), __fuse_decorate.p(0, s
 `;
 
 exports[`Decorators test Method decorators should decorate class method 1`] = `
-Object {
-  "code": "class A {
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class A {
   hey() {}
 }
-",
-  "requireStatementCollection": Array [],
-}
+__fuse_decorate.d([foo], A.prototype, \\"hey\\", null);
+"
 `;
 
 exports[`Decorators test Method decorators should decorate class static method 1`] = `
-Object {
-  "code": "class A {
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class A {
   static hey() {}
 }
-",
-  "requireStatementCollection": Array [],
-}
+__fuse_decorate.d([foo], A, \\"hey\\", null);
+"
 `;
 
 exports[`Decorators test Method param decorators should contain 1 decorator  1`] = `
