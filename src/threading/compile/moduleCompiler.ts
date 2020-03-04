@@ -113,8 +113,8 @@ export async function moduleCompiler(props: IModuleCompilerProps) {
         const jsonSourceMaps = genOptions.sourceMap.toJSON();
         if (!jsonSourceMaps.sourcesContent) {
           delete jsonSourceMaps.file;
-          jsonSourceMaps.sources = [module.publicPath];
-          jsonSourceMaps.sourcesContent = [props.contents];
+          jsonSourceMaps.sources = [target === 'server' ? module.absPath : module.publicPath];
+          if (target !== 'server') jsonSourceMaps.sourcesContent = [props.contents];
         }
         response.sourceMap = JSON.stringify(jsonSourceMaps);
       }
