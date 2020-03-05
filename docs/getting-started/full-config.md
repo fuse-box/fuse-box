@@ -1,5 +1,15 @@
 # Full Configuration with Defaults
 
+-------
+
+# Currently Out of Date
+
+This document may still be useful for reference as not everything has changed, but there have been
+many updates to the config.  To see the actual config interface, search this git repo for for `IConfig.ts`
+
+--------
+
+
 The following is a full list of all the configurations, including any defaults.
 
 ## Key
@@ -9,103 +19,40 @@ The following is a full list of all the configurations, including any defaults.
 
 ```ts
 export interface IPublicConfig {
-	root?: string;
-	target?: ITarget = 'browser' | 'server' | 'electron' | 'web-worker'; //default: 'browser'
-	dependencies?: {
-		include?: Array<string>;
-		ignorePackages?: Array<string>;
-		ignoreAllExternal?: boolean;
-	};
-  modules?: Array<string>;
-  compilerOptions?:  ICompilerOptions = {
-    baseUrl?: string;
-    buildTarget?: ITarget;
-    emitDecoratorMetadata?: boolean;
-    esModuleInterop?: boolean;
-    esModuleStatement?: boolean;
-    experimentalDecorators?: boolean;
-    jsxFactory?: string;
-    paths?: ITypeScriptPaths;
-    processEnv?: Record<string, string>;
-    tsConfig?: string;
-  }
+	alias?: { [key: string]: string };
 
-	logging?: IFuseLoggerProps = {
-		level?: 'succinct' | 'verbose' | 'disabled';
-		ignoreStatementErrors?: Array<string>;
-	};
-	webWorkers?: IWebWorkerConfig = {
-		enabled?: boolean;
-		config?: IPublicConfig = { recursive include tree };
-	};
-
-	watch?: boolean | IWatcherExternalProps = {
-		paths?: any;
-		skipRecommendedIgnoredPaths?: boolean;
-		ignored?: Array<string | RegExp>;
-		banned?: Array<string>;
-		chokidar?: WatchOptions;
-	};
-
-	resources?: IResourceConfig = {
-		resourcePublicRoot?: string; //default: "/resources"
-		resourceFolder?: string; //default: "{YOUR_DIST_FOLDER}/resources"
-	};
-
-	json?: IJSONPluginProps = {
-		useDefault?: boolean;
-		path?: string;
-	};
-	link?: IPluginLinkOptions = {
-		useDefault?: boolean;
-		resourcePublicRoot?: string;
-	};
-
-	env?: { [key: string]: string };
-
-	hmr?: boolean | IHMRExternalProps = {
-		reloadEntryOnStylesheet?: boolean;
-		hardReloadScripts?: boolean;
-	};
-	stylesheet?: IStyleSheetProps = {
-		ignoreChecksForCopiedResources?: boolean;
-		breakDependantsCache?: boolean;
-		groupResourcesFilesByType?: boolean;  //default: true
-		paths?: Array<string>;
-		autoImport?: Array<IStyleSheetAutoImportCapture>;
-		macros?: { [key: string]: string };
-		sass?: ISassProps;
-		postCSS?: IPostCSSProps;
-		less?: ILessProps;
-	};
 	cache?: boolean | ICacheProps = {
 		enabled?: boolean;  // default: true
 		root?: string;
-		FTL?: boolean;
+		strategy?: 'fs' | 'memory';
 	};
-	tsConfig?: string | IRawCompilerOptions = { very large. check out tsconfig };
-	entry?: string | Array<string>;
-	webIndex?: boolean | IWebIndexConfig = {
-		enabled?: boolean;
-		target?: string;
-		template?: string;
-		distFileName?: string;
-		publicPath?: string;
-		embedIndexedBundles?: boolean;
-	};
-	sourceMap?:
-		| {
-				sourceRoot?: string;
-				vendor?: boolean;
-				project?: boolean;
-				css?: boolean;
-			}
-		| boolean;
-	plugins?: Array<(ctx: Context) => void>;
-	alias?: { [key: string]: string };
 
-	// read only
-	defaultCollectionName?: string;
+	compilerOptions?:  ICompilerOptions = {
+		baseUrl?: string;
+		buildEnv?: Record<string, any>;
+		buildTarget?: ITarget;
+		emitDecoratorMetadata?: boolean;
+		esModuleInterop?: boolean;
+		esModuleStatement?: boolean;
+		experimentalDecorators?: boolean;
+		jsxFactory?: string;
+		paths?: ITypeScriptPaths;
+		processEnv?: Record<string, string>;
+		transformers?: Array<ICompilerOptionTransformer>;
+		tsConfig?: string;
+		jsParser?: { nodeModules?: ICompilerParserType; project?: ICompilerParserType };
+	}
+	
+	dependencies?: {
+		ignore?: Array<string | RegExp>;
+		importRefs?: Array<IImportRef> = [{
+			bundle?: boolean;
+			matching: RegExp | string;
+			replacement: string;
+		}];
+		include?: Array<string>;
+		serverIgnoreExternals?: boolean;
+	};
 
 	devServer?: boolean | undefined | IDevServerProps = {
 		enabled?: boolean;
@@ -133,6 +80,92 @@ export interface IPublicConfig {
 			connectionURL?: string;
 		};
 	};
+
+	electron?: IElectronOptions = {
+		nodeIntegration?: boolean;
+	};
+
+	entry?: Array<string> | string;
+
+	env?: { [key: string]: string };
+
+	hmr?: boolean | IHMRProps {
+		enabled?: boolean;
+		plugin?: string;
+	}
+
+	json?: IJSONPluginProps = {
+		useDefault?: boolean;
+		path?: string;
+	};
+
+	link?: IPluginLinkOptions = {
+		useDefault?: boolean;
+		resourcePublicRoot?: string;
+	};
+
+	logging?: IFuseLoggerProps = {
+		level?: 'succinct' | 'verbose' | 'disabled';
+		ignoreStatementErrors?: Array<string>;
+	};
+
+	modules?: Array<string>;
+
+	plugins?: Array<(ctx: Context) => void>;
+
+	resources?: IResourceConfig = {
+		resourcePublicRoot?: string; //default: "/resources"
+		resourceFolder?: string; //default: "{YOUR_DIST_FOLDER}/resources"
+	};
+
+	sourceMap?: boolean | ISourceMap = {
+		sourceRoot?: string;
+		vendor?: boolean;
+		project?: boolean;
+		css?: boolean;
+	};
+
+	stylesheet?: IStyleSheetProps = {
+		ignoreChecksForCopiedResources?: boolean;
+		breakDependantsCache?: boolean;
+		groupResourcesFilesByType?: boolean;  //default: true
+		paths?: Array<string>;
+		autoImport?: Array<IStyleSheetAutoImportCapture>;
+		macros?: { [key: string]: string };
+		sass?: ISassProps;
+		postCSS?: IPostCSSProps;
+		less?: ILessProps;
+	};
+
+	target?: ITarget = 'browser' | 'server' | 'electron' | 'web-worker'; //default: 'server'
+
+	threading?: IThreadingConfig = {
+		enabled?: boolean;
+		minFileSize?: number;
+		threadAmount?: number;
+	}
+
+	watcher?: boolean | IWatcherExternalProps = {
+		chokidarOptions?: WatchOptions;
+		enabled?: boolean;
+		ignore?: Array<string | RegExp>;
+		include?: Array<string | RegExp>;
+	};
+
+	webIndex?: boolean | IWebIndexConfig = {
+		distFileName?: string;
+		embedIndexedBundles?: boolean;
+		enabled?: boolean;
+		publicPath?: string;
+		target?: string;
+		template?: string;
+	};
+	
+	webWorkers?: IWebWorkerConfig = {
+		enabled?: boolean;
+		config?: IPublicConfig = { recursive include tree };
+	};
+
 }
 ```
 
@@ -142,7 +175,7 @@ export interface IPublicConfig {
 
 ### [**devServer**](../devServer.md) - How the product bundle is hosted locally
 
-```
+```ts
 devServer?: boolean | undefined | IDevServerProps = {
 	enabled?: boolean;
 	open?: boolean | IOpenProps = {
@@ -175,7 +208,7 @@ devServer?: boolean | undefined | IDevServerProps = {
 
 ### [**logging**](../logging.md) - What's written to console
 
-```
+```ts
 logging?: IFuseLoggerProps = {
 	level?: 'succinct' | 'verbose' | 'disabled';
 	ignoreStatementErrors?: Array<string>;
@@ -186,27 +219,20 @@ logging?: IFuseLoggerProps = {
 
 ### [**cache**](../cache.md) - How much work is reused, where it's stored
 
-```
+```ts
 cache?: boolean | ICacheProps = {
-	enabled?: boolean;
+	enabled?: boolean;  // default: true
 	root?: string;
-	FTL?: boolean;
+	strategy?: 'fs' | 'memory';
 };
 ```
 
-<br>
-
-### [**tsconfig**](../monorepo.md) - How paths are resolved
-
-```
-tsConfig?: string | IRawCompilerOptions = { very large. check out tsconfig };
-```
 
 <br>
 
 ### [**resources**](../resource_links.md) - How assets (png, ttf, etc) are copied to dist
 
-```
+```ts
 resources?: IResourceConfig = {
 	resourcePublicRoot?: string; //default: "/resources"
 	resourceFolder?: string; //default: "{YOUR_DIST_FOLDER}/resources"
@@ -217,7 +243,7 @@ resources?: IResourceConfig = {
 
 ### [**hmr**](../hmr.md) - Hot module reloading options
 
-```
+```ts
 hmr?: boolean | IHMRExternalProps = {
 	reloadEntryOnStylesheet?: boolean;
 	hardReloadScripts?: boolean;
@@ -228,7 +254,7 @@ hmr?: boolean | IHMRExternalProps = {
 
 ### [**stylesheet**](../stylesheet.md) - How stylesheet files (css, sass, etc) are imported and processed
 
-```
+```ts
 stylesheet?: IStyleSheetProps = {
 	ignoreChecksForCopiedResources?: boolean;
 	breakDependantsCache?: boolean;
@@ -246,13 +272,12 @@ stylesheet?: IStyleSheetProps = {
 
 ### [**watch**](../watcher.md) - How updates to project files are responded to
 
-```
-watch?: boolean | IWatcherExternalProps = {
-	paths?: any;
-	skipRecommendedIgnoredPaths?: boolean;
-	ignored?: Array<string | RegExp>;
-	banned?: Array<string>;
-	chokidar?: WatchOptions;
+```ts
+watcher?: boolean | IWatcherExternalProps = {
+	chokidarOptions?: WatchOptions;
+	enabled?: boolean;
+	ignore?: Array<string | RegExp>;
+	include?: Array<string | RegExp>;
 };
 ```
 
@@ -260,7 +285,7 @@ watch?: boolean | IWatcherExternalProps = {
 
 ### [**webIndex**](../webIndex.md) - How the final html file is generated
 
-```
+```ts
 webIndex?: boolean | IWebIndexConfig = {
 	enabled?: boolean;
 	target?: string;
@@ -275,7 +300,7 @@ webIndex?: boolean | IWebIndexConfig = {
 
 ### [**webWorkers**](../webworkers.md) - How WebWorker code is bundled
 
-```
+```ts
 webWorkers?: IWebWorkerConfig = {
 	enabled?: boolean;
 	config?: IPublicConfig;
