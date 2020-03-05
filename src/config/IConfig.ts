@@ -19,40 +19,37 @@ import { IThreadingConfig } from './IThreadingConfig';
 import { IWatcherPublicConfig } from './IWatcher';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 
+
+interface ISourceMap {
+  css?: boolean;
+  project?: boolean;
+  sourceRoot?: string;
+  vendor?: boolean;
+}
+
 export interface IPublicConfig {
-  compilerOptions?: ICompilerOptions;
-  logging?: IFuseLoggerProps;
-  modules?: Array<string>;
-  threading?: IThreadingConfig;
-
-  electron?: IElectronOptions;
-
+  alias?: { [key: string]: string };
   cache?: ICacheProps | boolean;
+  compilerOptions?: ICompilerOptions;
   dependencies?: IDependencies;
+  devServer?: undefined | IDevServerProps | boolean;
+  electron?: IElectronOptions;
   entry?: Array<string> | string;
+  env?: { [key: string]: string };
   hmr?: IHMRProps | boolean;
   json?: IJSONPluginProps;
   link?: IPluginLinkOptions;
+  logging?: IFuseLoggerProps;
+  modules?: Array<string>;
   plugins?: Array<(ctx: Context) => void>;
   resources?: IResourceConfig;
-  sourceMap?:
-    | boolean
-    | {
-        css?: boolean;
-        project?: boolean;
-        sourceRoot?: string;
-        vendor?: boolean;
-      };
+  sourceMap?: boolean | ISourceMap;
   stylesheet?: IStyleSheetProps;
   target?: ITarget;
+  threading?: IThreadingConfig;
   watcher?: IWatcherPublicConfig | boolean;
-  webWorkers?: IWebWorkerConfig;
-  env?: { [key: string]: string };
-
   webIndex?: IWebIndexConfig | boolean;
-  alias?: { [key: string]: string };
-
-  devServer?: undefined | IDevServerProps | boolean;
+  webWorkers?: IWebWorkerConfig;
 }
 
 export interface IConfig {
