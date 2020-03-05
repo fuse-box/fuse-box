@@ -14,7 +14,7 @@ Here are a few conceptual highlights to understand:
 
 - `tsconfig.json` - Optionally, the `tsconfig.json` file is also sourced for [some parts of configuration](../monorepo.md).
 
-- bundles and/or the "dist" folder - By default, everything is bundled into a `/dist` folder.  Optionally, you can specify any bundle names or logic you want.[specify any bundle names or logic you want.](../bundling.md)
+- bundles and/or the "dist" folder - By default, everything is bundled into a `/dist` folder.  Optionally, you can [specify any bundle names or logic you want.](../bundling.md)
 
 - css/sass/less - By default, imports of stylesheet files in your code will be automatically caught and (for sass or less) transpiled before
 being added to the bundle.  You can read more about that [here](../stylesheet.md)
