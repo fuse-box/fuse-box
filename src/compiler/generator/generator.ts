@@ -988,12 +988,10 @@ class State {
       mapping.name = node.name;
       this.sourceMap.addMapping(mapping);
     }
-    let debug = false;
     if (code && code.length > 0) {
       if (this.lineEndSize > 0) {
         if (code.endsWith(this.lineEnd)) {
           this.line += this.lineEndSize;
-
           this.column = 0;
         } else if (code[code.length - 1] === '\n') {
           // Case of inline comment
@@ -1001,9 +999,6 @@ class State {
 
           this.column = 0;
         } else {
-          if (debug) {
-            console.log('here');
-          }
           this.column += code.length;
         }
       } else {

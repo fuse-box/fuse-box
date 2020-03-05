@@ -186,7 +186,7 @@ export function ensureDir(dir: string) {
 }
 
 export function ensurePackageJson(dir: string) {
-  fsExtra.ensureDir(dir);
+  ensureDir(dir);
   const pkgJsonPath = pathJoin(dir, 'package.json');
   if (!fileExists(pkgJsonPath)) {
     const contents = JSON.stringify({ name: path.basename(dir) }, null, 4);
@@ -314,7 +314,7 @@ export function isNodeModuleInstalled(name) {
   }
 }
 
-export function ensureFuseBoxPath(input: string | undefined) {
+export function ensureFuseBoxPath(input: undefined | string) {
   return input && input.replace(/\\/g, '/').replace(/\/$/, '');
 }
 
