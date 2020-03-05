@@ -1,6 +1,6 @@
 # Watcher
 
-Watcher watches for projecnt file changes, and will run updates when they occur. It is based on
+Watcher watches for project file changes, and will run updates when they occur. It is based on
 [the chokidar project](https://github.com/paulmillr/chokidar).
 
 ```ts

@@ -29,7 +29,7 @@ export function createModule(): Module {}
 
 ### Defining objects
 
-The use of classes if strictly prohibited and will be not tolerated in a any case. If you object requires a constant
+The use of classes is strictly prohibited and will be not tolerated in a any case. If you object requires a constant
 access from the outside use the following pattern
 
 ```ts

@@ -10,14 +10,11 @@ Here are a few conceptual highlights to understand:
 
 - `fuse.ts` - There is always a main configuration script typically called `fuse.ts` or `fuse.js`.  To see the full extent of configuration, [click here](./full-config.md).
 
-- `node_modules/.fusebox` - This is where all of the caching is stored.  **If anything ever goes wrong, try deleting this file.**
+- `.cache/` - This is where all of the caching is stored.  **If anything ever goes wrong, try deleting this folder.**
 
 - `tsconfig.json` - Optionally, the `tsconfig.json` file is also sourced for [some parts of configuration](../monorepo.md).
 
-- `homeDir` - *(defaults to the location of `fuse.ts`)* Every project has a root path which all bundles resolve by.
-This dramatically improves performance by making it possible to leave transpiled output untouched.
-
-- the "dist" folder - This is where the output that fuse-box compiles is saved.  A fully self-contained bundle of the project.
+- bundles and/or the "dist" folder - By default, everything is bundled into a `/dist` folder.  Optionally, you can specify any bundle names or logic you want.
 
 - css/sass/less - By default, imports of stylesheet files in your code will be automatically caught and (for sass or less) transpiled before
 being added to the bundle.  You can read more about that [here](../stylesheet.md)
@@ -37,16 +34,12 @@ But for production builds fuse-box runs much slower and utilizes a lot of RAM to
 To begin, install fuse-box and it's required dependencies:
 
 ```bash
-npm install typescript fuse-box tslib --save-dev
+npm install fuse-box --save-dev
 ```
 <!-- TODO:  Can the order of this be changed to put "fuse-box" first? -->
 
 TEMPORARY EDIT: For those wanting to use 4.0, install `npm i fuse-box@next --save-dev` instead
 
-
-*What are these extra dependencies?*
-- `typescript` - FuseBox is written in typescript, though your project can be in plain javascript as well.
-- `tslib` - An addition to typescript which cleans up certain syntax
 
 
 
@@ -60,6 +53,7 @@ Add the following contents to your fuse file:
 import { fusebox } from 'fuse-box';
 const fuse = fusebox({
   entry: 'src/index.ts',
+  target: "browser",
   devServer: true,
   webIndex: true,
 });
@@ -69,6 +63,8 @@ fuse.runDev();
 *What do these configs do?*
 - `entry` - defines the main root file of your project
 - `devServer` - runs a local live server for viewing your site as you update the codebase
+- `webIndex` - creates a default index.html file (this can be a supplied file as well)
+- `target` - chooses a target type (ie browser, server, electron)
 - `fuse.runDev()` - starts fuse bundling in "dev mode," which emphasizes bundling speed over bundling density
 
 <!-- TODO: - You can see much more details on configuration in ADD LINK -->
@@ -96,7 +92,7 @@ If you chose `fuse.js` (javascript) as your fuse file:
 
 If you chose `fuse.ts` (typescript) as your fuse file:
 1. first install ts-node (`npm i ts-node --save-dev`)
-2. then run `ts-node fuse.ts`
+2. then run `./node_modules/.bin/ts-node fuse.ts`
 
 This should start a local web server which you can open in your browser.
 Try messing with the innerHTML of document.body to see how quickly it updates.
