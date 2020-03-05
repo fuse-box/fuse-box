@@ -1,13 +1,5 @@
 # Full Configuration with Defaults
 
--------
-
-# Currently Out of Date
-
-This document may still be useful for reference as not everything has changed, but there have been
-many updates to the config.  To see the actual config interface, search this git repo for for `IConfig.ts`
-
---------
 
 
 The following is a full list of all the configurations, including any defaults.
