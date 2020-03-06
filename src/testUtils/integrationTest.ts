@@ -220,7 +220,7 @@ export function createIntegrationTest(props: {
   const ctx = createContext({
     envType: props.envType,
     publicConfig: config,
-    runProps: { bundles: { app: 'app.js', distRoot: workspace.distRoot } },
+    runProps: { bundles: { app: 'app.js', distRoot: workspace.distRoot }, uglify: false },
     scriptRoot: workspace.rootDir,
   });
 
@@ -233,6 +233,7 @@ export function createIntegrationTest(props: {
     },
     runProd: async () => {
       preflightFusebox(ctx);
+
       const response = await bundleProd(ctx);
       return createDevSandbox({ ctx, response, workspace: props.workspace });
     },
