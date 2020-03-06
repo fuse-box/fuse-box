@@ -5,7 +5,7 @@ import { ITransformer } from '../../interfaces/ITransformer';
 import { GlobalContext } from '../../program/GlobalContext';
 
 export function createNullishStatement(props: ILocalContext) {
-  const { genId, globalContext } = props;
+  const { genId } = props;
   const expr: ASTNode = {
     expression: {
       alternate: undefined,
