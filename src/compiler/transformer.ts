@@ -20,6 +20,7 @@ import { BuildEnvTransformer } from './transformers/bundle/BuildEnvTransformer';
 import { BundleFastConditionUnwrapper } from './transformers/bundle/BundleFastConditionTransformer';
 import { BundlePolyfillTransformer } from './transformers/bundle/BundlePolyfillTransformer';
 import { RequireStatementInterceptor } from './transformers/bundle/RequireStatementInterceptor';
+import { NullishCoalescingTransformer } from './transformers/nullishCoalescing/NullishCoalescingTransformer';
 import { getCoreTransformer } from './transformers/optional';
 import { OptionalChaningTransformer } from './transformers/optionalChaining/OptionalChainingTransformer';
 import { DynamicImportTransformer } from './transformers/shared/DynamicImportTransformer';
@@ -42,6 +43,7 @@ export const BASE_TRANSFORMERS: Array<ITransformer> = [
 
   BuildEnvTransformer(),
 
+  NullishCoalescingTransformer(),
   OptionalChaningTransformer(),
 
   BundleFastConditionUnwrapper(),

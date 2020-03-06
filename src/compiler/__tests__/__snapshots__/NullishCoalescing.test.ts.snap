@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NullishCoalescing case 1 1`] = `
+"a !== null && a !== void 0 ? a : b;
+"
+`;
+
+exports[`NullishCoalescing case 1 with obj 1`] = `
+"var _1_;
+(_1_ = a.c) !== null && _1_ !== void 0 ? _1_ : d;
+"
+`;
+
+exports[`NullishCoalescing case 1 with option call 1`] = `
+"var _1_;
+(_1_ = a.c()) !== null && _1_ !== void 0 ? _1_ : d;
+"
+`;
+
+exports[`NullishCoalescing long 1 1`] = `
+"var _1_, _2_, _3_;
+(_3_ = (_2_ = (_1_ = foo.bar) !== null && _1_ !== void 0 ? _1_ : oi) !== null && _2_ !== void 0 ? _2_ : soi) !== null && _3_ !== void 0 ? _3_ : doi.o;
+"
+`;
+
+exports[`NullishCoalescing long with optional chaning 1`] = `
+"var _1_, _2_, _3_;
+var _4_;
+var _5_;
+(_3_ = (_2_ = (_1_ = (_5_ = foo) === null || _5_ === void 0 ? void 0 : _5_.bar) !== null && _1_ !== void 0 ? _1_ : oi) !== null && _2_ !== void 0 ? _2_ : soi) !== null && _3_ !== void 0 ? _3_ : (_4_ = doi) === null || _4_ === void 0 ? void 0 : _4_.o;
+"
+`;
