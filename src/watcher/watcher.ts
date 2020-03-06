@@ -55,7 +55,11 @@ export function createWatcher(ctx: Context) {
     }
   }
 
-  if (!props.ignore) {
+  if (props.ignore) {
+    for (const ignore of props.ignore) {
+      ignorePaths.push(path2RegexPattern(ignore));
+    }
+  } else {
     // default ignored paths
     ignorePaths.push(
       /node_modules/,
