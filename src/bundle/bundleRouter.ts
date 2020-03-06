@@ -97,8 +97,14 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
         // we skip this module
         if (module.isSplit || module.ignore) {
           continue;
-        } else if (ctx.config.isProduction && ctx.config.supportsStylesheet() && module.css) {
+        }
+        if (ctx.config.isProduction && ctx.config.supportsStylesheet() && module.css) {
           // special treatement for production styles
+          if (module.css.json) {
+            // if it's a css module
+            if (!mainBundle) createMainBundle();
+            mainBundle.source.modules.push(module);
+          }
           if (!cssBundle) createCSSBundle();
           cssBundle.source.modules.push(module);
         } else if (module.pkg.type === PackageType.EXTERNAL_PACKAGE && hasVendorConfig) {
@@ -130,6 +136,11 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
 
         for (const module of modules) {
           if (ctx.config.isProduction && module.css) {
+            if (module.css.json) {
+              // if it's a css module
+              splitBundle.source.modules.push(module);
+            }
+
             if (!currentCSSBundle) {
               const cssFileName = generateSplitFileName(entry.publicPath.replace(/\.(\w+)$/, '.css'));
               currentCSSBundle = createBundle({

@@ -1,4 +1,6 @@
 import { EnvironmentType } from '../config/EnvironmentType';
+import { pluginCSS } from '../plugins/core/plugin_css';
+import { pluginSass } from '../plugins/core/plugin_sass';
 import { runBrowserTest, runServerTest } from '../testUtils/integrationHelper';
 import { readFile } from '../utils/utils';
 
@@ -141,6 +143,30 @@ describe('CSS integration test', () => {
         expect(dist.findFile(/\.css$/)).toBeFalsy();
         expect(r.entry()).toBeTruthy();
       });
+
+      it('should work correctly with css modules', async () => {
+        const env = await runBrowserTest({
+          env: EnvironmentType.PRODUCTION,
+          config: {
+            plugins: [pluginSass('main.scss', { asModule: {} })],
+          },
+          files: {
+            'index.ts': `
+            import * as foo from "./main.scss"
+            export { foo }
+          `,
+            'main.scss': '.item { color: red }',
+          },
+        });
+
+        const r = await env.response.eval();
+        const result = r.entry();
+
+        expect(result.foo.item).toBeTruthy();
+        const dist = env.workspace.getDist();
+
+        expect(dist.findFile(/\.css$/)).toBeTruthy();
+      });
     });
 
     describe('Server', () => {
@@ -188,6 +214,30 @@ describe('CSS integration test', () => {
 
         expect(dist.findFile(/\.css$/)).toBeFalsy();
         expect(r.entry()).toBeTruthy();
+      });
+
+      it('should work correctly with css modules', async () => {
+        const env = await runServerTest({
+          env: EnvironmentType.PRODUCTION,
+          config: {
+            plugins: [pluginSass('main.scss', { asModule: {} })],
+          },
+          files: {
+            'index.ts': `
+            import * as foo from "./main.scss"
+            export { foo }
+          `,
+            'main.scss': '.item { color: red }',
+          },
+        });
+
+        const r = await env.response.eval();
+        const result = r.entry();
+
+        expect(result.foo.item).toBeTruthy();
+        const dist = env.workspace.getDist();
+
+        expect(dist.findFile(/\.css$/)).toBeFalsy();
       });
     });
   });
