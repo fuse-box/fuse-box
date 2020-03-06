@@ -89,11 +89,10 @@ function _visit(
         visit.node.scope = visit.scope;
       } else {
         if (!visit.scope.meta) visit.scope.meta = {};
-        visit.node.scope = visit.scope;
       }
 
       for (const key in response.scopeMeta) {
-        visit.node.scope.meta[key] = response.scopeMeta[key];
+        visit.scope.meta[key] = response.scopeMeta[key];
       }
     }
     if (response.onComplete) {

@@ -26,9 +26,6 @@ export function Phase_1_ExportLink(): ITransformer {
         onEachNode: (visit: IVisit): IVisitorMod => {
           const { node } = visit;
           const tree = module.moduleTree;
-          const scope = visit.scope;
-          const locals = scope && scope.locals ? scope.locals : {};
-
           const refs = tree.exportReferences.references;
 
           // trying to find an object by local ref type
@@ -39,19 +36,9 @@ export function Phase_1_ExportLink(): ITransformer {
             for (const ref of refs) {
               if (ref.type === ExportReferenceType.LOCAL_REFERENCE && ref.local === node.id.name) {
                 ref.targetObjectAst = node;
-                return { scopeMeta: { ref: ref } };
               }
             }
           }
-
-          if (scope && scope.meta && scope.meta.ref) {
-            //const ref: IExportReference = scope.meta.ref;
-
-            if (visit.isLocalIdentifier && !locals[node.name]) {
-              //console.log(scope.meta.ref, node.name);
-            }
-          }
-
           return;
         },
         onTopLevelTraverse: (visit: IVisit) => {
