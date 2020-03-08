@@ -5,7 +5,6 @@ import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
 import { realpathSync } from 'fs';
-import { getFolderEntryPointFromPackageJSON } from './shared';
 
 const NODE_MODULE_REGEX = /^(([^\.][\.a-z0-9@\-_]*)(\/)?([_a-z0-9.@-]+)?(\/)?(.*))$/i;
 
@@ -74,11 +73,11 @@ export function parseExistingModulePaths(fileAbsPath: string): string[] {
 }
 
 const CACHED_LOCAL_MODULES: { [key: string]: string | null } = {};
-export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): string {
+export function findTargetFolder(props: IResolverProps, name: string): string {
   // handle custom modules here
   if (props.modules) {
     for (const i in props.modules) {
-      const f = path.join(props.modules[i], parsed.name);
+      const f = path.join(props.modules[i], name);
       if (fileExists(f)) {
         return realpathSync(f);
       }
@@ -91,7 +90,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
   if (isPnp) {
     try {
       const pnp = require('pnpapi');
-      const folder = pnp.resolveToUnqualified(parsed.name, props.filePath, { considerBuiltins: false });
+      const folder = pnp.resolveToUnqualified(name, props.filePath, { considerBuiltins: false });
       return folder;
     } catch (e) {
       // Ignore error here, since it will be handled later
@@ -106,7 +105,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
   const paths = parseExistingModulePaths(props.filePath);
 
   for (let i = paths.length - 1; i >= 0; i--) {
-    const attempted = path.join(paths[i], parsed.name);
+    const attempted = path.join(paths[i], name);
     if (fileExists(path.join(attempted, "package.json"))) {
       return realpathSync(attempted);
     }
@@ -118,7 +117,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
   }
 
   if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
-    const attempted = path.join(localModuleRoot, parsed.name);
+    const attempted = path.join(localModuleRoot, name);
     if (fileExists(path.join(attempted, "package.json"))) {
       return realpathSync(attempted);
     }
@@ -126,96 +125,73 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
 }
 export interface INodeModuleLookup {
   error?: string;
+  // TODO: not used?
   isEntry?: boolean;
   meta?: IPackageMeta;
   targetAbsPath?: string;
+  // TODO: not used?
   targetExtension?: string;
+  // TODO: not used?
   targetFuseBoxPath?: string;
 }
 
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
   let folder: string;
+  const { name: moduleName, target } = parsed;
 
-  folder = findTargetFolder(props, parsed);
+  // Resolve the module name to a folder
+  folder = findTargetFolder(props, moduleName);
   if (!folder) {
-    return { error: `Cannot resolve "${parsed.name}"` };
+    return { error: `Cannot resolve "${moduleName}"` };
   }
-
-  const result: INodeModuleLookup = {};
-  const pkg: IPackageMeta = {
-    name: parsed.name,
-    packageRoot: folder,
-  };
-  result.meta = pkg;
 
   const packageJSONFile = path.join(folder, 'package.json');
   if (!fileExists(packageJSONFile)) {
-    return { error: `Failed to find package.json in ${folder} when resolving module ${parsed.name}` };
+    return { error: `Failed to find package.json in ${folder} when resolving module ${moduleName}` };
   }
   const json = JSON.parse(readFile(packageJSONFile));
-  pkg.version = json.version || '0.0.0';
-  pkg.browser = json.browser;
-  pkg.packageJSONLocation = packageJSONFile;
-  pkg.packageRoot = folder;
-  if (json['fuse-box']) {
-    pkg.fusebox = json['fuse-box'];
-  }
+  // Prepare the package metadata structure and copy a bunch of stuff into it
+  const pkg: IPackageMeta = {
+    name: moduleName,
+    packageRoot: folder,
+    version: json.version || '0.0.0',
+    browser: json.browser,
+    packageJSONLocation: packageJSONFile,
+    fusebox: json['fuse-box'] || undefined,
+  };
 
   const isBrowser = props.buildTarget === 'browser';
-  // extract entry point
 
-  // extract target if required
-  if (parsed.target) {
-    const parsedLookup = fileLookup({ fileDir: folder, target: parsed.target });
-    if (!parsedLookup) {
-      return { error: `Failed to resolve ${props.target} in ${parsed.name}` };
-    }
+  const isEntry = !target;
+  const targetLookup = fileLookup({ fileDir: folder, target: target || "", isBrowserBuild: isBrowser });
+  if (!targetLookup || !targetLookup.fileExists) {
+    const spec = target ? `"${target}"` : "an entry point";
+    return { error: `Failed to resolve ${spec} in package "${moduleName}"` };
+  }
+  let targetAbsPath = targetLookup.absPath;
 
-    result.targetAbsPath = parsedLookup.absPath;
-
-    if (isBrowser && json.browser && typeof json.browser === 'object') {
-      const override = handleBrowserField(pkg, parsedLookup.absPath);
-      if (override) {
-        result.targetAbsPath = override;
-        parsedLookup.customIndex = true;
-      }
-    }
-
-    result.isEntry = false;
-    result.targetFuseBoxPath = makeFuseBoxPath(folder, result.targetAbsPath);
-  } else {
-    const entryFile = getFolderEntryPointFromPackageJSON({ isBrowserBuild: isBrowser, json: json });
-
-    const entryLookup = fileLookup({ fileDir: folder, target: entryFile });
-
-    if (!entryLookup.fileExists) {
-      return {
-        error: `Failed to resolve an entry point in package ${parsed.name}. File ${entryFile} cannot be resolved.`,
-      };
-    }
-
-    pkg.entryAbsPath = entryLookup.absPath;
-    pkg.entryFuseBoxPath = makeFuseBoxPath(folder, entryLookup.absPath);
-
-    result.isEntry = true;
-
-    result.targetAbsPath = pkg.entryAbsPath;
-    result.targetFuseBoxPath = pkg.entryFuseBoxPath;
-
-    if (isBrowser && json.browser && typeof json.browser === 'object') {
-      const override = handleBrowserField(pkg, entryLookup.absPath);
-      if (override) {
-        //result.targetFuseBoxPath =
-        result.targetAbsPath = override;
-        pkg.entryAbsPath = override;
-        result.targetFuseBoxPath = makeFuseBoxPath(folder, override);
-        pkg.entryFuseBoxPath = result.targetFuseBoxPath;
-
-        entryLookup.customIndex = true;
-      }
+  const checkBrowserOverride = isBrowser && json.browser && typeof json.browser === 'object'
+  if (checkBrowserOverride) {
+    const override = handleBrowserField(pkg, targetLookup.absPath);
+    if (override) {
+      targetAbsPath = override;
     }
   }
-  result.targetExtension = path.extname(result.targetAbsPath);
 
-  return result;
+  const targetFuseBoxPath = makeFuseBoxPath(folder, targetAbsPath);
+
+  if (isEntry) {
+    pkg.entryAbsPath = targetAbsPath;
+    pkg.entryFuseBoxPath = targetFuseBoxPath;
+  }
+
+  const targetExtension = path.extname(targetAbsPath);
+
+  return {
+    isEntry,
+    targetAbsPath,
+    targetFuseBoxPath,
+    targetExtension,
+    meta: pkg,
+  };
 }
