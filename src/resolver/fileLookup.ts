@@ -2,9 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { IRawCompilerOptions } from '../compilerOptions/interfaces';
 import { parseTypescriptConfig } from '../compilerOptions/parseTypescriptConfig';
-// import { initTypescriptConfig } from '../tsconfig/configParser';
-import { fileExists } from '../utils/utils';
-import { getFolderEntryPointFromPackageJSON } from './shared';
+import { fileExists, readFile } from '../utils/utils';
 
 export interface ILookupProps {
   fileDir?: string;
@@ -13,6 +11,7 @@ export interface ILookupProps {
   javascriptFirst?: boolean;
   target: string;
   typescriptFirst?: boolean;
+  isBrowserBuild?: boolean;
 }
 
 export interface TsConfigAtPath {
@@ -27,14 +26,10 @@ export interface ILookupResult {
   extension?: string;
   fileExists: boolean;
   isDirectoryIndex?: boolean;
+  // TODO: not used?
   monorepoModulesPaths?: string;
   tsConfigAtPath?: TsConfigAtPath;
 }
-
-const JS_INDEXES = ['index.js', 'index.jsx'];
-const TS_INDEXES = ['index.ts', 'index.tsx'];
-const TS_INDEXES_FIRST = [...TS_INDEXES, ...JS_INDEXES];
-const JS_INDEXES_FIRST = [...JS_INDEXES, ...TS_INDEXES];
 
 const JS_EXTENSIONS = ['.js', '.jsx', '.mjs'];
 const TS_EXTENSIONS = ['.ts', '.tsx'];
@@ -42,143 +37,164 @@ const TS_EXTENSIONS = ['.ts', '.tsx'];
 const TS_EXTENSIONS_FIRST = [...TS_EXTENSIONS, ...JS_EXTENSIONS];
 const JS_EXTENSIONS_FIRST = [...JS_EXTENSIONS, ...TS_EXTENSIONS];
 
-function tryIndexes(target: string, indexes: Array<string>) {
-  for (const i in indexes) {
-    const indexFile = indexes[i];
-    const resolved = path.join(target, indexFile);
-    if (fileExists(resolved)) {
-      return resolved;
-    }
-  }
-}
-
-function tryExtensions(target: string, extensions: Array<string>) {
-  for (const i in extensions) {
-    const resolved = `${target}${extensions[i]}`;
-    if (fileExists(resolved)) {
-      return resolved;
-    }
-  }
+function isFileSync(path: string): boolean {
+  return fileExists(path) && fs.lstatSync(path).isFile();
 }
 
 export function fileLookup(props: ILookupProps): ILookupResult {
   if (!props.fileDir && !props.filePath) {
     throw new Error('Failed to lookup. Provide either fileDir or filePath');
   }
-  let resolved = path.join(props.filePath ? path.dirname(props.filePath) : props.fileDir, props.target);
-  const extension = path.extname(resolved);
+  const jsFirst = (props.javascriptFirst && !props.typescriptFirst);
+  return resolveSubmodule(props.filePath ? path.dirname(props.filePath) : props.fileDir, props.target, true, jsFirst, props.isBrowserBuild);
+}
 
-  if (extension && fileExists(resolved)) {
-    const stat = fs.lstatSync(resolved);
+function resolveSubmodule(base: string, target: string, checkPackage: boolean, jsFirst: boolean, isBrowserBuild: boolean) {
+  const exact = path.join(base, target);
 
-    if (stat.isFile()) {
-      return {
-        absPath: resolved,
-        extension: path.extname(resolved),
-        fileExists: fileExists(resolved),
-      };
+  // If an exact file exists, return it
+  if (isFileSync(exact)) {
+    return {
+      absPath: exact,
+      extension: path.extname(exact),
+      fileExists: true,
     }
   }
 
-  // try files without extensions first
-  let fileExtensions: Array<string> = TS_EXTENSIONS_FIRST;
-  if (props.javascriptFirst) {
-    fileExtensions = JS_EXTENSIONS_FIRST;
-  }
-  if (props.typescriptFirst) {
-    fileExtensions = TS_EXTENSIONS_FIRST;
-  }
-  const targetFile = tryExtensions(resolved, fileExtensions);
-  if (targetFile) {
-    return {
-      absPath: targetFile,
-      extension: path.extname(targetFile),
-      fileExists: true,
-    };
+  // If a file exists after adding an extension, return it
+  const extensions = jsFirst ? JS_EXTENSIONS_FIRST : TS_EXTENSIONS_FIRST;
+  for (const extension of extensions) {
+    const withExtension = `${exact}${extension}`;
+    if (isFileSync(withExtension)) {
+      return {
+        absPath: withExtension,
+        extension: extension,
+        fileExists: true,
+      }
+    }
   }
 
-  let isDirectory: boolean;
-  // try directory indexes
-  const exists = fileExists(resolved);
-  if (exists) {
-    const stat = fs.lstatSync(resolved);
-    if (stat.isDirectory) {
-      isDirectory = true;
+  // If we should check for a package.json, do that
+  // We don't always check because we might be here by following the "main" field from a previous package.json
+  // and no further package.json files should be followed after that
+  if (checkPackage) {
+    const packageJSONPath = path.join(exact, 'package.json');
+    if (isFileSync(packageJSONPath)) {
+      const packageJSON = JSON.parse(readFile(packageJSONPath));
 
-      let monorepoModulesPaths;
-      let tsConfigAtPath: TsConfigAtPath;
+      if (isBrowserBuild && packageJSON['browser'] && typeof packageJSON['browser'] === "string") {
+        const browser = packageJSON['browser'];
+        const subresolution = resolveSubmodule(exact, browser, false, jsFirst, isBrowserBuild);
+        return subresolution;
+      }
 
-      // only in case of a directory
-      const packageJSONPath = path.join(resolved, 'package.json');
-      if (fileExists(packageJSONPath)) {
-        const useLocalMain = !/node_modules/.test(packageJSONPath);
-        const packageJSON = require(packageJSONPath);
-        const entry = getFolderEntryPointFromPackageJSON({ json: packageJSON, useLocalField: useLocalMain });
+      // NOTE: the implementation of "local:main" has a couple of flaws
+      //         1. the isLocal test is fragile and won't work in Yarn 2
+      //         2. it is incorrect to simply assume that the tsconfig at the root of the package is the right one
+      //       a more robust solution would be to use tsconfig references which can map outputs to inputs
+      //       and then you can just "main" instead of "local:main" and the output will be mapped to the input
+      //       and tsconfig references also solve the "which tsconfig to use?" problem
+      const isLocal = !/node_modules/.test(packageJSONPath);
+      if (isLocal && packageJSON['local:main']) {
+        const localMain = packageJSON['local:main'];
+        const subresolution = resolveSubmodule(exact, localMain, false, jsFirst, isBrowserBuild);
 
-        if (useLocalMain && packageJSON['local:main']) {
-          const _monoModules = path.resolve(resolved, 'node_modules');
-          if (fileExists(_monoModules)) {
-            monorepoModulesPaths = _monoModules;
-          }
+        // TODO: not used?
+        const submodules = path.resolve(exact, 'node_modules');
+        const monorepoModulesPaths = fileExists(submodules) ? submodules : undefined;
 
-          const _tsConfig = path.resolve(resolved, 'tsconfig.json');
-          if (fileExists(_tsConfig)) {
-            const tsConfigParsed = parseTypescriptConfig(_tsConfig);
-            if (!tsConfigParsed.error)
-              tsConfigAtPath = {
-                absPath: resolved,
-                compilerOptions: tsConfigParsed.config.compilerOptions,
-                tsconfigPath: _tsConfig,
-              };
+        return {
+          ...subresolution,
+          customIndex: true,
+          isDirectoryIndex: true,
+          tsConfigAtPath: loadTsConfig(exact),
+          // TODO: not used?
+          monorepoModulesPaths,
+        }
+      }
+
+      if (packageJSON['ts:main']) {
+        const tsMain = packageJSON['ts:main'];
+        const subresolution = resolveSubmodule(exact, tsMain, false, jsFirst, isBrowserBuild);
+        if (subresolution.fileExists) {
+          return {
+            ...subresolution,
+            customIndex: true,
+            isDirectoryIndex: true,
           }
         }
-
-        const entryFile = path.join(resolved, entry);
-        return {
-          absPath: entryFile,
-          customIndex: true,
-          extension: path.extname(entryFile),
-          fileExists: fileExists(entryFile),
-          isDirectoryIndex: true,
-          monorepoModulesPaths,
-          tsConfigAtPath,
-        };
       }
 
-      let indexes: Array<string> = TS_INDEXES_FIRST;
-      if (props.javascriptFirst) {
-        indexes = JS_INDEXES_FIRST;
+      if (packageJSON['module']) {
+        const mod = packageJSON['module'];
+        const subresolution = resolveSubmodule(exact, mod, false, jsFirst, isBrowserBuild);
+        if (subresolution.fileExists) {
+          return {
+            ...subresolution,
+            customIndex: true,
+            isDirectoryIndex: true,
+          }
+        }
       }
-      if (props.typescriptFirst) {
-        indexes = TS_INDEXES_FIRST;
+
+      if (packageJSON['main']) {
+        const main = packageJSON['main'];
+        const subresolution = resolveSubmodule(exact, main, false, jsFirst, isBrowserBuild);
+        if (subresolution.fileExists) {
+          return {
+            ...subresolution,
+            isDirectoryIndex: true,
+            customIndex: true,
+          };
+        }
       }
-      const directoryIndex = tryIndexes(resolved, indexes);
-      if (directoryIndex) {
-        return {
-          absPath: directoryIndex,
-          extension: path.extname(directoryIndex),
-          fileExists: true,
-          isDirectoryIndex: true,
-        };
+
+      // We do not look for index.js (etc.) here
+      // Because we always look for those whether we are checking package.json or not
+      // So that's done outside the if.
+    }
+  }
+
+  // If an index file exists return it
+  for (const extension of extensions) {
+    const asIndex = path.join(exact, `index${extension}`);
+    if (isFileSync(asIndex)) {
+      return {
+        absPath: asIndex,
+        extension: extension,
+        fileExists: true,
+        isDirectoryIndex: true,
       }
     }
   }
 
-  // as a last resort, we should try ".json" which is a very rare case
-  // that's why it has the lowest priority here
-  if (!isDirectory) {
-    const targetFile = tryExtensions(resolved, ['.json']);
-    if (targetFile) {
+  const asJson = `${exact}.json`;
+  if (isFileSync(asJson)) {
+    return {
+      absPath: asJson,
+      customIndex: true,
+      extension: ".json",
+      fileExists: true,
+    }
+  }
+
+  return {
+    absPath: exact,
+    fileExists: false,
+  };
+}
+
+
+function loadTsConfig(packageDir: string) {
+  const tsConfig = path.resolve(packageDir, 'tsconfig.json');
+  if (isFileSync(tsConfig)) {
+    const tsConfigParsed = parseTypescriptConfig(tsConfig);
+    if (!tsConfigParsed.error) {
       return {
-        absPath: targetFile,
-        customIndex: true, // it still needs to be re-written because FuseBox client API won't find it
-        extension: path.extname(targetFile),
-        fileExists: true,
+        absPath: packageDir,
+        compilerOptions: tsConfigParsed.config.compilerOptions,
+        tsconfigPath: tsConfig,
       };
     }
   }
-  return {
-    absPath: resolved,
-    fileExists: false,
-  };
 }
