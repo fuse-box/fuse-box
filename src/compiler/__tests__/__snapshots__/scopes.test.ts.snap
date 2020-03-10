@@ -92,6 +92,34 @@ function foo() {
 "
 `;
 
+exports[`scope test classes should respect constructor prop 1`] = `
+"class Foo {
+  constructor(bar) {
+    console.log(bar);
+  }
+}
+"
+`;
+
+exports[`scope test classes should respect constructor prop with public accessibility 1`] = `
+"class Foo {
+  constructor(bar) {
+    this.bar = bar;
+    console.log(bar);
+  }
+}
+"
+`;
+
+exports[`scope test classes should respect method prop 1`] = `
+"class Foo {
+  method_1(bar) {
+    console.log(bar);
+  }
+}
+"
+`;
+
 exports[`scope test option 1 1`] = `
 "function hey() {}
 "
