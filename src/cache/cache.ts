@@ -11,7 +11,7 @@ export interface ICachePublicProps {
   FTL?: boolean;
   enabled: boolean;
   root?: string;
-  alwaysCheck?: string[];
+  safeCheckModules?: string[];
 }
 
 export interface IModuleRestoreResponse {
@@ -292,8 +292,16 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       const target = modules[depId];
       if (!target) return;
       const pkg = packages[target.packageId];
-      const alwaysCheck = pkg && ctx.config.cache.alwaysCheck.length > 0 && ctx.config.cache.alwaysCheck.filter((name) => pkg.publicName.includes(name)).length > 0;
-      if (!alwaysCheck && pkg && pkg.isExternalPackage) {
+      let safeCheckModules = false;
+      if (pkg && ctx.config.cache.safeCheckModules.length > 0) {
+        for (const name of ctx.config.cache.safeCheckModules) {
+          if (pkg.publicName.includes(name)) {
+            safeCheckModules = true;
+            break;
+          }
+        }
+      }
+      if (!safeCheckModules && pkg && pkg.isExternalPackage) {
         if (!restorePackage(pkg, mrc)) {
           // package has failed
           // interrupt everything

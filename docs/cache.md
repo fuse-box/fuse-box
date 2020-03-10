@@ -37,6 +37,6 @@ For checking is file changed on disk without checking cache you can specify list
 
 ```typescript
 fusebox({
-  cache: { alwaysCheck: ["package-name", "file-name"] },
+  cache: { safeCheckModules: ["package-name", "file-name"] },
 });
 ```   
