@@ -179,6 +179,7 @@ export function createConfig(props: {
   config.cache = {
     enabled: false,
     root: path.join(env.APP_ROOT, '.cache'),
+    alwaysCheck: []
   };
 
   if (typeof publicConfig.cache === 'boolean') {
@@ -191,6 +192,9 @@ export function createConfig(props: {
     }
     if (publicConfig.cache.strategy !== undefined) {
       config.cache.strategy = publicConfig.cache.strategy;
+    }
+    if (publicConfig.cache.alwaysCheck !== undefined && Array.isArray(publicConfig.cache.alwaysCheck)) {
+      config.cache.alwaysCheck = publicConfig.cache.alwaysCheck;
     }
   } else if (publicConfig.cache === undefined && !env.isTest) {
     config.cache.enabled = true;

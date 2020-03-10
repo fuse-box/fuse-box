@@ -30,3 +30,13 @@ fusebox({
   cache: { enabled: true, strategy: 'memory' /* or 'fs' */ },
 });
 ```
+
+### Always check for changes in directories  
+
+For checking is file changed on disk without checking cache you can specify list of string templates
+
+```typescript
+fusebox({
+  cache: { alwaysCheck: ["package-name", "file-name"] },
+});
+```   
