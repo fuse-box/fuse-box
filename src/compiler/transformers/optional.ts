@@ -1,6 +1,6 @@
 import { ICompilerOptionTransformer } from '../../compilerOptions/interfaces';
 import { ITransformer } from '../interfaces/ITransformer';
-import { CSSInJSXTransformer } from './shared/CSSInJSXTransformer';
+import { CSSInJSXTransformer } from './shared/CSSinJSXTransformer';
 import { AngularURLTransformer } from './ts/AngularURLTransformer';
 
 const OptionalCoreTransformers: Record<
