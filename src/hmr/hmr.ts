@@ -66,6 +66,7 @@ function generateUpdateForModules(modules: Array<IModule>): IHMRModulesUpdate {
 
 export function createHMR(ctx: Context) {
   const { ict } = ctx;
+  if (!ctx.config.devServer.enabled) return;
   const devServer = ctx.devServer;
   const tasks: Record<string, any> = {};
   const config = ctx.config;
