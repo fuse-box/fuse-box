@@ -1,5 +1,6 @@
 import { ICompilerOptionTransformer } from '../../compilerOptions/interfaces';
 import { ITransformer } from '../interfaces/ITransformer';
+import { CSSInJSXTransformer } from './shared/CSSInJSXTransformer';
 import { AngularURLTransformer } from './ts/AngularURLTransformer';
 
 const OptionalCoreTransformers: Record<
@@ -9,6 +10,10 @@ const OptionalCoreTransformers: Record<
   angular: {
     options: { name: 'angular' },
     transformer: AngularURLTransformer,
+  },
+  css_in_jsx: {
+    options: { name: 'css_in_jsx' },
+    transformer: CSSInJSXTransformer,
   },
 };
 

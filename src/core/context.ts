@@ -64,7 +64,6 @@ export interface Context {
   writer?: DistWriter;
   fatal?: (header: string, messages?: Array<string>) => void;
   getCachable?: () => any;
-  registerTransformer?: (transformer: ITransformer) => void;
   sendPageReload?: (reason?: string) => void;
   setLinkedReference?: (asbPath: string, module: IModule) => void;
 }
@@ -148,7 +147,6 @@ export function createContext(props: ICreateContextProps): Context {
 
   // custom transformers
   self.userTransformers = [];
-  self.registerTransformer = (transformer: ITransformer) => self.userTransformers.push(transformer);
 
   if (!env.isTest) {
     self.devServer = createDevServer(self);
