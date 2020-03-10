@@ -165,6 +165,19 @@ describe('JSX', () => {
     expect(result.code).toMatchSnapshot();
   });
 
+  it('should handle dotted JSX elements deep', () => {
+    const result = testTranspile({
+      code: `
+        import React from "react";
+        function test(){
+          return <this.state.foo.bar.animated.div/>
+        }
+          `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
   it('should work with JSXSpreadChild', () => {
     const result = testTranspile({
       code: `

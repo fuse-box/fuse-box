@@ -63,6 +63,14 @@ function test() {
 "
 `;
 
+exports[`JSX should handle dotted JSX elements deep 1`] = `
+"var react_1 = require(\\"react\\");
+function test() {
+  return react_1.default.createElement(this.state.foo.bar.animated.div, null);
+}
+"
+`;
+
 exports[`JSX should have only one spread props 1`] = `
 "function test() {
   return React.createElement(\\"i\\", Object.assign({}, props));

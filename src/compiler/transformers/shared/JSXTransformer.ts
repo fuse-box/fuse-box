@@ -1,4 +1,4 @@
-import { ASTNode } from '../../interfaces/AST';
+import { ASTNode, ASTType } from '../../interfaces/AST';
 
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import { ITransformer } from '../../interfaces/ITransformer';
@@ -79,6 +79,22 @@ function parseFactory(factory: string) {
 
   const createElement = createJSXFactory({ first, second });
   return { JSXFragment, createElement };
+}
+
+function convertJSXMemberExpression(expression: ASTNode) {
+  if (expression.type === ASTType.JSXMemberExpression) expression.type = 'MemberExpression';
+
+  if (expression.type === ASTType.JSXIdentifier) expression.type = 'Identifier';
+
+  if (expression.property && expression.property.type === ASTType.JSXIdentifier)
+    expression.property.type = 'Identifier';
+
+  if (expression.object) {
+    if (expression.object.type === ASTType.JSXMemberExpression) {
+      return convertJSXMemberExpression(expression.object);
+    }
+    if (expression.object.type === ASTType.JSXIdentifier) expression.object.type = 'Identifier';
+  }
 }
 
 export function JSXTransformer(): ITransformer {
@@ -205,13 +221,7 @@ export function JSXTransformer(): ITransformer {
               node.type = 'Identifier';
               return { replaceWith: node };
             case 'JSXMemberExpression':
-              node.type = 'MemberExpression';
-              // A member expression should never be translated to a literal
-              // So it isn't a JSXIdentifier at this point, it's just an identifier
-              node.object.type = "Identifier";
-              node.property.type = "Identifier";
-              // it's important to replace it, since it will be re-visited and picked up by other transformers
-              // for example Import transformer
+              convertJSXMemberExpression(node);
               return { replaceWith: node };
             case 'JSXText':
               if (node.value.indexOf('\n') > -1 && !node.value.trim()) {
