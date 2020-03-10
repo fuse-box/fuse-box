@@ -1,11 +1,18 @@
 import { initCommonTransform } from '../testUtils';
 import { ExportTransformer } from '../transformers/shared/ExportTransformer';
 import { ImportTransformer } from '../transformers/shared/ImportTransformer';
+import { ClassConstructorPropertyTransformer } from '../transformers/ts/ClassConstructorPropertyTransformer';
+import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
 
 const testTranspile = (props: { code: string; fileName?: string; target?: string }) => {
   return initCommonTransform({
     code: props.code,
-    transformers: [ImportTransformer(), ExportTransformer()],
+    transformers: [
+      ImportTransformer(),
+      ExportTransformer(),
+      CommonTSfeaturesTransformer(),
+      ClassConstructorPropertyTransformer(),
+    ],
   });
 };
 
@@ -525,6 +532,53 @@ describe('scope test', () => {
         export { oi, bar }
       `,
       });
+      expect(result.code).toMatchSnapshot();
+    });
+  });
+
+  describe('classes', () => {
+    it('should respect method prop', () => {
+      const result = testTranspile({
+        code: `
+        import { bar } from "bar";
+        class Foo {
+          method_1(bar){
+            console.log(bar)
+          }
+        }
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should respect constructor prop', () => {
+      const result = testTranspile({
+        code: `
+        import { bar } from "bar";
+        class Foo {
+          constructor(bar){
+            console.log(bar)
+          }
+        }
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should respect constructor prop with public accessibility', () => {
+      const result = testTranspile({
+        code: `
+        import { bar } from "bar";
+        class Foo {
+          constructor(public bar){
+            console.log(bar)
+          }
+        }
+      `,
+      });
+
       expect(result.code).toMatchSnapshot();
     });
   });

@@ -101,7 +101,10 @@ export function scopeTracker(visitor: IVisit): IASTScope {
         // the body of this function should have a copy a of the parent scope + its own local variables
         const funcScope = {};
         for (const item of node.params) {
-          if (item.type === 'Identifier') funcScope[item.name] = 1;
+          if (item.type === ASTType.Identifier) funcScope[item.name] = 1;
+          if (item.type === ASTType.ParameterProperty && item.parameter && item.parameter.type === ASTType.Identifier) {
+            funcScope[item.parameter.name] = 1;
+          }
         }
         node.body['scope'] = copy(scope, funcScope);
       }
