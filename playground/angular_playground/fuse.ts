@@ -13,7 +13,7 @@ class Context {
 
       sourceMap: { project: true, vendor: false },
       target: 'browser',
-      threading: { minFileSize: 2000, threadAmount: 3 },
+      //threading: { minFileSize: 2000, threadAmount: 3 },
       watcher: true,
       webIndex: {
         publicPath: '/',
