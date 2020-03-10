@@ -86,7 +86,12 @@ export function CSSInJSXTransformer(options?: CSSInJSXTransformerOptions): ITran
 
   return {
     target: { test: testPathRegex },
-    commonVisitors: ({ ctx, module }) => {
+    commonVisitors: props => {
+      const isProduction = false;
+      const {
+        transformationContext: { compilerOptions, module },
+      } = props;
+
       // Keep track of imported emotion functions.
       // Allows us to look for custom imports
       // import { css as emotionCss } from '@emotion/core'
@@ -105,10 +110,10 @@ export function CSSInJSXTransformer(options?: CSSInJSXTransformerOptions): ITran
         );
       }
 
-      const compilerJsxFactory = ctx && ctx.compilerOptions.jsxFactory;
+      const compilerJsxFactory = compilerOptions.jsxFactory;
 
       // Process dirName and fileName only once per file
-      const filePath = module.props.fuseBoxPath.replace(/\.([^.]+)$/, '');
+      const filePath = module.publicPath.replace(/\.([^.]+)$/, '');
       labelMapping['[dirname]'] = filePath.replace(/(\\|\/)/g, '-');
       labelMapping['[filename]'] = filePath.replace(/(.+)(\\|\/)(.+)$/, '$3');
 
@@ -167,7 +172,7 @@ export function CSSInJSXTransformer(options?: CSSInJSXTransformerOptions): ITran
                     // We don't need minification in devMode!
                     styleProperties.push({
                       type: 'Literal',
-                      value: !ctx.config.isProduction ? quasis[i].value.cooked : minify(quasis[i].value.cooked),
+                      value: isProduction ? quasis[i].value.cooked : minify(quasis[i].value.cooked),
                     });
                   }
                   // Put the expressions back in the place where they belong

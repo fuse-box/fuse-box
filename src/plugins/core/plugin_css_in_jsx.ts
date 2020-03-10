@@ -1,4 +1,4 @@
-import { CSSInJSXTransformer } from '../../compiler/transformers/shared/CSSInJSXTransformer';
+import { createCoreTransformerOption } from '../../compiler/transformers/optional';
 import { Context } from '../../core/context';
 
 export interface PluginCSSInJSXOptions {
@@ -14,6 +14,7 @@ export interface PluginCSSInJSXOptions {
 
 export function pluginCSSInJSX(options?: PluginCSSInJSXOptions) {
   return function(ctx: Context) {
-    return ctx.registerTransformer(CSSInJSXTransformer(options));
+    const plugin = createCoreTransformerOption('css_in_jsx', options);
+    ctx.compilerOptions.transformers.push(plugin);
   };
 }
