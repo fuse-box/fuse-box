@@ -6,6 +6,8 @@ First things to do:
 - Remove the `output` paramater (and forget about it forever). Read below on the new configuration
 - Remove `useSingleBundle` and forget about it forever
 - Rename `watch` to `watcher` (read watcher docs [here](./watcher.md)))
+- If you had `modules` field set with `node_modules` in it remove it. We have fixed the module resolution.
+- If you're targeting IE11 set buildTarget in `runProd`. Ignore this line if you're targeting modern browsers
 
 ### compilerOptions
 
@@ -129,7 +131,6 @@ const fuse = fusebox({
   dependencies: { serverIgnoreExternals: true },
   entry: 'src/main/main.ts',
   logging: { level: 'succinct' },
-  modules: ['node_modules'],
   target: 'server',
 });
 fuse.runDev({ bundles: { distRoot: 'dist/main', app: 'app.js' } });
