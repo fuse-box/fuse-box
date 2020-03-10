@@ -40,7 +40,8 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
       const cssData = module.css;
 
       if (cssData) {
-        concat.add(module.publicPath, cssData.css, module.isSourceMapRequired ? cssData.map : undefined);
+        const cssString = cssData.css.replace(/\/\*\#\s?sourceMappingURL.*?\*\//g, '');
+        concat.add(module.publicPath, cssString, module.isSourceMapRequired ? cssData.map : undefined);
         if (module.isSourceMapRequired && cssData.map) {
           self.containsMaps = true;
         }
