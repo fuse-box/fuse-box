@@ -12,7 +12,7 @@ export function parseTypeScript(code: string, props?: IParserOptions): ASTNode {
   props = props || {};
   return parser.parse(code, {
     range: props.locations,
-    // loc: false,
+    raw: true,
     useJSXTextNode: true,
     loc: props.locations,
     jsx: props.jsx,
