@@ -3,5 +3,5 @@ export interface ICacheProps {
   enabled?: boolean;
   root?: string;
   strategy?: ICacheStrategy;
-  alwaysCheck?: string[];
+  safeCheckModules?: string[];
 }
