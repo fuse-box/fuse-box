@@ -73,6 +73,7 @@ export function createBundle(props: IBundleProps): Bundle {
   function optimizeCSS(self: Bundle) {
     let userProps = {};
     if (typeof ctx.config.cleanCSS === 'object') userProps = ctx.config.cleanCSS;
+
     const response = new CleanCSS({
       ...userProps,
       sourceMap: source.containsMaps,
@@ -95,7 +96,7 @@ export function createBundle(props: IBundleProps): Bundle {
       if (isCSS) {
         // just in case remove the existing sourcemap references
         // some css preprocessors add it
-        self.contents = self.contents.replace(/\/\*#\ssourceMappingURL.*$/g, '');
+        self.contents = self.contents.replace(/\/\*\#\s?sourceMappingURL.*?\*\//g, '');
         self.contents += `\n/*#  sourceMappingURL=${sourceMapName} */`;
       } else {
         self.contents += `\n//# sourceMappingURL=${sourceMapName}`;
