@@ -1,53 +1,45 @@
-import * as ts from 'typescript';
-import { IProductionProps } from '../config/IProductionProps';
-import { IPublicConfig } from '../config/IPublicConfig';
-import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
-import { bundleDev } from '../main/bundle_dev';
-import { bundleProd } from '../production/bundle_prod';
-import { IProductionResponse } from '../production/main';
-import { UserHandler } from '../user-handler/UserHandler';
-import { parseVersion } from '../utils/utils';
-import { createContext, createProdContext } from './Context';
+import { EnvironmentType } from '../config/EnvironmentType';
+import { IPublicConfig } from '../config/IConfig';
+import { IRunProps } from '../config/IRunProps';
+import { bundleDev } from '../development/bundleDev';
+import { bundleProd } from '../production/bundleProd';
+import { IRunResponse } from './IRunResponse';
+import { createContext, ICreateContextProps } from './context';
+import { preflightFusebox } from './helpers/preflightFusebox';
 
-export interface IDevelopmentProps {}
+export function fusebox(publicConfig: IPublicConfig) {
+  async function execute(props: ICreateContextProps): Promise<IRunResponse> {
+    let response: IRunResponse;
+    const ctx = createContext(props);
 
-export function fusebox(config: IPublicConfig) {
-  function checkVersion(log: FuseBoxLogAdapter) {
-    // process.on('uncaughtException', e => {
-    //   console.log(e);
-    // });
+    ctx.isWorking = true;
+    ctx.ict.sync('init', { ctx: ctx });
 
-    const nodeVersion = parseVersion(process.version)[0];
-    if (nodeVersion < 11) {
-      log.warn(
-        'You are using an older version of Node.js $version. Upgrade to at least Node.js v11 to get the maximium speed out of FuseBox',
-        { version: process.version },
-      );
+    preflightFusebox(ctx);
+    switch (props.envType) {
+      case EnvironmentType.DEVELOPMENT:
+        try {
+          response = await bundleDev({ ctx, rebundle: false });
+        } catch (e) {
+          ctx.fatal('Error during development build', [e.stack]);
+        }
+
+        break;
+      case EnvironmentType.PRODUCTION:
+        try {
+          response = await bundleProd(ctx);
+        } catch (e) {
+          ctx.fatal('Error during production build', [e.stack]);
+        }
+        break;
     }
-    const tsVersion = parseVersion(ts.version);
-    if (tsVersion[0] < 3) {
-      log.warn('You are using an older version of TypeScript $version. FuseBox builds might not work properly', {
-        version: tsVersion,
-      });
-    }
+    ctx.isWorking = false;
+    return response;
   }
   return {
-    runDev: async (cb?: (handler: UserHandler) => void) => {
-      const ctx = createContext(config);
-      if (cb) cb(new UserHandler(ctx));
-
-      checkVersion(ctx.log);
-      return bundleDev(ctx).catch(e => {
-        console.error(e);
-      });
-    },
-    runProd: (props?: IProductionProps): Promise<IProductionResponse> => {
-      const ctx = createProdContext(config, props);
-
-      if (props && props.handler) {
-        props.handler(new UserHandler(ctx));
-      }
-      return bundleProd(ctx);
-    },
+    runDev: (runProps?: IRunProps): Promise<IRunResponse> =>
+      execute({ envType: EnvironmentType.DEVELOPMENT, publicConfig, runProps }),
+    runProd: (runProps?: IRunProps): Promise<IRunResponse> =>
+      execute({ envType: EnvironmentType.PRODUCTION, publicConfig, runProps }),
   };
 }

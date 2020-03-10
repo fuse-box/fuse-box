@@ -1,36 +1,39 @@
 # Watcher
 
-Watcher watches for projecnt file changes, and will run updates when they occur.  It is based on [the chokidar project](https://github.com/paulmillr/chokidar).
+Watcher watches for project file changes, and will run updates when they occur. It is based on
+[the chokidar project](https://github.com/paulmillr/chokidar).
 
 ```ts
-fusebox({ watch: true });
+fusebox({ watcher: true });
 ```
 
-----
+---
 
-## Default Watcher Rules
+### Default behevior
 
-There are a few rules that FuseBox automatically adds to the watcher. Those rules are based on common conventions
-and practices.
+By default the watcher watches the entire application root, but reacts only to the path relative to the first entry
+point.
 
-### Ignoring the paths
-
-In order to ignore updates to `.hidden_files`, `dist`, and `build` directories, the following ignore rule is added by default:
-
-```ts
-['/node_modules/', /(\/|\\)\./, 'dist/', 'build/', YOUR_OUTPUT_DIRECTORY];
-```
-
-If you wish to override these rules, you should add the following flag:
+You can change that by passing `include` property
 
 ```ts
 fusebox({
-  skipRecommendedIgnoredPaths: true,
-  ignored: [/my_own_regex/, 'some_string/'],
+  watcher: {
+    include: { "src/" },
+  },
 });
 ```
 
-*(note: Strings are automatically converted to regular expressions. FuseBox also takes care of windows/\*nix paths for you. For example`./` is converted into `(\/|\\)\.`)*
+### Adding and ignoring paths
+
+```ts
+fusebox({
+  watcher: {
+    include: { "src/" },
+    ignore: { "configs" }
+  }
+});
+```
 
 ### Chokidar options
 
@@ -38,10 +41,29 @@ You can pass chokidar options by using `chokidar` field:
 
 ```ts
 fusebox({
-  watch: {
-    chokidar: { usePolling: true },
+  watcher: {
+    chokidar: { chokidarOptions: true },
   },
 });
 ```
 
-*(note: The `ignored` field given to `chokidar` is declared by the `watch` field in FuseBox's configuration.  Do not define the `ignored` field here.)*
+_(note: The `ignored` field given to `chokidar` is declared by the `watcher` field in FuseBox's configuration. Do not
+define the `ignored` field here.)_
+
+Here is a default configuration for the chokidar configured by FuseBox.
+
+```js
+config = {
+  awaitWriteFinish: {
+    pollInterval: 100,
+    stabilityThreshold: 100,
+  },
+  ignoreInitial: true,
+  ignored: ignorePaths,
+  interval: 100,
+  persistent: true,
+};
+```
+
+Note that overriding this configuration will affect the overall peformance which might yield unpredicted behavior. Use
+it wisely

@@ -1,0 +1,357 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`scope test Array pattern 1`] = `
+"var oi_1 = require(\\"oi\\");
+function one(props) {
+  const [foo] = props;
+  console.log(foo);
+}
+console.log(oi_1.default);
+"
+`;
+
+exports[`scope test Object pattern 1`] = `
+"var oi_1 = require(\\"oi\\");
+function one(props) {
+  const {foo} = props;
+  console.log(foo);
+}
+console.log(oi_1.default);
+"
+`;
+
+exports[`scope test Object pattern with spread 1`] = `
+"var oi_1 = require(\\"oi\\");
+function one(props) {
+  const {foo, ...rest} = props;
+  console.log(foo);
+}
+console.log(oi_1.default);
+"
+`;
+
+exports[`scope test Object respect spread in Array 1`] = `
+"function one(props) {
+  const [foo, ...rest] = props;
+  console.log(rest);
+}
+"
+`;
+
+exports[`scope test Object respect spread in Object 1`] = `
+"function one(props) {
+  const {foo, ...rest} = props;
+  console.log(rest);
+}
+"
+`;
+
+exports[`scope test Spread Export spread 1 1`] = `
+"const [foo, bar] = [];
+exports.foo = foo;
+exports.bar = bar;
+"
+`;
+
+exports[`scope test Spread Export spread 2 1`] = `
+"const {foo, bar} = {};
+exports.foo = foo;
+exports.bar = bar;
+"
+`;
+
+exports[`scope test Spread Export spread 3 1`] = `
+"const {foo: {bar}} = {};
+exports.bar = bar;
+"
+`;
+
+exports[`scope test Spread Export spread 4 (deep) 1`] = `
+"const {foo: {bar: [oi]}} = {};
+exports.oi = oi;
+"
+`;
+
+exports[`scope test Spread Export spread 4 (deep) skip key 1`] = `
+"const {foo: {bar: [oi]}} = {};
+exports.oi = oi;
+"
+`;
+
+exports[`scope test Spread spread and defined var 1`] = `
+"var oi_1 = require(\\"./oi\\");
+function foo() {
+  function boo() {
+    const {foo: {bar: [oi]}} = {};
+    function another() {
+      console.log(oi);
+    }
+  }
+  console.log(oi_1.default);
+}
+"
+`;
+
+exports[`scope test classes should respect constructor prop 1`] = `
+"class Foo {
+  constructor(bar) {
+    console.log(bar);
+  }
+}
+"
+`;
+
+exports[`scope test classes should respect constructor prop with public accessibility 1`] = `
+"class Foo {
+  constructor(bar) {
+    this.bar = bar;
+    console.log(bar);
+  }
+}
+"
+`;
+
+exports[`scope test classes should respect method prop 1`] = `
+"class Foo {
+  method_1(bar) {
+    console.log(bar);
+  }
+}
+"
+`;
+
+exports[`scope test option 1 1`] = `
+"function hey() {}
+"
+`;
+
+exports[`scope test option 2 1`] = `
+"function hey() {}
+console.log(hey);
+"
+`;
+
+exports[`scope test should handle hoisted var Buffer 1`] = `
+"'use strict';
+var base64 = require('base64-js');
+var ieee754 = require('ieee754');
+exports.Buffer = Buffer;
+function Buffer() {}
+"
+`;
+
+exports[`scope test should handle hoisted var Buffer 2 1`] = `
+"'use strict';
+function two() {}
+function one() {}
+console.log(Buffer);
+function Buffer() {}
+function three() {}
+"
+`;
+
+exports[`scope test should handle hoisted var inside 1`] = `
+"var stuff_1 = require(\\"stuff\\");
+function hello() {}
+function some() {
+  function execute() {}
+}
+stuff_1.execute();
+"
+`;
+
+exports[`scope test should handle hoisted var inside 2 1`] = `
+"var stuff_1 = require(\\"stuff\\");
+function some() {
+  function execute() {}
+}
+stuff_1.execute();
+"
+`;
+
+exports[`scope test should handle hoisted var inside 3 1`] = `
+"function execute() {}
+execute();
+"
+`;
+
+exports[`scope test should handle hoisted var inside 4 1`] = `
+"exports.Disposable = (function () {
+  function Disposable(action) {}
+  return Disposable;
+})();
+console.log(exports.Disposable);
+"
+`;
+
+exports[`scope test should handle hoisted var inside 5 1`] = `
+"exports.Disposable = (function () {
+  function Disposable(action) {}
+  return Disposable;
+})();
+console.log(exports.Disposable);
+"
+`;
+
+exports[`scope test should handle hoisted var inside 6 1`] = `
+"var js_utils_1 = require(\\"../utils/js_utils\\");
+exports.Disposable = (function () {
+  function Disposable(action) {
+    console.log(js_utils_1.isFunction);
+  }
+  return Disposable;
+})();
+console.log(exports.Disposable);
+"
+`;
+
+exports[`scope test should handle hoisted variable 1`] = `
+"exports.Foo = (function () {
+  console.log(Foo);
+  function Foo() {}
+})();
+"
+`;
+
+exports[`scope test should handle hoisted variable 2 1`] = `
+"function some() {}
+exports.Disposable = (function () {
+  function Disposable() {}
+  return Disposable;
+})();
+console.log(exports.Disposable);
+"
+`;
+
+exports[`scope test should handle hoisted variable deep 1`] = `
+"exports.Foo = (function () {
+  function Bar() {
+    console.log(Foo);
+  }
+  function Foo() {}
+})();
+"
+`;
+
+exports[`scope test should handle import buffer 1`] = `
+"'use strict';
+var other_1 = require(\\"other\\");
+function two() {}
+function one() {}
+console.log(other_1.default);
+function three() {}
+"
+`;
+
+exports[`scope test should handle multiple scenarious at one 1`] = `
+"var shit_1 = require(\\"shit\\");
+var oi_1 = require(\\"oi\\");
+var hey_1 = require(\\"hey\\");
+function hello() {}
+function some() {
+  const execute = {};
+}
+shit_1.execute();
+function one(props) {
+  const {foo, ...rest} = props;
+  console.log(foo);
+}
+console.log(oi_1.default);
+console.log(hey_1.Hey);
+class Hey {
+  foo(hey) {
+    console.log(hey);
+  }
+}
+new Hey();
+function some() {}
+exports.Disposable = (function () {
+  function Disposable() {}
+  return Disposable;
+})();
+console.log(exports.Disposable);
+"
+`;
+
+exports[`scope test should trace down an import 1 1`] = `
+"var zen_observable_1 = require(\\"zen-observable\\");
+var Observable = zen_observable_1.default;
+"
+`;
+
+exports[`scope test should work with nulll 1`] = `
+"function one(props) {
+  const [, foo, ...rest] = props;
+  console.log(rest);
+}
+"
+`;
+
+exports[`scope test variation 3 1`] = `
+"function foo(hey) {}
+"
+`;
+
+exports[`scope test variation 4 1`] = `
+"const hey = hey => {};
+"
+`;
+
+exports[`scope test variation 5 1`] = `
+"const hey = hey => {
+  console.log(hey);
+};
+"
+`;
+
+exports[`scope test variation 6 1`] = `
+"var oi_1 = require(\\"oi\\");
+console.log(oi_1.hey);
+const hey = hey => {
+  console.log(hey);
+};
+"
+`;
+
+exports[`scope test variation 7 1`] = `
+"class Hey {
+  foo(hey) {
+    console.log(hey);
+  }
+}
+"
+`;
+
+exports[`scope test variation compute properties 1`] = `
+"exports.a = () => {};
+const b = {
+  [exports.a]: 1
+};
+"
+`;
+
+exports[`scope test variation normal prop 1`] = `
+"exports.a = () => {};
+const b = {
+  a: exports.a
+};
+"
+`;
+
+exports[`scope test variation with arrow expression 1`] = `
+"exports.a = () => {};
+console.log(() => exports.a);
+"
+`;
+
+exports[`scope test variation with class After 1`] = `
+"var oi_1 = require(\\"oi\\");
+console.log(oi_1.Hey);
+class Hey {
+  foo(hey) {
+    console.log(hey);
+  }
+}
+new Hey();
+"
+`;

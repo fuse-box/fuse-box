@@ -1,21 +1,22 @@
 import { fusebox, sparky } from '../../src';
+import { ITarget } from '../../src/config/ITarget';
 class Context {
   isProduction;
   runServer;
+  target: ITarget = 'browser';
   getConfig = () =>
     fusebox({
-      target: 'browser',
+      cache: { enabled: false, root: './.cache' },
+      devServer: this.runServer,
       entry: 'src/index.ts',
+      target: this.target,
+      threading: { minFileSize: 0, threadAmount: 1 },
       webIndex: {
-        publicPath: '.',
         template: 'src/index.html',
       },
-      cache: false,
-      watch: true,
-      devServer: this.runServer,
     });
 }
-const { task, rm, exec } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;
@@ -30,7 +31,19 @@ task('preview', async ctx => {
   const fuse = ctx.getConfig();
   await fuse.runProd({ uglify: false });
 });
+
+task('preview-server', async ctx => {
+  rm('./dist');
+  ctx.runServer = true;
+  ctx.target = 'server';
+  ctx.isProduction = true;
+  const fuse = ctx.getConfig();
+  const { onComplete } = await fuse.runProd();
+  onComplete(({ server }) => server.start());
+});
+
 task('dist', async ctx => {
+  rm('./dist');
   ctx.runServer = false;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();

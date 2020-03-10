@@ -5,24 +5,23 @@ class Context {
   runServer;
   getConfig() {
     return fusebox({
-      output: './dist/$hash-$name',
-      target: 'server',
-      entry: 'src/index.ts',
       cache: false,
-      watch: true,
+      entry: 'src/index.ts',
       hmr: true,
+      modules: ['packages'],
+      target: 'server',
+      watcher: true,
     });
   }
 }
-const { task, exec, rm } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   rm('./dist');
   const fuse = ctx.getConfig();
-  await fuse.runDev(handler => {
-    handler.onComplete(output => {
-      output.server.handleEntry({ nodeArgs: [], scriptArgs: [] });
-    });
+  const { onComplete } = await fuse.runDev();
+  onComplete(({ server }) => {
+    server.start();
   });
 });
 
@@ -31,14 +30,8 @@ task('preview', async ctx => {
 
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd({
-    uglify: true,
-    handler: handler => {
-      handler.onComplete(output => {
-        output.server.handleEntry({ nodeArgs: [], scriptArgs: [] });
-      });
-    },
-  });
+  const { onComplete } = await fuse.runProd();
+  onComplete(({ server }) => server.start());
 });
 task('dist', async ctx => {
   rm('./dist');

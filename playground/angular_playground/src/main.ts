@@ -3,13 +3,12 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
-
-import { rem } from 'csx';
-console.log(rem(5));
+import './main.scss';
 
 if (environment.production) {
   enableProdMode();
 }
+console.log(3);
 
 platformBrowserDynamic()
   .bootstrapModule(AppModule)

@@ -1,15 +1,16 @@
-import { Context } from './Context';
 import { copyFile } from '../utils/utils';
+import { Context } from './context';
 
 export class ContextTaskManager {
   private copyFilesTask: { [key: string]: string };
   constructor(private ctx: Context) {
     this.copyFilesTask = {};
+
     ctx.ict.on('complete', props => {
       this.perform();
       return props;
     });
-    ctx.ict.on('rebundle_complete', props => {
+    ctx.ict.on('rebundle', props => {
       this.perform();
       return props;
     });

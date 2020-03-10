@@ -1,11 +1,11 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 import { postCSSHandler } from '../../stylesheet/postcss/postcssHandler';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
 
-export function pluginPostCSS(a?: string | RegExp, b?: IPluginCommon) {
+export function pluginPostCSS(a?: RegExp | string, b?: IPluginCommon) {
   return (ctx: Context) => {
     let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
 
@@ -17,8 +17,8 @@ export function pluginPostCSS(a?: string | RegExp, b?: IPluginCommon) {
         return;
       }
 
-      if (matcher.test(module.props.absPath)) {
-        ctx.log.info('PostCSS', module.props.absPath);
+      if (matcher.test(module.absPath)) {
+        ctx.log.info('PostCSS', module.absPath);
 
         props.module.read();
         props.module.captured = true;
@@ -31,6 +31,7 @@ export function pluginPostCSS(a?: string | RegExp, b?: IPluginCommon) {
         // It also accepts extra properties (like asText) to handle text rendering
         cssContextHandler({
           ctx,
+          fuseCSSModule: ctx.meta['fuseCSSModule'],
           module: module,
           options: opts.stylesheet,
           processor: postCSS,

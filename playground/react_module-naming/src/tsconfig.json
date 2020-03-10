@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "downlevelIteration": true,
+    "jsx": "react",
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "moduleResolution": "node",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "target": "esnext"
+  }
+}

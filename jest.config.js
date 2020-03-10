@@ -11,11 +11,15 @@ module.exports = {
     '^.+\\.ts?$': 'ts-jest',
   },
 
-  testRegex: '(/(__tests__|tests)/.*|(\\.|/))\\.test\\.tsx?$',
+  coveragePathIgnorePatterns: ['test_utils.ts', 'logging/logging.ts', 'logging/spinner.ts'],
+  maxConcurrency: 1,
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'json'],
   modulePathIgnorePatterns: ['/modules', '/_modules'],
   testPathIgnorePatterns: [
     '.fusebox/',
     '/lib/',
+    '__refactor',
+    '____production',
     'node_modules/',
     'modules',
     '_playground/',
@@ -23,7 +27,6 @@ module.exports = {
     '.dev/',
     'website',
   ],
-  maxConcurrency: 1,
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'json'],
-  coveragePathIgnorePatterns: ['test_utils.ts', 'logging/logging.ts', 'logging/spinner.ts'],
+  testRegex: '(/(__tests__|tests)/.*|(\\.|/))\\.test\\.tsx?$',
+  watchPathIgnorePatterns: ['.tmp', 'dist'],
 };

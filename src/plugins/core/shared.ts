@@ -1,24 +1,26 @@
 import * as postcss from 'postcss';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
-import { Context } from '../../core/Context';
-import { Module } from '../../core/Module';
-import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
+import { cssDevModuleRender, ICSSModuleRender } from '../../stylesheet/cssDevModuleRender';
 import { IStyleSheetProcessor } from '../../stylesheet/interfaces';
+import { isNodeModuleInstalled } from '../../utils/utils';
 import { IPluginCommon } from '../interfaces';
 import { wrapContents } from '../pluginStrings';
 
 export interface ICSSContextHandler {
   ctx: Context;
-  processor: IStyleSheetProcessor;
+  fuseCSSModule: IModule;
+  module: IModule;
   options: IStyleSheetProps;
-  module: Module;
+  processor: IStyleSheetProcessor;
   shared: IPluginCommon;
 }
 export function setEmpty() {}
 
 export interface ICreateCSSModule {
   css?: string;
-  module: Module;
+  module: IModule;
   shared: IPluginCommon;
 }
 async function createCSSModule(props: ICreateCSSModule): Promise<{ json: any; css: string; map: any }> {
@@ -32,41 +34,43 @@ async function createCSSModule(props: ICreateCSSModule): Promise<{ json: any; cs
       }),
     ])
       .process(props.css, {
-        from: props.module.props.absPath,
-        to: props.module.props.absPath,
-        map: props.module.isCSSSourceMapRequired() && { inline: false },
+        from: props.module.absPath,
+        map: props.module.isCSSSourceMapRequired && { inline: false },
+        to: props.module.absPath,
       })
       .then(result => {
-        return resolve({ json: targetJSON, css: result.css, map: result.map });
+        return resolve({ css: result.css, json: targetJSON, map: result.map });
       });
   });
 }
 export function cssContextHandler(props: ICSSContextHandler) {
   const { ctx, processor, shared } = props;
-  const supported = props.ctx.config.supportsStylesheet() || shared.asText;
+  const supported = props.ctx.config.supportsStylesheet() || shared.asText || shared.asModule;
   if (!supported) {
     props.module.contents = 'module.exports = {}';
     return;
   }
   if (shared.asModule) {
-    if (!ctx.isInstalled('postcss-modules')) {
-      ctx.fatal(`Fatal error when capturing ${props.module.props.absPath}`, [
+    if (!isNodeModuleInstalled('postcss-modules')) {
+      ctx.fatal(`Fatal error when capturing ${props.module.absPath}`, [
         'Module "postcss-modules" is required, Please install it using the following command',
         'npm install postcss-modules --save-dev',
       ]);
       return;
     }
   }
+
   ctx.ict.promise(async () => {
     try {
       // reset errored status
       props.module.errored = false;
       const data = await processor.render();
-      const rendererProps = {
-        data,
+      const rendererProps: ICSSModuleRender = {
         ctx,
-        options: props.options,
+        data,
+        fuseCSSModule: props.fuseCSSModule,
         module: props.module,
+        options: props.options,
         useDefault: props.shared.useDefault,
       };
 
@@ -76,14 +80,16 @@ export function cssContextHandler(props: ICSSContextHandler) {
         data.map = undefined;
         data.css = result.css;
         props.module.isCSSModule = true;
+        props.module.breakDependantsCache = true;
       } else if (shared.asText) {
         props.module.isCSSText = true;
-        props.module.notStylesheet();
+        props.module.isStylesheet = false;
+
         props.module.contents = wrapContents(JSON.stringify(data.css), props.shared.useDefault);
 
         return;
       }
-      if (ctx.config.production) {
+      if (ctx.config.isProduction) {
         props.module.css = data;
         if (shared.asModule && data.json) {
           props.module.contents = wrapContents(JSON.stringify(data.json), props.shared.useDefault);
@@ -94,11 +100,11 @@ export function cssContextHandler(props: ICSSContextHandler) {
     } catch (e) {
       // prevent module from being cached
       props.module.errored = true;
-      let errMessage = e.message ? e.message : `Uknown error in file ${props.module.props.absPath}`;
+      let errMessage = e.message ? e.message : `Uknown error in file ${props.module.absPath}`;
       props.module.contents = `console.error(${JSON.stringify(errMessage)})`;
       ctx.log.error('$error in $file', {
         error: e.message,
-        file: props.module.props.absPath,
+        file: props.module.absPath,
       });
     }
   });

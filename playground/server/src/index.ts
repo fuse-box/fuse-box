@@ -1,2 +1,4 @@
-import * as v8 from 'v8';
-console.log(v8);
+console.log('START ALL OVER');
+setInterval(() => {
+  console.log('hello world');
+}, 500);

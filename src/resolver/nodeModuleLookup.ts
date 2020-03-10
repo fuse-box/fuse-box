@@ -1,13 +1,10 @@
-import * as appRoot from 'app-root-path';
 import * as path from 'path';
-import { fileExists, makeFuseBoxPath } from '../utils/utils';
+import { findUp } from '../utils/findUp';
+import { fileExists, makeFuseBoxPath, readFile } from '../utils/utils';
 import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
-import { getFolderEntryPointFromPackageJSON, isBrowserEntry } from './shared';
-import { findUp } from '../utils/findUp';
-
-const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
+import { getFolderEntryPointFromPackageJSON } from './shared';
 
 const NODE_MODULE_REGEX = /^(([^\.][\.a-z0-9@\-_]*)(\/)?([_a-z0-9.@-]+)?(\/)?(.*))$/i;
 
@@ -16,11 +13,10 @@ export interface IModuleParsed {
   target?: string;
 }
 
-export function isNodeModule(path: string): IModuleParsed | undefined {
+export function isNodeModule(path: string): undefined | IModuleParsed {
   const matched = path.match(NODE_MODULE_REGEX);
-  if (!matched) {
-    return;
-  }
+  if (!matched) return;
+
   let [name, b, c] = [matched[2], matched[4], matched[6]];
 
   const result: IModuleParsed = { name };
@@ -37,29 +33,43 @@ export function isNodeModule(path: string): IModuleParsed | undefined {
   return result;
 }
 
-export function parseAllModulePaths(fileAbsPath: string) {
-  const baseDir = path.dirname(fileAbsPath);
+function parentDir(normalizedPath: string): string | undefined {
+  const parent = path.dirname(normalizedPath);
+  if (parent === normalizedPath)
+    return undefined;
+  return parent;
+}
+
+export function parseAllModulePaths(fileAbsPath: string): string[] {
+  const start = path.normalize(fileAbsPath);
   const paths = [];
-
-  const snippets = baseDir.split(/node_modules/);
-  let current = '';
-  if (snippets.length > 1) {
-    const total = snippets.length - 1;
-    for (let i = 0; i < total; i++) {
-      current = path.join(current, snippets[i], 'node_modules');
-      paths.push(current);
-    }
-
-    const last = snippets[total];
-
-    const matchedLast = last.match(/[\/|\\]([a-z-@0-9_-]+)/gi);
-    if (matchedLast && matchedLast[0]) {
-      paths.push(path.join(paths[paths.length - 1], matchedLast[0], 'node_modules'));
-    }
-    return paths;
+  for (let dir = parentDir(start); dir !== undefined; dir = parentDir(dir)) {
+    const name = path.basename(dir);
+    if (name === "node_modules")
+      continue;
+    paths.unshift(path.join(dir, "node_modules"));
   }
 
-  return [PROJECT_NODE_MODULES];
+  return paths;
+}
+
+const pathExists = new Map<string, boolean>();
+function memoizedExists(absPath: string): boolean {
+  let exists = pathExists.get(absPath);
+  if (exists === undefined) {
+    exists = fileExists(absPath);
+    pathExists.set(absPath, exists);
+  }
+  return exists;
+}
+
+export function parseExistingModulePaths(fileAbsPath: string): string[] {
+  const all = parseAllModulePaths(fileAbsPath);
+  const existing = [];
+  for (let i = 0; i < all.length; i++) {
+    memoizedExists(all[i]) && existing.push(all[i]);
+  }
+  return existing;
 }
 
 const CACHED_LOCAL_MODULES: { [key: string]: string | null } = {};
@@ -74,11 +84,24 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
     }
   }
 
-  const paths = parseAllModulePaths(props.filePath);
+  const isPnp = (process.versions as any).pnp;
+
+  // Support for Yarn v2 PnP
+  if (isPnp) {
+    try {
+      const pnp = require('pnpapi');
+      const folder = pnp.resolveToUnqualified(parsed.name, props.filePath, { considerBuiltins: false });
+      return folder;
+    } catch (e) {
+      // Ignore error here, since it will be handled later
+    }
+  }
+
+  const paths = parseExistingModulePaths(props.filePath);
 
   for (let i = paths.length - 1; i >= 0; i--) {
     const attempted = path.join(paths[i], parsed.name);
-    if (fileExists(attempted)) {
+    if (fileExists(path.join(attempted, "package.json"))) {
       return attempted;
     }
   }
@@ -90,26 +113,24 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
 
   if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
     const attempted = path.join(localModuleRoot, parsed.name);
-    if (fileExists(attempted)) {
+    if (fileExists(path.join(attempted, "package.json"))) {
       return attempted;
     }
   }
 }
 export interface INodeModuleLookup {
   error?: string;
+  isEntry?: boolean;
+  meta?: IPackageMeta;
   targetAbsPath?: string;
   targetExtension?: string;
   targetFuseBoxPath?: string;
-  isEntry?: boolean;
-  forcedStatement?: string;
-  meta?: IPackageMeta;
 }
 
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
   let folder: string;
 
   folder = findTargetFolder(props, parsed);
-
   if (!folder) {
     return { error: `Cannot resolve "${parsed.name}"` };
   }
@@ -125,7 +146,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   if (!fileExists(packageJSONFile)) {
     return { error: `Failed to find package.json in ${folder} when resolving module ${parsed.name}` };
   }
-  const json = require(packageJSONFile);
+  const json = JSON.parse(readFile(packageJSONFile));
   pkg.version = json.version || '0.0.0';
   pkg.browser = json.browser;
   pkg.packageJSONLocation = packageJSONFile;
@@ -139,14 +160,14 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
   // extract target if required
   if (parsed.target) {
-    const parsedLookup = fileLookup({ target: parsed.target, fileDir: folder });
+    const parsedLookup = fileLookup({ fileDir: folder, target: parsed.target });
     if (!parsedLookup) {
       return { error: `Failed to resolve ${props.target} in ${parsed.name}` };
     }
 
     result.targetAbsPath = parsedLookup.absPath;
 
-    if (json.browser && typeof json.browser === 'object') {
+    if (isBrowser && json.browser && typeof json.browser === 'object') {
       const override = handleBrowserField(pkg, parsedLookup.absPath);
       if (override) {
         result.targetAbsPath = override;
@@ -156,14 +177,10 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
     result.isEntry = false;
     result.targetFuseBoxPath = makeFuseBoxPath(folder, result.targetAbsPath);
-
-    if (parsedLookup.customIndex) {
-      result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
-    }
   } else {
-    const entryFile = getFolderEntryPointFromPackageJSON({ json: json, isBrowserBuild: isBrowser });
+    const entryFile = getFolderEntryPointFromPackageJSON({ isBrowserBuild: isBrowser, json: json });
 
-    const entryLookup = fileLookup({ target: entryFile, fileDir: folder });
+    const entryLookup = fileLookup({ fileDir: folder, target: entryFile });
 
     if (!entryLookup.fileExists) {
       return {
@@ -178,11 +195,8 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
     result.targetAbsPath = pkg.entryAbsPath;
     result.targetFuseBoxPath = pkg.entryFuseBoxPath;
-    if (isBrowserEntry(json, isBrowser)) {
-      result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
-    }
 
-    if (json.browser && typeof json.browser === 'object') {
+    if (isBrowser && json.browser && typeof json.browser === 'object') {
       const override = handleBrowserField(pkg, entryLookup.absPath);
       if (override) {
         //result.targetFuseBoxPath =

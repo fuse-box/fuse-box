@@ -1,9 +1,9 @@
-import { Context } from '../../core/Context';
-import { parsePluginOptions } from '../pluginUtils';
+import { Context } from '../../core/context';
 import { safeRegex } from '../../utils/utils';
+import { parsePluginOptions } from '../pluginUtils';
 
 export type IPluginReplaceProps = { [key: string]: any };
-export function pluginReplace(a?: IPluginReplaceProps | string | RegExp, b?: IPluginReplaceProps) {
+export function pluginReplace(a?: IPluginReplaceProps | RegExp | string, b?: IPluginReplaceProps) {
   const [opts, matcher] = parsePluginOptions<IPluginReplaceProps>(a, b, {});
 
   const expressions = [];
@@ -11,17 +11,17 @@ export function pluginReplace(a?: IPluginReplaceProps | string | RegExp, b?: IPl
     expressions.push([safeRegex(key), opts[key]]);
   }
   return (ctx: Context) => {
-    ctx.ict.on('assemble_before_analysis', props => {
+    ctx.ict.on('module_init', props => {
       // filter out options
 
-      if (matcher && !matcher.test(props.module.props.absPath)) {
+      if (matcher && !matcher.test(props.module.absPath)) {
         return;
       }
 
       const { module } = props;
 
       ctx.log.info('pluginReplace', 'replacing in $file', {
-        file: module.props.absPath,
+        file: module.absPath,
       });
 
       module.read();

@@ -1,41 +1,14 @@
-import { sparky, fusebox } from '../../../src';
+import { fusebox } from '../../../src/core/fusebox';
 
-class Context {
-  isProduction;
-  runServer;
-  getConfig() {
-    return fusebox({
-      target: 'browser',
-      output: './dist',
-      homeDir: '../',
-      tsConfig: 'tsconfig.json',
-      entry: 'project/src/index.ts',
-      webIndex: {
-        template: 'src/index.html',
-      },
-      cache: false,
-      devServer: true,
-    });
-  }
-}
-const { task, exec, rm } = sparky<Context>(Context);
-
-task('default', async ctx => {
-  ctx.runServer = true;
-  const fuse = ctx.getConfig();
-  await fuse.runDev();
+const fuse = fusebox({
+  cache: true,
+  compilerOptions: { tsConfig: 'tsconfig.json' },
+  devServer: true,
+  entry: 'src/index.ts',
+  target: 'browser',
+  webIndex: {
+    template: 'src/index.html',
+  },
 });
 
-task('preview', async ctx => {
-  await rm('./dist');
-  ctx.runServer = true;
-  ctx.isProduction = true;
-  const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: false });
-});
-task('dist', async ctx => {
-  ctx.runServer = false;
-  ctx.isProduction = true;
-  const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: false });
-});
+fuse.runDev({ bundles: { distRoot: 'dist' } });

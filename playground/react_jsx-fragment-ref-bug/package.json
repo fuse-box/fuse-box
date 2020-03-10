@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@emotion/core": "10.0.6",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "name": "fuse_test",
+  "scripts": {
+    "start": "ts-node -T fuse"
+  },
+  "version": "1.0.0"
+}

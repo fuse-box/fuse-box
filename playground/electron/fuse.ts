@@ -4,69 +4,62 @@ class Context {
   runServer;
   getMainConfig() {
     return fusebox({
-      output: 'dist/main/$name-$hash',
-      target: 'electron',
-      homeDir: 'src/main',
-      entry: 'main.ts',
-      useSingleBundle: true,
-      dependencies: { ignoreAllExternal: true },
+      cache: { enabled: true, root: './.cache' },
+      dependencies: { serverIgnoreExternals: true },
+      entry: 'src/main/main.ts',
       logging: { level: 'succinct' },
-      cache: {
-        enabled: true,
-        root: '.cache/main',
-      },
+      modules: ['node_modules'],
+      target: 'server',
     });
   }
-  launch(handler) {
-    handler.onComplete(output => {
-      output.electron.handleMainProcess();
-    });
-  }
+
   getRendererConfig() {
     return fusebox({
-      output: 'dist/renderer/$name-$hash',
-      target: 'electron',
-      homeDir: 'src/renderer',
-      entry: 'index.ts',
-      dependencies: { include: ['tslib'] },
+      cache: { enabled: true, root: './.cache' },
+      devServer: {
+        hmrServer: { port: 7878 },
+        httpServer: false,
+      },
+      electron: { nodeIntegration: true },
+      entry: 'src/renderer/index.ts',
       logging: { level: 'succinct' },
+      modules: ['node_modules'],
+      target: 'electron',
       webIndex: {
         publicPath: './',
         template: 'src/renderer/index.html',
       },
-      cache: {
-        enabled: false,
-        root: '.cache/renderere',
-      },
-      devServer: {
-        httpServer: false,
-        hmrServer: { port: 7878 },
-      },
     });
   }
 }
-const { task, rm } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   await rm('./dist');
 
   const rendererConfig = ctx.getRendererConfig();
-  await rendererConfig.runDev();
+  await rendererConfig.runDev({ bundles: { distRoot: 'dist/renderer', app: 'app.js' } });
 
   const electronMain = ctx.getMainConfig();
-  await electronMain.runDev(handler => ctx.launch(handler));
+
+  const { onComplete } = await electronMain.runDev({ bundles: { distRoot: 'dist/main', app: 'app.js' } });
+  onComplete(({ electron }) => electron.start());
 });
 
 task('dist', async ctx => {
   await rm('./dist');
 
   const rendererConfig = ctx.getRendererConfig();
-  await rendererConfig.runProd({ uglify: false });
+  await rendererConfig.runProd({ bundles: { distRoot: 'dist/renderer', app: 'app.js' } });
 
   const electronMain = ctx.getMainConfig();
-  await electronMain.runProd({
-    uglify: true,
-    manifest: true,
-    handler: handler => ctx.launch(handler),
+
+  const { onComplete } = await electronMain.runProd({
+    bundles: {
+      distRoot: 'dist/main',
+      app: 'app.js',
+      vendor: 'vendor.js',
+    },
   });
+  onComplete(({ electron }) => electron.start());
 });

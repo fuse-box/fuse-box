@@ -1,9 +1,9 @@
+import * as appRoot from 'app-root-path';
 import * as fs from 'fs';
 import * as fsExtra from 'fs-extra';
+import * as offsetLinesModule from 'offset-sourcemap-lines';
 import * as path from 'path';
 import { env } from '../env';
-
-import * as offsetLinesModule from 'offset-sourcemap-lines';
 const CACHED_PATHS = new Map<string, RegExp>();
 let prettyTime = require('pretty-time');
 
@@ -25,10 +25,35 @@ export function matchAll(regex: RegExp, str: string, cb: (matches) => void) {
   }
 }
 
+export function getFileModificationTime(absPath) {
+  return fs.statSync(absPath).mtime.getTime();
+}
+
+export function makePublicPath(target: string) {
+  return ensureFuseBoxPath(path.relative(appRoot.path, target));
+}
+
 export function removeFolder(userPath) {
   fsExtra.removeSync(userPath);
 }
 
+export function readJSONFile(target: string) {
+  return JSON.parse(readFile(target));
+}
+
+export function isPathRelative(from: string, to: string) {
+  const relativePath = path.relative(from, to);
+  return !relativePath.startsWith('..');
+}
+
+export function isDirectoryEmpty(directory: string) {
+  const files = fs.readdirSync(directory);
+  return files.length === 0;
+}
+
+export function getPublicPath(x: string) {
+  return path.relative(env.APP_ROOT, x);
+}
 export function beautifyBundleName(absPath: string, maxLength?: number) {
   return absPath
     .replace(/(\.\w+)$/g, '')
@@ -39,6 +64,15 @@ export function beautifyBundleName(absPath: string, maxLength?: number) {
     )
     .toLowerCase();
 }
+
+export const listDirectory = (dir, filelist = []) => {
+  fs.readdirSync(dir).forEach(file => {
+    filelist = fs.statSync(path.join(dir, file)).isDirectory()
+      ? listDirectory(path.join(dir, file), filelist)
+      : filelist.concat(path.join(dir, file));
+  });
+  return filelist;
+};
 
 export function offsetLines(obj: any, amount: number) {
   return offsetLinesModule(obj, amount);
@@ -110,6 +144,15 @@ export function readFile(file: string) {
   return fs.readFileSync(file).toString();
 }
 
+export function readFileAsync(file: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, (e, data) => {
+      if (e) return reject(e);
+      return resolve(data.toString());
+    });
+  });
+}
+
 export function readFileAsBuffer(file: string) {
   return fs.readFileSync(file);
 }
@@ -127,13 +170,28 @@ export function isObject(obj: any) {
 export function pathJoin(...args) {
   return path.join(...args);
 }
+export function pathRelative(from: string, to: string) {
+  return path.relative(from, to);
+}
 export function getExtension(file: string) {
   return path.extname(file);
+}
+export function getFilename(file: string) {
+  return path.basename(file);
 }
 
 export function ensureDir(dir: string) {
   fsExtra.ensureDirSync(dir);
   return dir;
+}
+
+export function ensurePackageJson(dir: string) {
+  ensureDir(dir);
+  const pkgJsonPath = pathJoin(dir, 'package.json');
+  if (!fileExists(pkgJsonPath)) {
+    const contents = JSON.stringify({ name: path.basename(dir) }, null, 4);
+    fs.writeFileSync(pkgJsonPath, contents);
+  }
 }
 
 export function fileStat(file: string) {
@@ -146,8 +204,8 @@ export function makeFuseBoxPath(homeDir: string, absPath: string) {
 export function measureTime(group?: string) {
   let startTime = process.hrtime();
   return {
-    end: () => {
-      return prettyTime(process.hrtime(startTime));
+    end: (precision?) => {
+      return prettyTime(process.hrtime(startTime), precision);
     },
   };
 }
@@ -166,7 +224,7 @@ export function findReplace(str: string, re: RegExp, fn: (args) => string) {
   });
 }
 
-export function path2RegexPattern(input: undefined | string | RegExp): RegExp {
+export function path2RegexPattern(input: undefined | RegExp | string): RegExp {
   if (!input) {
     return;
   }
@@ -175,6 +233,9 @@ export function path2RegexPattern(input: undefined | string | RegExp): RegExp {
     let r = '';
     for (let i = 0; i < input.length; i++) {
       switch (input[i]) {
+        case '*':
+          r += '.*';
+          break;
         case '.':
           r += '\\.';
           break;
@@ -183,9 +244,6 @@ export function path2RegexPattern(input: undefined | string | RegExp): RegExp {
           break;
         case '\\': // window paths
           r += '(\\/|\\\\)';
-          break;
-        case '*':
-          r += '.*';
           break;
         default:
           r += input[i];
@@ -208,9 +266,9 @@ export function ensureUserPath(userPath: string, root?: string) {
 }
 
 export type Concat = {
-  add(fileName: string | null, content: string | Buffer, sourceMap?: string): void;
   content: Buffer;
   sourceMap: string;
+  add(fileName: null | string, content: Buffer | string, sourceMap?: string): void;
 };
 export type ConcatModule = {
   new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
@@ -228,7 +286,14 @@ export function ensureAbsolutePath(userPath: string, root: string) {
   return userPath;
 }
 
-export function getPathRelativeToConfig(props: { fileName?: string; dirName: string; ensureDirExist?: boolean }) {
+export function ensureScriptRoot(userPath: string) {
+  if (!path.isAbsolute(userPath)) {
+    return path.join(env.SCRIPT_PATH, userPath);
+  }
+  return userPath;
+}
+
+export function getPathRelativeToConfig(props: { dirName: string; ensureDirExist?: boolean; fileName?: string }) {
   let target = props.fileName ? path.dirname(props.fileName) : props.dirName;
   const fileName = props.fileName && path.basename(props.fileName);
   if (!path.isAbsolute(target)) {
@@ -241,8 +306,16 @@ export function getPathRelativeToConfig(props: { fileName?: string; dirName: str
   return fileName ? path.join(target, fileName) : target;
 }
 
-export function ensureFuseBoxPath(input: string) {
-  return input.replace(/\\/g, '/').replace(/\/$/, '');
+export function isNodeModuleInstalled(name) {
+  try {
+    return require(name);
+  } catch (e) {
+    return false;
+  }
+}
+
+export function ensureFuseBoxPath(input: undefined | string) {
+  return input && input.replace(/\\/g, '/').replace(/\/$/, '');
 }
 
 export function joinFuseBoxPath(...any): string {
@@ -263,6 +336,9 @@ export async function writeFile(name: string, contents) {
   });
 }
 
+export function randomHash() {
+  return fastHash(`${Math.random()}_${Math.random()}`);
+}
 export function fastHash(text: string): string {
   let hash = 0;
   if (text.length == 0) return '';

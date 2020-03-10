@@ -4,4 +4,4 @@ myWorker.onmessage = function(e) {
   console.log('Message received from worker', e);
 };
 
-console.log('KUKKA');
+console.log('hey!!!!');

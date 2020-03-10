@@ -1,15 +1,15 @@
 import * as path from 'path';
 import { IStyleSheetProps } from '../config/IStylesheetProps';
-import { Context } from '../core/Context';
+import { FONT_EXTENSIONS, IMAGE_EXTENSIONS } from '../config/extensions';
+import { Context } from '../core/context';
 import { fastHash, fileExists, joinFuseBoxPath } from '../utils/utils';
 import { replaceCSSMacros } from './cssResolveModule';
-import { IMAGE_EXTENSIONS, FONT_EXTENSIONS } from '../config/extensions';
 
 export interface ICSSResolveURLProps {
-  filePath: string;
   contents: string;
-  options: IStyleSheetProps;
   ctx: Context;
+  filePath: string;
+  options: IStyleSheetProps;
 }
 
 const Expression = /url\(([^\)]+)\)/gm;
@@ -30,8 +30,8 @@ function extractValue(input: string) {
 }
 
 export interface IURLReplaced {
-  original: string;
   destination: string;
+  original: string;
   publicPath: string;
 }
 
@@ -94,13 +94,13 @@ export function resolveCSSResource(target, props: ICSSResolveURLProps): IURLRepl
         props.ctx.taskManager.copyFile(target, destination);
       }
     }
-    return { original: target, publicPath, destination };
+    return { destination, original: target, publicPath };
   }
 }
 
 export interface ICSSResolveURLResult {
-  replaced: Array<IURLReplaced>;
   contents: string;
+  replaced: Array<IURLReplaced>;
 }
 
 export function mapErrorLine(contents: string, offset: number) {
@@ -136,11 +136,11 @@ export function cssResolveURL(props: ICSSResolveURLProps): ICSSResolveURLResult 
       return `url("${result.publicPath}")`;
     }
     props.ctx.log.warn('Failed to resolve $value in $file:$line', {
-      value: value,
       file: props.filePath,
       line: mapErrorLine(contents, offset),
+      value: value,
     });
     return match;
   });
-  return { replaced, contents };
+  return { contents, replaced };
 }

@@ -2,8 +2,9 @@ import * as appRoot from 'app-root-path';
 import * as path from 'path';
 import '../../utils/test_utils';
 import { findTargetFolder, isNodeModule, parseAllModulePaths, nodeModuleLookup } from '../nodeModuleLookup';
-import { ensureDir } from '../../utils/utils';
+import { ensureDir, ensurePackageJson } from '../../utils/utils';
 import { createRealNodeModule } from '../../utils/test_utils';
+import { resolve as pathResolve } from 'path'
 
 const cases = path.join(__dirname, 'cases');
 
@@ -114,26 +115,37 @@ describe('NodeModule lookup', () => {
 });
 
 describe('parseAllModulePaths', () => {
-  it('Should parse 1', () => {
-    const path = 'a/node_modules/@angular/core/node_modules/foo/node_modules/bar/far/woo/index.js';
-    const paths = parseAllModulePaths(path);
-    expect(paths[0]).toMatchFilePath(`a/node_modules$`);
-    expect(paths[1]).toMatchFilePath(`a/node_modules/@angular/core/node_modules$`);
-    expect(paths[2]).toMatchFilePath(`a/node_modules/@angular/core/node_modules/foo/node_modules$`);
-    expect(paths[3]).toMatchFilePath(`a/node_modules/@angular/core/node_modules/foo/node_modules/bar/node_modules$`);
+  it('Should skip node_modules directories', () => {
+    const path = pathResolve('/a/node_modules/@angular/core/node_modules/foo/node_modules/bar/far/woo/index.js');
+    const actual = parseAllModulePaths(path);
+    const expected = [
+      '/node_modules',
+      '/a/node_modules',
+      '/a/node_modules/@angular/node_modules',
+      '/a/node_modules/@angular/core/node_modules',
+      '/a/node_modules/@angular/core/node_modules/foo/node_modules',
+      '/a/node_modules/@angular/core/node_modules/foo/node_modules/bar/node_modules',
+      '/a/node_modules/@angular/core/node_modules/foo/node_modules/bar/far/node_modules',
+      '/a/node_modules/@angular/core/node_modules/foo/node_modules/bar/far/woo/node_modules',
+    ].map(p => pathResolve(p));
+    expect(actual).toStrictEqual(expected)
   });
 
-  it('Should give a primary path ', () => {
-    const path = 'some/user/file';
-    const paths = parseAllModulePaths(path);
-    expect(paths).toHaveLength(1);
-    expect(paths[0]).toMatchFilePath('node_modules$');
+  it('Should give all node_modules paths ', () => {
+    const path = pathResolve('/some/user/file');
+    const actual = parseAllModulePaths(path);
+    const expected = [
+      '/node_modules',
+      '/some/node_modules',
+      '/some/user/node_modules',
+    ].map(p => pathResolve(p));
+    expect(actual).toStrictEqual(expected)
   });
 });
 
 describe('folder lookup', () => {
   ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-b'));
-  ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/b/node_modules/d/'));
+  ensurePackageJson(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/b/node_modules/d/'));
   ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/crazy-module/'));
   ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/nm-lookup-test-b'));
   it('case 1', () => {
@@ -145,6 +157,7 @@ describe('folder lookup', () => {
 
   it('case 2', () => {
     const dir = ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/b/node_modules/c/'));
+    ensurePackageJson(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/crazy-module/'));
     const target = path.join(dir, 'foo/bar/index.js');
     const targetFolder = findTargetFolder({ target: 'a', filePath: target }, { name: 'crazy-module' });
     expect(targetFolder).toMatchFilePath('node_modules/nm-lookup-test-a/node_modules/crazy-module$');
@@ -152,6 +165,7 @@ describe('folder lookup', () => {
 
   it('case 3', () => {
     const dir = ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/b/node_modules/c/'));
+    ensurePackageJson(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/nm-lookup-test-b'));
     const target = path.join(dir, 'foo/bar/index.js');
     const targetFolder = findTargetFolder({ target: 'a', filePath: target }, { name: 'nm-lookup-test-b' });
     expect(targetFolder).toMatchFilePath('node_modules/nm-lookup-test-a/node_modules/nm-lookup-test-b$');
@@ -165,8 +179,21 @@ describe('folder lookup', () => {
 
   it('case 5 (not inside node_modules)', () => {
     const target = path.join(__dirname, 'nm-lookup-test-b');
+    ensurePackageJson(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-b'));
     const targetFolder = findTargetFolder({ target: 'a', filePath: target }, { name: 'nm-lookup-test-b' });
     expect(targetFolder).toMatchFilePath('node_modules/nm-lookup-test-b$');
+  });
+
+  it('case 6 (only package.json)', () => {
+    // this one should not match (has no package.json)
+    const deep = ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/b'))
+    ensureDir(path.join(deep, 'b/node_modules/c/'));
+    // this one should match (has package.json)
+    const shallow = ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/c'));
+    ensurePackageJson(shallow);
+    const target = path.join(deep, 'foo/bar/index.js');
+    const targetFolder = findTargetFolder({ target: 'a', filePath: target }, { name: 'c' });
+    expect(targetFolder).toMatchFilePath('nm-lookup-test-a/node_modules/c$');
   });
 
   describe('Nested lookup', () => {

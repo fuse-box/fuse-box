@@ -1,0 +1,52 @@
+{
+  "author": "Ferry Kobus <ferry@webmonkeys.nl>",
+  "browserslist": [
+    "last 2 versions"
+  ],
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "chalk": "^3.0.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "emotion-normalize": "^10.1.0",
+    "emotion-theming": "^10.0.19",
+    "express": "^4.17.1",
+    "history": "^4.10.1",
+    "immer": "^5.0.1",
+    "isomorphic-fetch": "^2.2.1",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-helmet-async": "^1.0.4",
+    "react-router-dom": "^5.1.2",
+    "reflexbox": "^4.0.6",
+    "styled-system": "^5.1.4",
+    "use-immer": "^0.3.5"
+  },
+  "description": "Appshell / PWA / AMP / SSR / CSR / HMR / FuseBox / SW / WW whatnot boilerplate",
+  "devDependencies": {
+    "@snowcoders/sortier": "^3.0.1",
+    "dotenv": "^8.2.0",
+    "eslint": "^6.7.2",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^1.19.1",
+    "stylelint": "^12.0.0",
+    "stylelint-config-recommended": "^3.0.0"
+  },
+  "license": "MIT",
+  "name": "@fkobus/klister",
+  "scripts": {
+    "build": "ts-node -T fuse.ts dist",
+    "eslint": "eslint --ignore-path .gitignore .",
+    "prod": "node -r dotenv/config ./dist/server/app.js",
+    "sortier": "sortier \"{,!(package-lock.json),!(node_modules|dist|assets)/}**/*.{js,jsx,json}\"",
+    "start": "ts-node -T fuse.ts",
+    "stylelint": "stylelint \"src/**/*\" -s css-in-js",
+    "test": "npm run sortier && npm run stylelint && npm run eslint"
+  },
+  "stylelint": {
+    "extends": "stylelint-config-recommended"
+  },
+  "version": "0.0.0"
+}

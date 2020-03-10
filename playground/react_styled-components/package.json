@@ -1,0 +1,19 @@
+{
+  "author": "Ferry Kobus <ferry@webmonkeys.nl>",
+  "browserslist": [
+    "last 2 versions"
+  ],
+  "dependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "styled-components": "^5.0.0"
+  },
+  "description": "Styled components playground",
+  "license": "MIT",
+  "name": "@fkobus/react_emotion",
+  "scripts": {
+    "build": "ts-node -T fuse.ts dist",
+    "start": "ts-node -T fuse.ts"
+  },
+  "version": "0.0.0"
+}

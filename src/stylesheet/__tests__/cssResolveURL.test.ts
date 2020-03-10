@@ -1,7 +1,8 @@
-import { createContext } from '../../core/Context';
-import { cssResolveURL } from '../cssResolveURL';
-import { mockWriteFile } from '../../utils/test_utils';
 import * as path from 'path';
+import { createContext } from '../../core/context';
+import { distWriter } from '../../output/distWriter';
+import { createTestContext, mockWriteFile } from '../../utils/test_utils';
+import { cssResolveURL } from '../cssResolveURL';
 
 const fileMock = mockWriteFile();
 
@@ -11,11 +12,13 @@ describe('CSS Resolve URL test', () => {
 
   it('should resolve image 1', () => {
     fileMock.addFile(path.join(__dirname, 'hello.png'), '');
-    const ctx = createContext({ homeDir: __dirname });
+
+    const ctx = createTestContext();
+    ctx.writer = distWriter({ root: __dirname });
     const props = {
       contents: `url("./hello.png")`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -24,11 +27,11 @@ describe('CSS Resolve URL test', () => {
 
   it('should not resolve svg filter', () => {
     fileMock.addFile(path.join(__dirname, 'hello.png'), '');
-    const ctx = createContext({ homeDir: __dirname });
+    const ctx = createTestContext();
     const props = {
       contents: `url(#svgFilter)`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -37,11 +40,11 @@ describe('CSS Resolve URL test', () => {
 
   it('should not resolve svg filter ( keep formatting 1)', () => {
     fileMock.addFile(path.join(__dirname, 'hello.png'), '');
-    const ctx = createContext({ homeDir: __dirname });
+    const ctx = createTestContext();
     const props = {
       contents: `url('#svgFilter')`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -50,11 +53,11 @@ describe('CSS Resolve URL test', () => {
 
   it('should not resolve svg filter ( keep formatting 1)', () => {
     fileMock.addFile(path.join(__dirname, 'hello.png'), '');
-    const ctx = createContext({ homeDir: __dirname });
+    const ctx = createTestContext();
     const props = {
       contents: `url("#svgFilter")`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -63,11 +66,11 @@ describe('CSS Resolve URL test', () => {
 
   it('should keep http references', () => {
     fileMock.addFile(path.join(__dirname, 'hello.png'), '');
-    const ctx = createContext({ homeDir: __dirname });
+    const ctx = createTestContext();
     const props = {
       contents: `url(http://foo.com/hello.png)`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -76,7 +79,7 @@ describe('CSS Resolve URL test', () => {
 
   it('should keep mixin', () => {
     fileMock.addFile(path.join(__dirname, 'hello.png'), '');
-    const ctx = createContext({ homeDir: __dirname });
+    const ctx = createTestContext();
     const props = {
       contents: `
       @mixin svg($url) {
@@ -84,8 +87,8 @@ describe('CSS Resolve URL test', () => {
       }
 
       `,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -94,13 +97,14 @@ describe('CSS Resolve URL test', () => {
 
   it('should skip and data:', () => {
     fileMock.addFile(path.join(__dirname, 'hello.png'), '');
-    const ctx = createContext({ homeDir: __dirname });
+    const ctx = createTestContext();
     const props = {
       contents: `url('data:image/png;base64,iVBO')`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
+
     const res = cssResolveURL(props);
     expect(res.contents).toEqual(`url('data:image/png;base64,iVBO')`);
   });

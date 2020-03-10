@@ -1,7 +1,7 @@
-export type IBumpVersionType = 'minor' | 'major' | 'patch' | 'next' | 'alpha' | 'beta' | 'rc' | 'dev';
+export type IBumpVersionType = 'alpha' | 'beta' | 'dev' | 'major' | 'minor' | 'next' | 'patch' | 'rc';
 export interface IBumpVersion {
-  userJson?: { version: string };
   type: IBumpVersionType;
+  userJson?: { version: string };
 }
 export function bumpVersion(stringJson: string, opts: IBumpVersion): string {
   let json;
@@ -12,9 +12,9 @@ export function bumpVersion(stringJson: string, opts: IBumpVersion): string {
   const type = opts.type;
 
   let matched = version.match(/(\d{1,}).(\d{1,})\.(\d{1,})(-(\w{1,})\.(\d{1,}))?/i);
-  let major = matched[1] * 1;
-  let minor = matched[2] * 1;
-  let patch = matched[3] * 1;
+  let major = 1 * matched[1];
+  let minor = 1 * matched[2];
+  let patch = 1 * matched[3];
   let addonName = matched[5];
   let addonNumber = matched[6];
 

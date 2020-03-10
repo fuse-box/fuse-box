@@ -3,14 +3,14 @@ export function nodeIsString(node) {
 }
 
 interface IVisitProps {
+  context?: IASTContext;
+  idx?: number;
   parent?: any;
   prop?: string;
-  idx?: number;
-  context?: IASTContext;
 }
 interface IASTContext {
-  locals?: Array<string>;
   exports?: Array<string>;
+  locals?: Array<string>;
 }
 interface IASTWalkProps {
   withScope?: boolean;
@@ -94,7 +94,7 @@ export function fastWalk(ast: any, walker: IASTWalkProps) {
       if (child instanceof Array) {
         for (let i = 0; i < child.length; i++) {
           if (child && child[i] && child[i].type) {
-            visit(child[i], { parent: node, prop, idx: i }, context);
+            visit(child[i], { idx: i, parent: node, prop }, context);
           }
         }
       } else {

@@ -1,7 +1,7 @@
 import * as glob from 'glob';
 import { isAbsolute } from 'path';
-import { ensureAbsolutePath } from '../utils/utils';
 import { env } from '../env';
+import { ensureAbsolutePath } from '../utils/utils';
 
 export async function sparky_src(rule: string) {
   return new Promise((resolve, reject) => {

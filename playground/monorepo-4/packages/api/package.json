@@ -1,0 +1,20 @@
+{
+    "name": "@fusebox-test/api",
+    "scripts": {
+        "compile": "ts-node -T fuse build"
+    },
+    "dependencies": {
+        "aws-sdk": "^2.472.0",
+        "aws-xray-sdk": "^2.3.3",
+        "jsonwebtoken": "^8.5.1",
+        "jwks-rsa": "^1.6.0",
+        "lodash": "^4.17.15",
+        "reflect-metadata": "^0.1.13",
+        "sql-ts": "^3.0.1",
+        "tslib": "^1.10.0",
+        "typedi": "^0.8.0"
+    },
+    "devDependencies": {
+        "@types/lodash": "^4.14.134"
+    }
+}

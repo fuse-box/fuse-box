@@ -1,34 +1,45 @@
-import { fusebox, pluginAngular, pluginSass, sparky, pluginCSS } from '../../src';
+import * as path from 'path';
+import { fusebox, pluginAngular, pluginCSS, pluginSass, sparky } from '../../src';
 class Context {
   isProduction;
   runServer;
   getConfig = () =>
     fusebox({
-      target: 'browser',
+      //compilerOptions: { tsConfig: 'sdfsd.json' },
+      cache: { enabled: false, root: './.cache', strategy: 'fs' },
+      compilerOptions: { jsParser: { nodeModules: 'ts' } },
+      devServer: this.runServer,
       entry: 'src/entry.ts',
-      modules: ['./node_modules'],
 
+      sourceMap: { project: true, vendor: false },
+      target: 'browser',
+      //threading: { minFileSize: 2000, threadAmount: 3 },
+      watcher: true,
       webIndex: {
-        publicPath: '.',
+        publicPath: '/',
         template: 'src/index.html',
       },
-      cache: { enabled: false, FTL: true, root: './.cache' },
-      watch: true,
-      devServer: this.runServer,
 
       plugins: [
         pluginAngular('*.component.ts'),
-        pluginSass({ asText: true, useDefault: false }),
+        pluginSass('*.component.scss', { asText: true, useDefault: false }),
         pluginCSS('app*.css', { asText: true }),
       ],
     });
 }
-const { task, rm, exec } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
+  rm('./dist');
   ctx.runServer = true;
   const fuse = ctx.getConfig();
-  await fuse.runDev();
+
+  await fuse.runDev({
+    bundles: {
+      distRoot: path.join(__dirname, 'dist'),
+      app: 'app.js',
+    },
+  });
 });
 
 task('preview', async ctx => {
@@ -36,7 +47,7 @@ task('preview', async ctx => {
   ctx.runServer = true;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: false });
+  await fuse.runProd({ uglify: true, buildTarget: 'ES5' });
 });
 task('dist', async ctx => {
   ctx.runServer = false;

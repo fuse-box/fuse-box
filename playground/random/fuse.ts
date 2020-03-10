@@ -1,30 +1,33 @@
-import { fusebox, sparky } from '../../src';
+import { fusebox, pluginReplace, sparky } from '../../src';
 class Context {
   isProduction;
   runServer;
   getConfig = () =>
     fusebox({
-      target: 'browser',
+      //electron: { nodeIntegration: true },
       entry: 'src/index.ts',
-      modules: ['./node_modules'],
+      modules: ['modules'],
+      target: 'browser',
 
+      //threading: { threadAmount: 1 },
+
+      cache: { enabled: true, root: './.cache' },
+      devServer: this.runServer,
+      watcher: true,
       webIndex: {
         publicPath: '.',
         template: 'src/index.html',
       },
-      cache: { enabled: true, root: './.cache' },
-      watch: true,
-      devServer: this.runServer,
 
-      plugins: [],
+      //plugins: [pluginReplace('*', { hello: 'wadup' })],
     });
 }
-const { task, rm } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;
   const fuse = ctx.getConfig();
-  await fuse.runDev();
+  await fuse.runDev({ bundles: { app: 'app.js' } });
 });
 
 task('preview', async ctx => {
@@ -32,7 +35,7 @@ task('preview', async ctx => {
   ctx.runServer = true;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: false });
+  await fuse.runProd({ uglify: false, bundles: { app: 'app.js' } });
 });
 task('dist', async ctx => {
   ctx.runServer = false;
