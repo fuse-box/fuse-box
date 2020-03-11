@@ -10,6 +10,48 @@ console.log(oi_1.default);
 "
 `;
 
+exports[`scope test Import qualifiers should iqnore qualifer ref 1`] = `""`;
+
+exports[`scope test Import qualifiers should iqnore qualifer ref deep 1`] = `""`;
+
+exports[`scope test Import qualifiers should replace qualifer ref 1`] = `
+"var oi_1 = require(\\"oi\\");
+function oi() {
+  console.log(oi_1.Foo.baz);
+}
+"
+`;
+
+exports[`scope test Import qualifiers should replace qualifer ref 2 1`] = `
+"var oi_1 = require(\\"oi\\");
+function oi() {
+  console.log(oi_1.Foo);
+}
+"
+`;
+
+exports[`scope test Import qualifiers should replace qualifer ref 2 times correctly 1`] = `
+"var oi_1 = require(\\"oi\\");
+function oi() {
+  console.log(oi_1.Foo.hey);
+  function other() {
+    console.log(oi_1.Foo.hey);
+  }
+}
+"
+`;
+
+exports[`scope test Import qualifiers should replace qualifer ref and respect local scope 1`] = `
+"var oi_1 = require(\\"oi\\");
+function oi() {
+  console.log(oi_1.Foo.hey);
+  function other(Bar) {
+    console.log(Bar);
+  }
+}
+"
+`;
+
 exports[`scope test Object pattern 1`] = `
 "var oi_1 = require(\\"oi\\");
 function one(props) {
@@ -120,18 +162,6 @@ exports[`scope test classes should respect constructor prop with public accessib
     console.log(bar);
   }
 }
-"
-`;
-
-exports[`scope test classes should respect import qualifer id ref 1`] = `
-"var oi_1 = require(\\"oi\\");
-let Bar = oi_1.Foo;
-"
-`;
-
-exports[`scope test classes should respect import qualifer id ref deep 1`] = `
-"var oi_1 = require(\\"oi\\");
-let Bar = oi_1.Foo.baz;
 "
 `;
 

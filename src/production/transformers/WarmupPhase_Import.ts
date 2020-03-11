@@ -30,7 +30,9 @@ export function Phase_1_ImportLink(): ITransformer {
         return (
           !!NODES_OF_INTEREST[node.type] &&
           ((!!node.source && !!refs[node.source.value]) ||
-            (!!node.moduleReference && !!refs[node.moduleReference.expression.value]))
+            (!!node.moduleReference &&
+              node.moduleReference.expression &&
+              !!refs[node.moduleReference.expression.value]))
         );
       }
 
