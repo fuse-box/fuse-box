@@ -1,3 +1,4 @@
+import { realpathSync } from 'fs';
 import * as path from 'path';
 import { findUp } from '../utils/findUp';
 import { fileExists, makeFuseBoxPath, readFile } from '../utils/utils';
@@ -77,7 +78,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
     for (const i in props.modules) {
       const f = path.join(props.modules[i], parsed.name);
       if (fileExists(f)) {
-        return f;
+        return realpathSync(f);
       }
     }
   }
@@ -105,7 +106,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
   for (let i = paths.length - 1; i >= 0; i--) {
     const attempted = path.join(paths[i], parsed.name);
     if (fileExists(path.join(attempted, 'package.json'))) {
-      return attempted;
+      return realpathSync(attempted);
     }
   }
 
@@ -117,7 +118,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
   if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
     const attempted = path.join(localModuleRoot, parsed.name);
     if (fileExists(path.join(attempted, 'package.json'))) {
-      return attempted;
+      return realpathSync(attempted);
     }
   }
 }
