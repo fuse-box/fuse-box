@@ -567,6 +567,29 @@ describe('scope test', () => {
       expect(result.code).toMatchSnapshot();
     });
 
+    it('should respect import qualifer id ref', () => {
+      const result = testTranspile({
+        code: `
+        import {Foo} from 'oi';
+        import Bar = Foo;
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should respect import qualifer id ref deep', () => {
+      const result = testTranspile({
+        code: `
+        import {Foo} from 'oi';
+        import Bar = Foo.baz;
+      `,
+      });
+      console.log(result.code);
+
+      expect(result.code).toMatchSnapshot();
+    });
+
     it('should respect constructor prop with public accessibility', () => {
       const result = testTranspile({
         code: `
