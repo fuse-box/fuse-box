@@ -20,7 +20,8 @@ export function isLocalIdentifier(node: ASTNode, parent: ASTNode, propertyName: 
   if (node.type === 'Identifier') {
     if (propertyName === 'params') return;
     if (propertyName === 'superClass') return true;
-    if (parent && !_isLocalIdentifierRulesExceptionNodes[parent.type]) {
+    if (parent) {
+      if (_isLocalIdentifierRulesExceptionNodes[parent.type]) return;
       if (parent.$assign_pattern) {
         return;
       }

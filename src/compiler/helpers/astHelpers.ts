@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { IASTScope } from '../Visitor/Visitor';
+import { INodeScope } from '../Visitor/scopeTracker';
 import { ASTNode } from '../interfaces/AST';
 
 export function generateModuleNameFromSource(source: string, sourceReferences) {
@@ -32,10 +32,11 @@ export function generateVariableFromSource(source: string, index: number) {
   return variable;
 }
 
-export function isLocalDefined(name: string, scope: IASTScope) {
+export function isLocalDefined(name: string, scope: INodeScope) {
   if (!scope) return;
-  if (scope.locals && scope.locals[name] === 1) return true;
-  if (scope.hoisted && scope.hoisted[name] === 1) return true;
+  for (const bodyScope of scope) {
+    if (bodyScope[name] && bodyScope[name].type) return bodyScope[name];
+  }
 }
 
 export function createUndefinedVariable(name: string): ASTNode {
