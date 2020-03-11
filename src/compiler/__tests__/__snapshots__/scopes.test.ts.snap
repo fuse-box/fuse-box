@@ -92,6 +92,18 @@ function foo() {
 "
 `;
 
+exports[`scope test classes should respect catch clause 1`] = `
+"function oi() {}
+function hey() {
+  try {
+    oi();
+  } catch (someException) {
+    console.log(someException);
+  }
+}
+"
+`;
+
 exports[`scope test classes should respect constructor prop 1`] = `
 "class Foo {
   constructor(bar) {
