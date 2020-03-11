@@ -32,7 +32,7 @@ export function testTranspile(props: ICompileModuleProps) {
 
     const pkg = createPackage({ meta: {} as any });
     const module = createModule({
-      absPath: __filename,
+      absPath: props.fileName,
       ctx,
       pkg,
     });

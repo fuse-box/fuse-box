@@ -7,12 +7,14 @@ class Context {
       //electron: { nodeIntegration: true },
       entry: 'src/index.ts',
       modules: ['modules'],
+
+      compilerOptions: { emitDecoratorMetadata: true, experimentalDecorators: true },
       target: 'browser',
 
       //threading: { threadAmount: 1 },
 
       cache: { enabled: true, root: './.cache' },
-      devServer: this.runServer,
+      devServer: true,
       watcher: true,
       webIndex: {
         publicPath: '.',

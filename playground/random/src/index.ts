@@ -1,10 +1,13 @@
-import * as url from 'url';
-console.log(url.parse('https://google.com'));
-// import io from 'socket.io-client';
-// //You are supposed to use io like this
+import { LitElement, customElement, html, property } from 'lit-element';
 
-// const socket = io(); //👈 this particular line of code wants to know about `punycode`
-// //You can then emit stuff to the server
-// socket.emit('hey-server');
+@customElement('my-element')
+export class MyElement extends LitElement {
+  @property()
+  foo = 'foo';
 
-// console.log('jere...');
+  render() {
+    return html`
+      <p>${this.foo}</p>
+    `;
+  }
+}

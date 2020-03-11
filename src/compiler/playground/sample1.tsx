@@ -1,18 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { LitElement, customElement, html, property } from 'lit-element';
 
-@Injectable()
-class DialogService {
-  show() {
-    // do whatever
-  }
-}
+@customElement('my-element')
+export class MyElement extends LitElement {
+  @property()
+  foo = 'foo';
 
-@Injectable()
-class MyService {
-  constructor(private readonly dialog: DialogService, private readonly ds: DialogService) {}
-
-  showDialog() {
-    this.dialog.show(); // THIS DOES NOT WORK; this.dialog is undefined
-    this.ds.show(); // works fine!
+  render() {
+    return html`
+      <p>${this.foo}</p>
+    `;
   }
 }

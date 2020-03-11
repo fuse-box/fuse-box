@@ -12,6 +12,7 @@ async function main() {
       experimentalDecorators: true,
       jsxFactory: 'React.createElement',
     },
+
     fileName: __dirname + '/sample1.tsx',
   });
   console.log(code);
