@@ -270,7 +270,6 @@ function three() {}
 exports[`scope test should handle multiple scenarious at one 1`] = `
 "var shit_1 = require(\\"shit\\");
 var oi_1 = require(\\"oi\\");
-var hey_1 = require(\\"hey\\");
 function hello() {}
 function some() {
   const execute = {};
@@ -281,7 +280,7 @@ function one(props) {
   console.log(foo);
 }
 console.log(oi_1.default);
-console.log(hey_1.Hey);
+console.log(Hey);
 class Hey {
   foo(hey) {
     console.log(hey);
@@ -329,8 +328,7 @@ exports[`scope test variation 5 1`] = `
 `;
 
 exports[`scope test variation 6 1`] = `
-"var oi_1 = require(\\"oi\\");
-console.log(oi_1.hey);
+"console.log(hey);
 const hey = hey => {
   console.log(hey);
 };
@@ -369,8 +367,7 @@ console.log(() => exports.a);
 `;
 
 exports[`scope test variation with class After 1`] = `
-"var oi_1 = require(\\"oi\\");
-console.log(oi_1.Hey);
+"console.log(Hey);
 class Hey {
   foo(hey) {
     console.log(hey);

@@ -1,21 +1,14 @@
 import { ASTNode } from '../interfaces/AST';
+import { IProgramProps } from '../program/transpileModule';
 import { astTransformer } from './astTransformer';
 import { isLocalIdentifier } from './helpers';
-import { scopeTracker } from './scopeTracker';
-import { IProgramProps } from '../program/transpileModule';
+import { INodeScope, newScopeTracker } from './scopeTracker';
 
 export interface IVisitProps {
   parent?: any;
   prop?: string;
   id?: number;
-  context?: IASTScope;
-}
-export interface IASTScope {
-  context?: any;
-  hoisted?: Record<string, number>;
-  locals?: { [key: string]: any };
-  meta?: { [key: string]: any };
-  namespace?: string;
+  context?: INodeScope;
 }
 
 export interface IVisit {
@@ -25,7 +18,7 @@ export interface IVisit {
   parent?: ASTNode;
   property?: string;
   id?: number;
-  scope?: IASTScope;
+  scope?: INodeScope;
 }
 
 export interface IVisitorMod {
@@ -67,8 +60,12 @@ function _visit(
   fn: (visit: IVisit) => IVisitorMod | void,
   node: ASTNode,
   props: { parent?; property?; id?: number },
-  scope: IASTScope,
+  scope: INodeScope,
 ) {
+  if (!scope) {
+    scope = [];
+  }
+
   const visit = {
     scope,
     globalContext,
@@ -79,22 +76,13 @@ function _visit(
     isLocalIdentifier: isLocalIdentifier(node, props.parent, props.property),
   };
 
-  scopeTracker(visit);
+  const bodyScope = newScopeTracker(visit);
+  const currentScope = [];
+  for (const x of scope) currentScope.push(x);
+  if (bodyScope) currentScope.push(bodyScope);
 
   const response = fn(visit);
   if (response) {
-    if (response.scopeMeta) {
-      if (!visit.scope) {
-        visit.scope = { meta: {} };
-        visit.node.scope = visit.scope;
-      } else {
-        if (!visit.scope.meta) visit.scope.meta = {};
-      }
-
-      for (const key in response.scopeMeta) {
-        visit.scope.meta[key] = response.scopeMeta[key];
-      }
-    }
     if (response.onComplete) {
       globalContext.completeCallbacks.push(response.onComplete);
     }
@@ -115,7 +103,7 @@ function _visit(
         return;
       }
       for (const n of replacedNodes) {
-        _visit(t, globalContext, fn, n, { parent: props.parent, property: props.property }, visit.scope);
+        _visit(t, globalContext, fn, n, { parent: props.parent, property: props.property }, currentScope);
       }
       return;
     } else if (response.insertAfterThisNode) {
@@ -124,7 +112,7 @@ function _visit(
       t.insertAfter(visit, newNodes);
 
       for (const n of newNodes) {
-        _visit(t, globalContext, fn, n, { parent: props.parent, property: props.property }, visit.scope);
+        _visit(t, globalContext, fn, n, { parent: props.parent, property: props.property }, currentScope);
       }
       //return;
       //console.log('DONE ************************************');
@@ -132,6 +120,7 @@ function _visit(
       return;
     }
   }
+
   //node.$parent = props.parent;
   for (const property in node) {
     if (property[0] === '$' || IGNORED_KEYS[property] === 1) {
@@ -144,13 +133,13 @@ function _visit(
         const item = child[i];
 
         if (item && item.type && !IRNOGED_TYPES[item.type]) {
-          _visit(t, globalContext, fn, item, { parent: node, property, id: i }, visit.scope);
+          _visit(t, globalContext, fn, item, { parent: node, property, id: i }, currentScope);
         }
         i++;
       }
     } else {
       if (child && child.type && !IRNOGED_TYPES[child.type])
-        _visit(t, globalContext, fn, child, { parent: node, property }, visit.scope);
+        _visit(t, globalContext, fn, child, { parent: node, property }, currentScope);
     }
   }
 }

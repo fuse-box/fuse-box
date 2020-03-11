@@ -382,7 +382,7 @@ export function ExportTransformer(): ITransformer {
                 // if the variable present in the scope...
                 // or picked up by the identifierReplacement ( we can leave that for GlobalContextTranformer)
                 if (
-                  (visit.scope && visit.scope.locals[specifier.local.name]) ||
+                  isLocalDefined(specifier.local.name, visit.scope) ||
                   global.identifierReplacement[specifier.local.name]
                 ) {
                   newNodes.push(

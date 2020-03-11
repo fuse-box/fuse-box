@@ -87,6 +87,7 @@ export function ImportTransformer(): ITransformer {
                     second: 'default',
                   };
                 }
+
                 global.identifierReplacement[specifier.local.name] = replacement;
               } else if (specifier.type === ASTType.ImportNamespaceSpecifier) {
                 // only if we have more than one specifier

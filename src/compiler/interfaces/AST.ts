@@ -1,5 +1,3 @@
-import { IASTScope } from '../Visitor/Visitor';
-
 export interface ASTNode {
   raw?: string;
   type: keyof typeof ASTType;
@@ -28,7 +26,6 @@ export interface ASTNode {
   optional?: boolean;
   prefix?: boolean;
   returnType?: ASTNode;
-  scope?: IASTScope;
   shorthand?: boolean;
   source?: ASTNode;
   sourceType?: string;
