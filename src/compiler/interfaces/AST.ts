@@ -72,6 +72,7 @@ export interface ASTNode {
   object?: ASTNode;
   openingElement?: ASTNode;
   operator?: string;
+  param?: ASTNode;
   parameter?: ASTNode;
   params?: Array<ASTNode>;
   properties?: Array<ASTNode>;

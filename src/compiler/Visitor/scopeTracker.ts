@@ -6,6 +6,7 @@ const _FunctionDecl = {
   ClassDeclaration: 1,
   FunctionDeclaration: 1,
   FunctionExpression: 1,
+  [ASTType.CatchClause]: 1,
 };
 
 const _Body = {
@@ -93,6 +94,13 @@ export function scopeTracker(visitor: IVisit): IASTScope {
       }
       if (visitor.id !== undefined && property) {
         copyScopeToNextNode(visitor, scope);
+      }
+
+      if (node.param && node.param.type === ASTType.Identifier) {
+        const funcScope = {};
+        // catch clause
+        funcScope[node.param.name] = 1;
+        node.body['scope'] = copy(scope, funcScope);
       }
 
       if (node.params) {

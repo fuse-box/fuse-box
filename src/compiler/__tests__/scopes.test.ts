@@ -585,7 +585,6 @@ describe('scope test', () => {
         import Bar = Foo.baz;
       `,
       });
-      console.log(result.code);
 
       expect(result.code).toMatchSnapshot();
     });
@@ -599,6 +598,25 @@ describe('scope test', () => {
             console.log(bar)
           }
         }
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should respect catch clause', () => {
+      const result = testTranspile({
+        code: `
+        import someException from 'someException';
+        function oi() {}
+        function hey() {
+          try {
+            oi();
+          } catch (someException) {
+            console.log(someException);
+          }
+        }
+
       `,
       });
 
