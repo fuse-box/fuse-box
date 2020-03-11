@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { INodeScope } from '../Visitor/scopeTracker';
+import { IASTScope } from '../Visitor/Visitor';
+import { INodeScope } from '../Visitor/newScopeTracker';
 import { ASTNode } from '../interfaces/AST';
 
 export function generateModuleNameFromSource(source: string, sourceReferences) {

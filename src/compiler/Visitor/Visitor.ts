@@ -2,7 +2,7 @@ import { ASTNode } from '../interfaces/AST';
 import { IProgramProps } from '../program/transpileModule';
 import { astTransformer } from './astTransformer';
 import { isLocalIdentifier } from './helpers';
-import { INodeScope, newScopeTracker } from './scopeTracker';
+import { INodeScope, newScopeTracker } from './newScopeTracker';
 
 export interface IVisitProps {
   parent?: any;
