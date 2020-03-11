@@ -1,11 +1,7 @@
 import { BUNDLE_RUNTIME_NAMES } from '../../../bundleRuntime/bundleRuntimeCore';
 import { IVisit } from '../../Visitor/Visitor';
-import {
-  ES_MODULE_EXPRESSION,
-  createEsModuleDefaultInterop,
-  createRequireStatement,
-  createVariableDeclaration,
-} from '../../Visitor/helpers';
+import { ES_MODULE_EXPRESSION, createEsModuleDefaultInterop, createRequireStatement } from '../../Visitor/helpers';
+import { isLocalDefined } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
@@ -32,6 +28,13 @@ function convertQualifiedName(node: ASTNode) {
   return node;
 }
 
+function getQualifierId(node: ASTNode) {
+  if (node.left) {
+    if (node.left.type === ASTType.Identifier) return node.left.name;
+    return getQualifierId(node.left);
+  }
+}
+
 export function ImportTransformer(): ITransformer {
   return {
     commonVisitors: props => {
@@ -39,7 +42,7 @@ export function ImportTransformer(): ITransformer {
         transformationContext: { compilerOptions },
       } = props;
       const esModuleInterop = compilerOptions.esModuleInterop;
-
+      const importQualifierNames = {};
       return {
         onEachNode: (visit: IVisit) => {},
 
@@ -51,8 +54,23 @@ export function ImportTransformer(): ITransformer {
             const moduleReference = node.moduleReference;
             const moduleIdName = node.id.name;
             if (moduleReference.type === ASTType.QualifiedName || moduleReference.type === ASTType.Identifier) {
+              const qualifierId = getQualifierId(moduleReference);
+              // considering the following scenario ->
+              // import { some } from "some"
+              // import SomeType = some.foo
+              // If SomeType is referenced as an object we should alias it
+
+              const memberReference = convertQualifiedName(moduleReference);
+              // witing for the reference signal
+              global.onRef(moduleIdName, (n, v) => {
+                if (!isLocalDefined(moduleIdName, v.scope)) {
+                  importQualifierNames[qualifierId] = 1;
+                  return { replaceWith: memberReference };
+                }
+              });
+
               return {
-                replaceWith: createVariableDeclaration(moduleIdName, convertQualifiedName(moduleReference)),
+                removeNode: true,
               };
             } else {
               const reqStatement = createRequireStatement(node.moduleReference.expression.value, node.id.name);
@@ -134,7 +152,10 @@ export function ImportTransformer(): ITransformer {
 
                 let atLeastOneInUse = false;
                 for (const specifier of node.specifiers) {
-                  const traced = global.identifierReplacement[specifier.local.name];
+                  const localName = specifier.local.name;
+                  const traced = global.identifierReplacement[localName];
+                  if (importQualifierNames[localName]) atLeastOneInUse = true;
+
                   if (traced && traced.inUse) {
                     atLeastOneInUse = true;
                     break; // we just need to know if we need to keep the node
