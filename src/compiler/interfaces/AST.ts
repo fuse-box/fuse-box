@@ -237,7 +237,7 @@ export const ASTType = {
   PropertySignature: 'PropertySignature',
   ProtectedKeyword: 'ProtectedKeyword',
   PublicKeyword: 'PublicKeyword',
-  QualifiedName: 'QualifiedName',
+  QualifiedName: 'TSQualifiedName',
   ReadonlyKeyword: 'ReadonlyKeyword',
   RestType: 'RestType',
   StaticKeyword: 'StaticKeyword',

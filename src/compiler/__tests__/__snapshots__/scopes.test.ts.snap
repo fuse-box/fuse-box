@@ -111,6 +111,18 @@ exports[`scope test classes should respect constructor prop with public accessib
 "
 `;
 
+exports[`scope test classes should respect import qualifer id ref 1`] = `
+"var oi_1 = require(\\"oi\\");
+let Bar = oi_1.Foo;
+"
+`;
+
+exports[`scope test classes should respect import qualifer id ref deep 1`] = `
+"var oi_1 = require(\\"oi\\");
+let Bar = oi_1.Foo.baz;
+"
+`;
+
 exports[`scope test classes should respect method prop 1`] = `
 "class Foo {
   method_1(bar) {

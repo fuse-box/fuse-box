@@ -11,6 +11,8 @@ const _isLocalIdentifierRulesExceptionNodes = {
   ImportNamespaceSpecifier: 1,
   ImportSpecifier: 1,
   RestElement: 1,
+  [ASTType.ImportEqualsDeclaration]: 1,
+  [ASTType.QualifiedName]: 1,
   [ASTType.TypeReference]: 1,
 };
 export function isLocalIdentifier(node: ASTNode, parent: ASTNode, propertyName: string) {

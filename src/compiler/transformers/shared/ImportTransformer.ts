@@ -1,6 +1,11 @@
 import { BUNDLE_RUNTIME_NAMES } from '../../../bundleRuntime/bundleRuntimeCore';
 import { IVisit } from '../../Visitor/Visitor';
-import { ES_MODULE_EXPRESSION, createEsModuleDefaultInterop, createRequireStatement } from '../../Visitor/helpers';
+import {
+  ES_MODULE_EXPRESSION,
+  createEsModuleDefaultInterop,
+  createRequireStatement,
+  createVariableDeclaration,
+} from '../../Visitor/helpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
@@ -11,6 +16,22 @@ function injectEsModuleStatementIntoBody(props: IProgramProps) {
   const body = props.ast.body as Array<ASTNode>;
   body.splice(0, 0, ES_MODULE_EXPRESSION);
 }
+
+function convertQualifiedName(node: ASTNode) {
+  if (node.type === ASTType.QualifiedName) node.type = 'MemberExpression';
+
+  if (node.left) {
+    node.object = node.left;
+    delete node.left;
+    convertQualifiedName(node.object);
+  }
+  if (node.right) {
+    node.property = node.right;
+    delete node.right;
+  }
+  return node;
+}
+
 export function ImportTransformer(): ITransformer {
   return {
     commonVisitors: props => {
@@ -20,16 +41,26 @@ export function ImportTransformer(): ITransformer {
       const esModuleInterop = compilerOptions.esModuleInterop;
 
       return {
+        onEachNode: (visit: IVisit) => {},
+
         onTopLevelTraverse: (visit: IVisit) => {
-          const node = visit.node;
+          const { node } = visit;
           const global = visit.globalContext as GlobalContext;
 
           if (node.type === ASTType.ImportEqualsDeclaration) {
-            const reqStatement = createRequireStatement(node.moduleReference.expression.value, node.id.name);
-            if (props.onRequireCallExpression) {
-              props.onRequireCallExpression(ImportType.RAW_IMPORT, reqStatement.reqStatement);
+            const moduleReference = node.moduleReference;
+            const moduleIdName = node.id.name;
+            if (moduleReference.type === ASTType.QualifiedName || moduleReference.type === ASTType.Identifier) {
+              return {
+                replaceWith: createVariableDeclaration(moduleIdName, convertQualifiedName(moduleReference)),
+              };
+            } else {
+              const reqStatement = createRequireStatement(node.moduleReference.expression.value, node.id.name);
+              if (props.onRequireCallExpression) {
+                props.onRequireCallExpression(ImportType.RAW_IMPORT, reqStatement.reqStatement);
+              }
+              return { replaceWith: reqStatement.statement };
             }
-            return { replaceWith: reqStatement.statement };
           }
           let injectDefaultInterop;
           if (node.type === ASTType.ImportDeclaration) {
