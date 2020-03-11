@@ -94,7 +94,12 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
       return folder;
     } catch (e) {
       // Ignore error here, since it will be handled later
+      // Don't ignore these errors, because PnP returns very useful errors and
+      console.error(e);
     }
+    // If this is PnP and PnP says it doesn't exist,
+    // don't continue trying the rest of the node_modules stuff
+    return;
   }
 
   const paths = parseExistingModulePaths(props.filePath);
