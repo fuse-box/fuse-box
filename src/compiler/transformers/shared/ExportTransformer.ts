@@ -184,26 +184,29 @@ export function ExportTransformer(): ITransformer {
               }
               const response: IVisitorMod = {
                 replaceWith: {
-                  arguments: [
-                    {
-                      name: 'exports',
-                      type: 'Identifier',
+                  expression: {
+                    arguments: [
+                      {
+                        name: 'exports',
+                        type: 'Identifier',
+                      },
+                      reqExpression,
+                    ],
+                    callee: {
+                      computed: false,
+                      object: {
+                        name: 'Object',
+                        type: 'Identifier',
+                      },
+                      property: {
+                        name: 'assign',
+                        type: 'Identifier',
+                      },
+                      type: 'MemberExpression',
                     },
-                    reqExpression,
-                  ],
-                  callee: {
-                    computed: false,
-                    object: {
-                      name: 'Object',
-                      type: 'Identifier',
-                    },
-                    property: {
-                      name: 'assign',
-                      type: 'Identifier',
-                    },
-                    type: 'MemberExpression',
+                    type: 'CallExpression',
                   },
-                  type: 'CallExpression',
+                  type: 'ExpressionStatement',
                 },
               };
 

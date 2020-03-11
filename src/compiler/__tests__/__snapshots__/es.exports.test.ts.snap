@@ -108,7 +108,7 @@ exports.hey = foo_1.name;
 `;
 
 exports[`Es exports tests Export from source should export all 1`] = `
-"Object.assign(exports, require(\\"./foo\\"))
+"Object.assign(exports, require(\\"./foo\\"));
 "
 `;
 
