@@ -50,6 +50,7 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
       modules: config.modules,
       packageMeta: parent.pkg && parent.pkg.meta,
       target: props.statement,
+      tsTargetResolver: ctx.tsTargetResolver,
       typescriptPaths: getModuleResolutionPaths({ module: parent }),
     });
 
