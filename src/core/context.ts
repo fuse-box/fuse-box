@@ -3,6 +3,7 @@ import { CustomTransformers } from 'typescript';
 import { ITransformer } from '../compiler/interfaces/ITransformer';
 import { createCompilerOptions } from '../compilerOptions/compilerOptions';
 import { ICompilerOptions } from '../compilerOptions/interfaces';
+import { createTsTargetResolver } from '../compilerOptions/typescriptReferences';
 import { EnvironmentType } from '../config/EnvironmentType';
 import { IConfig, IPublicConfig } from '../config/IConfig';
 import { IRunProps } from '../config/IRunProps';
@@ -18,7 +19,7 @@ import { IModule } from '../moduleResolver/module';
 import { outputConfigConverter } from '../output/OutputConfigConverter';
 import { IOutputConfig } from '../output/OutputConfigInterface';
 import { DistWriter, distWriter } from '../output/distWriter';
-import { TsConfigAtPath } from '../resolver/fileLookup';
+import { TargetResolver, TsConfigAtPath } from '../resolver/fileLookup';
 import { CompilerHub, createCompilerHub } from '../threading/worker_threads/compilerHub';
 import { getFileModificationTime } from '../utils/utils';
 import { createWatcher } from '../watcher/watcher';
@@ -58,6 +59,13 @@ export interface Context {
   systemDependencies?: Record<string, number>;
   taskManager?: ContextTaskManager;
   tsConfigAtPaths?: Array<TsConfigAtPath>;
+  /**
+   * This is a resolver that can take an import of an output file (such as dist/foo.js)
+   * and resolve it to its corresponding source file (e.g. src/foo.ts)
+   * These are built from recursing the "references" fields in tsconfig.json files
+   * see https://www.typescriptlang.org/docs/handbook/project-references.html
+   */
+  tsTargetResolver?: TargetResolver;
   userTransformers?: Array<ITransformer>;
   weakReferences?: WeakModuleReferences;
   webIndex?: IWebIndexInterface;
@@ -144,6 +152,14 @@ export function createContext(props: ICreateContextProps): Context {
   self.taskManager = createContextTaskManager(self);
 
   self.compilerOptions = createCompilerOptions(self);
+
+  // Resolver that can calculate typescript output->input mappings from references
+  self.tsTargetResolver =
+    self.compilerOptions.tsReferences &&
+    createTsTargetResolver(
+      self.compilerOptions.tsReferences,
+      self.compilerOptions.tsConfig || path.dirname(path.join(env.SCRIPT_FILE)),
+    );
 
   // custom transformers
   self.userTransformers = [];

@@ -161,16 +161,19 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   const isBrowser = props.buildTarget === 'browser';
 
   const isEntry = !target;
-  const targetLookup = fileLookup({ fileDir: folder, isBrowserBuild: isBrowser, target: target || '' });
-  if (!targetLookup || !targetLookup.fileExists) {
+  let targetResolver = fileLookup;
+  if (props.tsTargetResolver)
+    targetResolver = props.tsTargetResolver;
+  const resolved = targetResolver({ fileDir: folder, isBrowserBuild: isBrowser, target: target || '' });
+  if (!resolved || !resolved.fileExists) {
     const spec = target ? `"${target}"` : 'an entry point';
     return { error: `Failed to resolve ${spec} in package "${moduleName}"` };
   }
-  let targetAbsPath = targetLookup.absPath;
+  let targetAbsPath = resolved.absPath;
 
   const checkBrowserOverride = isBrowser && json.browser && typeof json.browser === 'object';
   if (checkBrowserOverride) {
-    const override = handleBrowserField(pkg, targetLookup.absPath);
+    const override = handleBrowserField(pkg, resolved.absPath);
     if (override) {
       targetAbsPath = override;
     }

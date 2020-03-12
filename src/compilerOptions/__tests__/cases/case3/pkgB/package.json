@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "pkgC": "file:../pkgC"
+    },
+    "name": "pkg-b"
+}
