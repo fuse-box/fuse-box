@@ -25,6 +25,7 @@ export interface ICompilerOptions {
   processEnv?: Record<string, string>;
   transformers?: Array<ICompilerOptionTransformer>;
   tsConfig?: string;
+  tsReferences?: ITsConfigReference[];
   jsParser?: { nodeModules?: ICompilerParserType; project?: ICompilerParserType };
 }
 
@@ -57,11 +58,17 @@ export interface IRawCompilerOptions {
   target?: IJavaScriptTarget;
 }
 
+// an element in the "references":[] array in a tsconfig.json
+export interface ITsConfigReference {
+  path?: string
+}
+
 export interface IRawTypescriptConfig {
   error?: any;
 
   config?: {
     compilerOptions?: IRawCompilerOptions;
     extends?: string;
+    references?: ITsConfigReference[];
   };
 }

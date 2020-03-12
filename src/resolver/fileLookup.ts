@@ -12,12 +12,22 @@ export interface ILookupProps {
   target: string;
   typescriptFirst?: boolean;
   isBrowserBuild?: boolean;
+  // the resolver used to find the subpath inside a package
+  subPathResolver?: SubPathResolver;
 }
 
 export interface TsConfigAtPath {
   absPath: string;
   compilerOptions: IRawCompilerOptions;
   tsconfigPath: string;
+}
+
+export interface TargetResolver {
+  (lookupArgs: ILookupProps): ILookupResult | undefined
+}
+
+export interface SubPathResolver {
+  (modulePath: string, subPath: string, type?: "file" | "dir" | "exists", props?: Partial<ILookupResult>): ILookupResult | undefined
 }
 
 export interface ILookupResult {
@@ -41,36 +51,46 @@ function isFileSync(path: string): boolean {
   return fileExists(path) && fs.lstatSync(path).isFile();
 }
 
+// A SubPathResolver that simply checks the actual filesystem
+export const resolveIfExists: SubPathResolver = (base, target = "", type, props = {}) => {
+  const absPath = path.join(base, target);
+  switch (type) {
+    case "exists":
+    case undefined:
+      return fileExists(absPath) && { absPath, extension: path.extname(absPath), fileExists: true, ...props } || undefined;
+    case "dir":
+      return fileExists(absPath) && fs.lstatSync(absPath).isDirectory() && { absPath, extension: path.extname(absPath), fileExists: true, ...props } || undefined;
+    case "file":
+      return fileExists(absPath) && fs.lstatSync(absPath).isFile() && { absPath, extension: path.extname(absPath), fileExists: true, ...props } || undefined;
+    default: // never
+      return undefined;
+  }
+}
+
 export function fileLookup(props: ILookupProps): ILookupResult {
   if (!props.fileDir && !props.filePath) {
     throw new Error('Failed to lookup. Provide either fileDir or filePath');
   }
   const jsFirst = (props.javascriptFirst && !props.typescriptFirst);
-  return resolveSubmodule(props.filePath ? path.dirname(props.filePath) : props.fileDir, props.target, true, jsFirst, props.isBrowserBuild);
+  const base = path.normalize(props.filePath ? path.dirname(props.filePath) : props.fileDir);
+  const subpathResolver = props.subPathResolver || resolveIfExists;
+  const target = props.target && path.normalize(props.target)
+  return resolveSubmodule(base, target, subpathResolver, true, jsFirst, props.isBrowserBuild);
 }
 
-function resolveSubmodule(base: string, target: string, checkPackage: boolean, jsFirst: boolean, isBrowserBuild: boolean) {
-  const exact = path.join(base, target);
-
+function resolveSubmodule(base: string, target: string, resolveSubpath: SubPathResolver, checkPackage: boolean, jsFirst: boolean, isBrowserBuild: boolean) {
   // If an exact file exists, return it
-  if (isFileSync(exact)) {
-    return {
-      absPath: exact,
-      extension: path.extname(exact),
-      fileExists: true,
-    }
+  const exactFile = resolveSubpath(base, target, "file");
+  if (exactFile) {
+    return exactFile;
   }
 
   // If a file exists after adding an extension, return it
   const extensions = jsFirst ? JS_EXTENSIONS_FIRST : TS_EXTENSIONS_FIRST;
   for (const extension of extensions) {
-    const withExtension = `${exact}${extension}`;
-    if (isFileSync(withExtension)) {
-      return {
-        absPath: withExtension,
-        extension: extension,
-        fileExists: true,
-      }
+    const withExtension = resolveSubpath(base, `${target}${extension}`, "file");
+    if (withExtension) {
+      return withExtension;
     }
   }
 
@@ -78,13 +98,13 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
   // We don't always check because we might be here by following the "main" field from a previous package.json
   // and no further package.json files should be followed after that
   if (checkPackage) {
-    const packageJSONPath = path.join(exact, 'package.json');
+    const packageJSONPath = path.join(base, target, 'package.json');
     if (isFileSync(packageJSONPath)) {
       const packageJSON = JSON.parse(readFile(packageJSONPath));
 
       if (isBrowserBuild && packageJSON['browser'] && typeof packageJSON['browser'] === "string") {
-        const browser = packageJSON['browser'];
-        const subresolution = resolveSubmodule(exact, browser, false, jsFirst, isBrowserBuild);
+        const browser = path.join(target, packageJSON['browser']);
+        const subresolution = resolveSubmodule(base, browser, resolveSubpath, false, jsFirst, isBrowserBuild);
         return subresolution;
       }
 
@@ -96,26 +116,26 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
       //       and tsconfig references also solve the "which tsconfig to use?" problem
       const isLocal = !/node_modules/.test(packageJSONPath);
       if (isLocal && packageJSON['local:main']) {
-        const localMain = packageJSON['local:main'];
-        const subresolution = resolveSubmodule(exact, localMain, false, jsFirst, isBrowserBuild);
+        const localMain = path.join(target, packageJSON['local:main']);
+        const subresolution = resolveSubmodule(base, localMain, resolveSubpath, false, jsFirst, isBrowserBuild);
 
         // TODO: not used?
-        const submodules = path.resolve(exact, 'node_modules');
+        const submodules = path.resolve(base, path.join(target, 'node_modules'));
         const monorepoModulesPaths = fileExists(submodules) ? submodules : undefined;
 
         return {
           ...subresolution,
           customIndex: true,
           isDirectoryIndex: true,
-          tsConfigAtPath: loadTsConfig(exact),
+          tsConfigAtPath: loadTsConfig(path.join(base, target)),
           // TODO: not used?
           monorepoModulesPaths,
         }
       }
 
       if (packageJSON['ts:main']) {
-        const tsMain = packageJSON['ts:main'];
-        const subresolution = resolveSubmodule(exact, tsMain, false, jsFirst, isBrowserBuild);
+        const tsMain = path.join(target, packageJSON['ts:main']);
+        const subresolution = resolveSubmodule(base, tsMain, resolveSubpath, false, jsFirst, isBrowserBuild);
         if (subresolution.fileExists) {
           return {
             ...subresolution,
@@ -126,8 +146,8 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
       }
 
       if (packageJSON['module']) {
-        const mod = packageJSON['module'];
-        const subresolution = resolveSubmodule(exact, mod, false, jsFirst, isBrowserBuild);
+        const mod = path.join(target, packageJSON['module']);
+        const subresolution = resolveSubmodule(base, mod, resolveSubpath, false, jsFirst, isBrowserBuild);
         if (subresolution.fileExists) {
           return {
             ...subresolution,
@@ -138,8 +158,8 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
       }
 
       if (packageJSON['main']) {
-        const main = packageJSON['main'];
-        const subresolution = resolveSubmodule(exact, main, false, jsFirst, isBrowserBuild);
+        const main = path.join(target, packageJSON['main']);
+        const subresolution = resolveSubmodule(base, main, resolveSubpath, false, jsFirst, isBrowserBuild);
         if (subresolution.fileExists) {
           return {
             ...subresolution,
@@ -157,29 +177,23 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
 
   // If an index file exists return it
   for (const extension of extensions) {
-    const asIndex = path.join(exact, `index${extension}`);
-    if (isFileSync(asIndex)) {
-      return {
-        absPath: asIndex,
-        extension: extension,
-        fileExists: true,
-        isDirectoryIndex: true,
-      }
+    const asIndex = resolveSubpath(base, path.join(target, `index${extension}`), "file", {
+      isDirectoryIndex: true,
+    });
+    if (asIndex) {
+      return asIndex;
     }
   }
 
-  const asJson = `${exact}.json`;
-  if (isFileSync(asJson)) {
-    return {
-      absPath: asJson,
-      customIndex: true,
-      extension: ".json",
-      fileExists: true,
-    }
+  const asJson = resolveSubpath(base, `${target}.json`, "file", {
+    customIndex: true,
+  });
+  if (asJson) {
+    return asJson;
   }
 
   return {
-    absPath: exact,
+    absPath: path.join(base, target),
     fileExists: false,
   };
 }

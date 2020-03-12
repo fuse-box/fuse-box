@@ -4,7 +4,7 @@ import { ITarget } from '../config/ITarget';
 import { path2Regex } from '../utils/utils';
 import { handleBrowserField } from './browserField';
 import { NODE_BUILTIN_MODULES } from './built-inModules';
-import { TsConfigAtPath, fileLookup, ILookupResult } from './fileLookup';
+import { TsConfigAtPath, fileLookup, ILookupResult, TargetResolver } from './fileLookup';
 import { isNodeModule, nodeModuleLookup, INodeModuleLookup } from './nodeModuleLookup';
 import { pathsLookup } from './pathsLookup';
 
@@ -26,6 +26,7 @@ export interface IResolverProps {
   // user string
   target: string;
   typescriptPaths?: ITypescriptPathsConfig;
+  tsTargetResolver?: TargetResolver;
   alias?: {
     [key: string]: string;
   };

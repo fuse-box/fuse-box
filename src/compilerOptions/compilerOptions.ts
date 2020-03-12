@@ -96,6 +96,8 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
 
         if (tsConfigCompilerOptions.jsxFactory) options.jsxFactory = tsConfigCompilerOptions.jsxFactory;
       }
+
+      options.tsReferences = tsConfig.references;
     }
   }
   if (baseURL) options.baseUrl = path.resolve(tsConfigDirectory, baseURL);

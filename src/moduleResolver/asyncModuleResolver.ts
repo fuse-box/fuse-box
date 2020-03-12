@@ -51,6 +51,7 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
       packageMeta: parent.pkg && parent.pkg.meta,
       target: props.statement,
       typescriptPaths: getModuleResolutionPaths({ module: parent }),
+      tsTargetResolver: ctx.tsTargetResolver,
     });
 
     if (!resolved || (resolved && resolved.error)) return { errored: true };

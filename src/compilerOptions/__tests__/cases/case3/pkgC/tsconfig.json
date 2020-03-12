@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "rootDir": "input",
+        "outDir": "output",
+        "composite": true,
+        "incremental": true,
+        "declaration": true
+    },
+    "include": [
+        "input/**/*"
+    ]
+}
