@@ -38,6 +38,13 @@ export function extractDefinedVariables(node: ASTNode, names: Record<string, AST
   }
 }
 
+function extractDeclarations(node: ASTNode, bodyScope: Record<string, ASTNode>) {
+  if (!node.declarations) return;
+  for (const decl of node.declarations) {
+    if (decl.type === ASTType.VariableDeclarator && decl.id) extractDefinedVariables(decl.id, bodyScope);
+  }
+}
+
 export type INodeScope = Array<IBodyScope>;
 
 export type IBodyScope = Record<string, ASTNode>;
@@ -69,6 +76,14 @@ export function newScopeTracker(visitor: IVisit): IBodyScope {
         }
       }
     }
+
+    // for loops
+    // for (var i = 0; i <= 0; i++) {}
+    // should set the body scope
+    if (node.type === ASTType.ForStatement && node.init && node.init.type === ASTType.VariableDeclaration) {
+      extractDeclarations(node.init, bodyScope);
+    }
+
     while (index < bodyNodesLength) {
       const item = node.body[index];
       const type = item.type;
@@ -77,11 +92,7 @@ export function newScopeTracker(visitor: IVisit): IBodyScope {
       // const foo = 1
       if (type === ASTType.VariableDeclaration) {
         // here we just update the existing scope
-        if (item.declarations) {
-          for (const decl of item.declarations) {
-            if (decl.type === ASTType.VariableDeclarator && decl.id) extractDefinedVariables(decl.id, bodyScope);
-          }
-        }
+        extractDeclarations(item, bodyScope);
       }
 
       // function and class declarations

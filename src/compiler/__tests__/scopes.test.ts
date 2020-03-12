@@ -461,6 +461,21 @@ describe('scope test', () => {
     expect(result.code).toMatchSnapshot();
   });
 
+  describe('Iterator scope', () => {
+    it('Export spread 1', () => {
+      const result = testTranspile({
+        code: `
+        import i from 'mod';
+        for (var i = 0; i <= 0; i++) {
+          console.log(i);
+        }
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+  });
+
   describe('Spread', () => {
     it('spread and defined var', () => {
       const result = testTranspile({
