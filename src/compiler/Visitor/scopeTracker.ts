@@ -7,6 +7,7 @@ const _FunctionDecl = {
   FunctionDeclaration: 1,
   FunctionExpression: 1,
   [ASTType.CatchClause]: 1,
+  [ASTType.EnumDeclaration]: 1,
 };
 
 // const _Body = {

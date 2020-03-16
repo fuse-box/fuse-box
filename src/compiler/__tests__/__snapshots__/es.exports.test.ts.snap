@@ -221,6 +221,15 @@ exports.hello = hello;
 "
 `;
 
+exports[`Es exports tests Object export should export enum 1`] = `
+"var Foo;
+(function (Foo) {
+  Foo[Foo[\\"Oi\\"] = 0] = \\"Oi\\"
+})(Foo || (Foo = {}))
+exports.Foo = Foo;
+"
+`;
+
 exports[`Es exports tests Object export should export object with keys 1`] = `
 "const name1 = 2;
 const name2 = 3;
