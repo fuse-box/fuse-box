@@ -182,7 +182,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
 
       self.isSourceMapRequired = true;
 
-      if (self.pkg.type === PackageType.USER_PACKAGE) {
+      if (self.pkg && self.pkg.type === PackageType.USER_PACKAGE) {
         if (!config.sourceMap.project) self.isSourceMapRequired = false;
       } else {
         if (!config.sourceMap.vendor) self.isSourceMapRequired = false;

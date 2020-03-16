@@ -1,13 +1,7 @@
-import { LitElement, customElement, html, property } from 'lit-element';
+import { AObject } from './hey';
 
-@customElement('my-element')
-export class MyElement extends LitElement {
-  @property()
-  foo = 'foo';
+import SomeType = AObject.b;
 
-  render() {
-    return html`
-      <p>${this.foo}</p>
-    `;
-  }
+function hey() {
+  console.log(SomeType);
 }
