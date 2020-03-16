@@ -135,11 +135,6 @@ export function ExportTransformer(): ITransformer {
             for (const decl of node.declarations) {
               if (decl.id && decl.id.name === 'exports') {
                 USE_MODULE_EXPORTS = true;
-                // OVERRIDE_COMPILER_RESERVED_EXPORTS = true;
-                // OVERRIDE_EXPORTS_VAR = global.getNextSystemVariable();
-                // decl.id.name = OVERRIDE_EXPORTS_VAR;
-                // visit.scope.locals[OVERRIDE_EXPORTS_VAR] = 1;
-                // delete visit.scope.locals['exports'];
               }
             }
           }
