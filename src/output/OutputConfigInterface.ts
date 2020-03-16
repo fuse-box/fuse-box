@@ -43,7 +43,7 @@ export interface IPublicOutputConfig {
     target: IOutputBundleConfig;
   }>;
   serverEntry?: string;
-  styles?: IOutputBundleConfigAdvanced;
+  styles?: IOutputBundleConfig;
   vendor?: IOutputBundleConfig;
 }
 

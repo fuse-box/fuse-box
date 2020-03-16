@@ -43,7 +43,7 @@ export function outputConfigConverter(props: IOutputConfigProps): IOutputConfig 
     if (userConfig.vendor) config.vendor = ensureBundleConfig(userConfig.vendor, defaultPublicPath);
     if (userConfig.codeSplitting) config.codeSplitting = userConfig.codeSplitting;
     if (userConfig.serverEntry) config.serverEntry = userConfig.serverEntry;
-    if (userConfig.styles) config.styles = userConfig.styles;
+    if (userConfig.styles) config.styles = ensureBundleConfig(userConfig.styles, defaultPublicPath);
 
     if (userConfig.mapping) {
       config.mapping = [];
@@ -79,6 +79,7 @@ export function outputConfigConverter(props: IOutputConfigProps): IOutputConfig 
       path: DEFAULT_STYLES_DIR + '/styles.$hash.css',
     };
   }
+
   if (!config.styles.publicPath) config.styles.publicPath = defaultPublicPath;
   if (!config.styles.codeSplitting) config.styles.codeSplitting = {};
   if (!config.styles.codeSplitting.path) config.styles.codeSplitting.path = 'dynamic/$name.$hash.css';

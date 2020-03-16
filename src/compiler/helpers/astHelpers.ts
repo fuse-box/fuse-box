@@ -34,8 +34,12 @@ export function generateVariableFromSource(source: string, index: number) {
 
 export function isLocalDefined(name: string, scope: INodeScope) {
   if (!scope) return;
-  for (const bodyScope of scope) {
+
+  let i = scope.length - 1;
+  while (i >= 0) {
+    const bodyScope = scope[i];
     if (bodyScope[name] && bodyScope[name].type) return bodyScope[name];
+    i--;
   }
 }
 
