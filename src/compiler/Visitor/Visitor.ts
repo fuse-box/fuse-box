@@ -77,9 +77,14 @@ function _visit(
   };
 
   const bodyScope = newScopeTracker(visit);
-  const currentScope = [];
-  for (const x of scope) currentScope.push(x);
-  if (bodyScope) currentScope.push(bodyScope);
+  let currentScope = [];
+  // for (const x of scope) currentScope.push(x);
+  // if (bodyScope) currentScope.push(bodyScope);
+
+  if (bodyScope) {
+    for (const x of scope) currentScope.push(x);
+    currentScope.push(bodyScope);
+  } else currentScope = scope;
 
   const response = fn(visit);
   if (response) {
