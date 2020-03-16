@@ -4,13 +4,14 @@ import { initCommonTransform } from '../testUtils';
 import { ExportTransformer } from '../transformers/shared/ExportTransformer';
 import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
+import { EnumTransformer } from '../transformers/ts/EnumTransformer';
 
 const testTranspile = (props: { code: string; compilerOptions?: ICompilerOptions; jsx?: boolean }) => {
   return initCommonTransform({
     code: props.code,
     compilerOptions: props.compilerOptions || {},
     jsx: props.jsx,
-    transformers: [ImportTransformer(), ExportTransformer(), CommonTSfeaturesTransformer()],
+    transformers: [ImportTransformer(), EnumTransformer(), ExportTransformer(), CommonTSfeaturesTransformer()],
   });
 };
 
@@ -173,6 +174,18 @@ describe('Es exports tests', () => {
           const name1 = 2;
           const name2 = 3;
           export {name1, name2}
+            `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should export enum', () => {
+      const result = testTranspile({
+        code: `
+        enum Foo {
+          Oi,
+        }
+        export { Foo };
             `,
       });
       expect(result.code).toMatchSnapshot();
