@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "name": "@myorg/foo",
+  "version": "0.0.0-workspace",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@myorg/bar": "workspace:*",
+    "nanoid": "latest"
+  },
+  "devDependencies": {
+    "typescript": "latest"
+  },
+  "peerDependencies": {
+    "react": "16"
+  }
+}

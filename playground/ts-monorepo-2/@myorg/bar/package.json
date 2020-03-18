@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "name": "@myorg/bar",
+  "version": "0.0.0-workspace",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "devDependencies": {
+    "typescript": "latest"
+  }
+}
