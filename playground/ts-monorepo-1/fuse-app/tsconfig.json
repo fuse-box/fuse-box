@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "es6",
+    "moduleResolution": "node",
+    "target": "ES6",
+
+    /* Rules everyone should live by */
+    "strict": true,
+
+    /* Build all of the non-code supporting outputs */
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    "allowJs": true,
+    /* ensure that there is a deterministic mapping between compile inputs and outputs */
+    "composite": true,
+    /* if this is left unspecified, then tsBuildInfoFile can sometimes fail with an error */
+    /* however if it is every specified as false, then "composite" fails with an error, so we specify it as true */
+    "incremental": true,
+    /* make it so that import 'module' is not a synonym for './module.ts' or any other .ts */
+    //"baseUrl": "/never",
+    /* where to put output files */
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    /* Declare that the exported output of this package when built mirrors the structure within "src" */
+    "rootDir": "src",
+    /* Make sure the tsbuildinfo file is inside the dist folder so that when dist is deleted, the incremental info is also */
+    /* This is absolutely necessary if you don't want really confusing "Cannot find module" errors after someone "cleans" a dist folder */
+    "tsBuildInfoFile": "dist/.tsbuildinfo"
+  },
+  /* Simply include all files within the "src" folder */
+  "include": ["src/**/*"],
+  /* Recapitulate any references to local typescript packages */
+  "references": [{ "path": "../@myorg/foo" }]
+}

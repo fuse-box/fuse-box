@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "@myorg/foo": "0.0.0-workspace",
+    "react": "^16",
+    "react-dom": "^16"
+  },
+  "devDependencies": {
+    "@types/node": "^13.7.6",
+    "@types/react": "^16",
+    "@types/react-dom": "^16",
+    "cross-env": "^7.0.2",
+    "fuse-box": "next",
+    "ts-node": "latest",
+    "typescript": "latest"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "name": "fuse-app",
+  "scripts": {
+    "start": "node fuse/start.js"
+  },
+  "version": "1.0.0"
+}
