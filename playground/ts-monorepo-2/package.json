@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "resolutions": {
+    "fuse-box": "portal:/home/warren/source/fuse-box/dist"
+  },
+  "scripts": {
+    "start": "echo \"\\e[33m- This is the workspace, to run the main app, cd fuse-app, and then start -\\e[0m\""
+  },
+  "workspaces": [
+    "@myorg/*",
+    "fuse-app"
+  ]
+}
