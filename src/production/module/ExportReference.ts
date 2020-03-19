@@ -1,4 +1,4 @@
-import { IVisit } from '../../compiler/Visitor/Visitor';
+import { ISchema } from '../../compiler/core/nodeSchema';
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { IModule } from '../../moduleResolver/module';
 import { IProductionContext } from '../ProductionContext';
@@ -6,7 +6,7 @@ import { IProductionContext } from '../ProductionContext';
 export interface ExportReferenceProps {
   module: IModule;
   productionContext: IProductionContext;
-  visit: IVisit;
+  schema: ISchema;
 }
 
 export enum ExportReferenceType {
@@ -18,10 +18,10 @@ export enum ExportReferenceType {
 export interface IExportReferenceProps {
   local?: string;
   name: string;
+  schema?: ISchema;
   scope: IExportReferences;
   targetObjectAst?: ASTNode;
   type: ExportReferenceType;
-  visit?: IVisit;
 }
 export function ExportReference(props: IExportReferenceProps) {
   const exposed = {
@@ -43,7 +43,7 @@ export type IExportReference = ReturnType<typeof ExportReference>;
  * @param props
  */
 function SingeObjectExport(props: ExportReferenceProps, scope: IExportReferences) {
-  const { node } = props.visit;
+  const { node } = props.schema;
   let type: ExportReferenceType;
   const declaration = node.declaration;
 
@@ -53,7 +53,7 @@ function SingeObjectExport(props: ExportReferenceProps, scope: IExportReferences
 
   const name = declaration.id.name;
   scope.references.push(
-    ExportReference({ local: name, name, scope, targetObjectAst: node.declaration, type: type, visit: props.visit }),
+    ExportReference({ local: name, name, schema: props.schema, scope, targetObjectAst: node.declaration, type: type }),
   );
 }
 
@@ -65,7 +65,7 @@ function SingeObjectExport(props: ExportReferenceProps, scope: IExportReferences
  */
 
 function SingeDefaultExport(props: ExportReferenceProps, scope: IExportReferences) {
-  const { node } = props.visit;
+  const { node } = props.schema;
   let type: ExportReferenceType;
   const declaration = node.declaration;
 
@@ -77,25 +77,25 @@ function SingeDefaultExport(props: ExportReferenceProps, scope: IExportReference
     ExportReference({
       local: declaration.id ? declaration.id.name : undefined,
       name: 'default',
+      schema: props.schema,
       scope,
       targetObjectAst: node.declaration,
       type: type,
-      visit: props.visit,
     }),
   );
 }
 // export {foo, bar }
 export function HandleExportReferences(props: ExportReferenceProps, scope: IExportReferences) {
-  const { node } = props.visit;
+  const { node } = props.schema;
   for (const specifier of node.specifiers) {
     if (specifier.local.name && specifier.exported.name) {
       scope.references.push(
         ExportReference({
           local: specifier.local.name,
           name: specifier.exported.name,
+          schema: props.schema,
           scope,
           type: ExportReferenceType.LOCAL_REFERENCE,
-          visit: props.visit,
         }),
       );
     }
@@ -107,7 +107,7 @@ export function ExportReferences(productionContext: IProductionContext, module: 
   const scope = {
     references,
     register: (props: ExportReferenceProps) => {
-      const { node } = props.visit;
+      const { node } = props.schema;
       if (node.type === 'ExportNamedDeclaration') {
         if (!node.source) {
           if (!node.specifiers.length && node.declaration) {

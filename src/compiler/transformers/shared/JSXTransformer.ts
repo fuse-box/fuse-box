@@ -1,8 +1,6 @@
+import { ISchema } from '../../core/nodeSchema';
 import { ASTNode, ASTType } from '../../interfaces/AST';
-
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import { ITransformer } from '../../interfaces/ITransformer';
-import { GlobalContext } from '../../program/GlobalContext';
 
 //const Factories: { [key: string]: () => ASTNode } = {};
 
@@ -116,13 +114,14 @@ export function JSXTransformer(): ITransformer {
       let createElement;
 
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const node = visit.node;
+        onEach: (schema: ISchema) => {
+          const { context, node, replace } = schema;
           const name = node.name as string;
 
           // We only want to setup the jsxFacory once for this module
           if (!initJsxFactory) {
-            const { jsxFactory: factory } = visit.globalContext as GlobalContext;
+            const factory = context.jsxFactory;
+
             ({ JSXFragment, createElement } = parseFactory(factory || jsxFactory));
             initJsxFactory = true;
           }
@@ -201,35 +200,31 @@ export function JSXTransformer(): ITransformer {
                 props = propObject;
               } else props = { type: 'Literal', value: null };
 
-              return {
-                replaceWith: createElement([openingElement.name, props].concat(node.children)),
-              };
+              return replace(createElement([openingElement.name, props].concat(node.children)));
+
             case 'JSXExpressionContainer':
             case 'JSXSpreadChild':
-              if (node.expression.type === 'JSXEmptyExpression') return { removeNode: true };
-              return { replaceWith: node.expression };
+              if (node.expression.type === 'JSXEmptyExpression') return schema.remove();
+              return replace(node.expression);
             case 'JSXFragment':
-              return {
-                replaceWith: createElement(
-                  [JSXFragment, { type: 'Literal', value: null } as ASTNode].concat(node.children),
-                ),
-              };
+              return replace(
+                createElement([JSXFragment, { type: 'Literal', value: null } as ASTNode].concat(node.children)),
+              );
+
             case 'JSXIdentifier':
               if (name[0] === name[0].toLowerCase()) {
-                return { replaceWith: { type: 'Literal', value: name } };
+                return replace({ type: 'Literal', value: name });
               }
               node.type = 'Identifier';
-              return { replaceWith: node };
+              return replace(node);
             case 'JSXMemberExpression':
               convertJSXMemberExpression(node);
-              return { replaceWith: node };
+              return replace(node);
             case 'JSXText':
               if (node.value.indexOf('\n') > -1 && !node.value.trim()) {
-                return { removeNode: true };
+                return schema.remove();
               }
-              return {
-                replaceWith: { type: 'Literal', value: node.value },
-              };
+              return replace({ type: 'Literal', value: node.value });
           }
         },
       };

@@ -1,11 +1,11 @@
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ISchema } from '../../core/nodeSchema';
 import {
   createASTFromObject,
   createRequireStatement,
   defineVariable,
   isPropertyOrPropertyAccess,
-} from '../../Visitor/helpers';
-import { isLocalDefined } from '../../helpers/astHelpers';
+} from '../../helpers/helpers';
+import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
 import { ImportType } from '../../interfaces/ImportType';
@@ -15,6 +15,25 @@ interface BrowserProcessTransformProps {
 }
 export type IBrowserProcessTransform = BrowserProcessTransformProps & ITransformerSharedOptions;
 
+const _MaybeCall = {
+  [ASTType.CallExpression]: 1,
+  [ASTType.MemberExpression]: 1,
+  [ASTType.NewExpression]: 1,
+};
+
+function findObj(node: ASTNode) {
+  if (node.type == ASTType.Identifier) return node.name;
+  if (node.type === ASTType.MemberExpression) return findObj(node.object);
+}
+function getAccessName(node: ASTNode): string {
+  if (_MaybeCall[node.type]) {
+    let name;
+    if (node.callee) name = findObj(node.callee);
+    else name = findObj(node);
+
+    return name;
+  }
+}
 export function BrowserProcessTransformer(): ITransformer {
   return {
     commonVisitors: props => {
@@ -29,86 +48,78 @@ export function BrowserProcessTransformer(): ITransformer {
       let ignoreProcess = false;
 
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
+        onEach: (schema: ISchema) => {
           if (ignoreProcess) return;
 
-          const { node, parent } = visit;
+          const { getLocal, node, parent } = schema;
 
-          if (isLocalDefined('process', visit.scope)) {
+          if (getLocal('process')) {
             return;
           }
+          const accessName = getAccessName(node);
+          if (!accessName) return;
+          if (accessName !== 'process') return;
 
           const accessList = isPropertyOrPropertyAccess(node, parent, 'process');
 
           if (accessList) {
-            if (visit.parent.type === 'AssignmentExpression') {
+            if (parent.type === 'AssignmentExpression') {
               if (!entireEnvInserted) {
                 entireEnvInserted = true;
                 const statement = createRequireStatement('process', 'process');
+
                 if (props.onRequireCallExpression)
                   props.onRequireCallExpression(ImportType.REQUIRE, statement.reqStatement);
-                return {
-                  avoidReVisit: true,
-                  ignoreChildren: true,
-                  prependToBody: [statement.statement],
-                };
+
+                return schema.bodyPrepend([statement.statement]).ignore();
               }
               return;
             }
             const variableAmount = accessList.length;
+
+            const { replace } = schema;
             if (variableAmount === 3 && accessList[1] === 'env') {
               const keyName = accessList[2];
 
               if (env && env[keyName] !== undefined) {
-                return { replaceWith: { loc: node.loc, type: 'Literal', value: env[keyName].toString() } };
+                return replace([{ loc: node.loc, type: 'Literal', value: env[keyName].toString() }]);
               }
-              return { replaceWith: { type: 'Identifier', value: 'undefined' } };
+              return replace([{ type: 'Identifier', value: 'undefined' }]);
             }
+
             if (variableAmount === 2) {
               switch (accessList[1]) {
                 case 'browser':
-                  return { avoidReVisit: true, replaceWith: { loc: node.loc, type: 'Literal', value: true } };
+                  return replace([{ loc: node.loc, type: 'Literal', value: true }]).ignore();
                 case 'cwd':
-                  return { avoidReVisit: true, replaceWith: { type: 'Literal', value: './' } };
+                  return replace([{ type: 'Literal', value: './' }]).ignore();
                 case 'title':
-                  return { avoidReVisit: true, replaceWith: { loc: node.loc, type: 'Literal', value: 'browser' } };
+                  return replace([{ loc: node.loc, type: 'Literal', value: 'browser' }]).ignore();
                 case 'umask':
-                  return { avoidReVisit: true, replaceWith: { type: 'Literal', value: 0 } };
+                  return replace([{ type: 'Literal', value: 0 }]).ignore();
                 case 'version':
-                  return {
-                    avoidReVisit: true,
-                    replaceWith: { loc: node.loc, type: 'Literal', value: process.version },
-                  };
+                  return replace([{ loc: node.loc, type: 'Literal', value: process.version }]).ignore();
                 case 'versions':
-                  return {
-                    avoidReVisit: true,
-                    replaceWith: { loc: node.loc, properties: [], type: 'ObjectExpression' },
-                  };
+                  return replace([{ loc: node.loc, properties: [], type: 'ObjectExpression' }]).ignore();
                 case 'env':
                   if (env) {
-                    const response: IVisitorMod = {};
                     if (!globalEnvInserted) {
-                      response.prependToBody = [defineVariable('___env', createASTFromObject(env))];
+                      schema.bodyPrepend([defineVariable('___env', createASTFromObject(env))]);
                       globalEnvInserted = true;
                     }
-                    response.replaceWith = { name: '___env', type: 'Identifier' };
-                    return response;
-                  } else return { avoidReVisit: true, replaceWith: createASTFromObject({}) };
+                    return replace([{ name: '___env', type: 'Identifier' }]).ignore();
+                  } else return replace([createASTFromObject({})]).ignore();
 
                 default:
                   // inserting require("process")
-                  // because we cannot match a know variable
+                  // because we cannot match a known variable
+
                   if (!entireEnvInserted) {
                     entireEnvInserted = true;
-
                     const statement = createRequireStatement('process', 'process');
-
                     if (props.onRequireCallExpression)
                       props.onRequireCallExpression(ImportType.REQUIRE, statement.reqStatement);
-                    return {
-                      avoidReVisit: true,
-                      prependToBody: [statement.statement],
-                    };
+                    return schema.bodyPrepend([statement.statement]).ignore();
                   }
                   break;
               }

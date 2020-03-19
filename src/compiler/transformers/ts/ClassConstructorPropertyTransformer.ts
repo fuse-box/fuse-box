@@ -1,26 +1,25 @@
+import { ISchema } from '../../core/nodeSchema';
+import { createExpressionStatement, isValidMethodDefinition } from '../../helpers/helpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
-import { GlobalContext } from '../../program/GlobalContext';
-import { createExpressionStatement, isValidMethodDefinition } from '../../Visitor/helpers';
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 
 const SUPER_WITH_ARGS: ASTNode = {
-  type: 'ExpressionStatement',
   expression: {
-    type: 'CallExpression',
+    arguments: [
+      {
+        argument: {
+          name: 'arguments',
+          type: 'Identifier',
+        },
+        type: 'SpreadElement',
+      },
+    ],
     callee: {
       type: 'Super',
     },
-    arguments: [
-      {
-        type: 'SpreadElement',
-        argument: {
-          type: 'Identifier',
-          name: 'arguments',
-        },
-      },
-    ],
+    type: 'CallExpression',
   },
+  type: 'ExpressionStatement',
 };
 
 export function ClassConstructorPropertyTransformer(): ITransformer {
@@ -29,8 +28,8 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
     commonVisitors: props => {
       let classIds = 0;
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const { node } = visit;
+        onEach: (schema: ISchema) => {
+          const { context, node, parent } = schema;
 
           let StaticProps: Array<ASTNode>;
           let ClassNode: ASTNode;
@@ -56,9 +55,9 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
                       StaticProps.push(bodyEl);
                     } else {
                       bodyInitializers.push({
-                        paramName: bodyEl.key.name,
-                        computed: bodyEl.computed,
                         ast: bodyEl.value,
+                        computed: bodyEl.computed,
+                        param: bodyEl.key,
                       });
                     }
                   } else if (isValidMethodDefinition(bodyEl) && bodyEl.kind === 'constructor') {
@@ -72,20 +71,20 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
                     if (hasSuperClass) bodyBlockStatement.push(SUPER_WITH_ARGS);
                     // injecting constructor if none found
                     (classBody.body as Array<ASTNode>).splice(0, 0, {
-                      type: 'MethodDefinition',
-                      kind: 'constructor',
                       $fuse_classInitializers: bodyInitializers,
                       key: {
-                        type: 'Identifier',
                         name: 'constructor',
+                        type: 'Identifier',
                       },
+                      kind: 'constructor',
+                      type: 'MethodDefinition',
                       value: {
-                        type: 'FunctionExpression',
-                        params: [],
                         body: {
-                          type: 'BlockStatement',
                           body: bodyBlockStatement,
+                          type: 'BlockStatement',
                         },
+                        params: [],
+                        type: 'FunctionExpression',
                       },
                     });
                   } else constructorNode.$fuse_classInitializers = bodyInitializers;
@@ -104,12 +103,15 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
                 if (param.type === ASTType.ParameterProperty) {
                   hasSomethingToAdd = true;
                   let name;
+                  let obj;
                   if (param.parameter.left) {
+                    obj = param.parameter.left;
                     name = param.parameter.left.name;
                   } else {
+                    obj = param.parameter;
                     name = param.parameter.name;
                   }
-                  thisParams.push({ paramName: name, ast: { type: 'Identifier', name } });
+                  thisParams.push({ ast: { name, type: 'Identifier' }, param: obj });
                 }
                 index++;
               }
@@ -134,18 +136,18 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
                 }
                 for (const item of thisParams) {
                   (<Array<ASTNode>>body).splice(insertPosition, 0, {
-                    type: 'ExpressionStatement',
                     expression: {
-                      type: 'AssignmentExpression',
                       left: {
-                        type: 'MemberExpression',
-                        object: { type: 'ThisExpression' },
                         computed: item.computed === true,
-                        property: { type: 'Identifier', name: item.paramName },
+                        object: { type: 'ThisExpression' },
+                        property: item.param,
+                        type: 'MemberExpression',
                       },
                       operator: '=',
                       right: item.ast,
+                      type: 'AssignmentExpression',
                     },
+                    type: 'ExpressionStatement',
                   });
                   insertPosition++;
                 }
@@ -154,35 +156,33 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
           }
           // handle static props
           if (StaticProps) {
-            if (!ClassNode.id) ClassNode.id = { type: 'Identifier', name: `_UnnamedClass_${++classIds}` };
+            if (!ClassNode.id) ClassNode.id = { name: `_UnnamedClass_${++classIds}`, type: 'Identifier' };
 
             const className = ClassNode.id.name;
             const statements: Array<ASTNode> = [];
             for (const prop of StaticProps) {
               const statement = createExpressionStatement(
                 {
-                  type: 'MemberExpression',
-                  object: {
-                    type: 'Identifier',
-                    name: className,
-                  },
                   computed: prop.computed,
-                  property: {
+                  object: {
+                    name: className,
                     type: 'Identifier',
-                    name: prop.key.name,
                   },
+                  property: prop.key,
+                  type: 'MemberExpression',
                 },
                 prop.value,
               );
+
               statements.push(statement);
             }
 
-            if (visit.parent.body) {
+            if (parent.body) {
               // this is a simple case, where we have body to insert after
-              return { insertAfterThisNode: statements };
+
+              return schema.insertAfter(statements);
             } else {
               if (ClassNode.$fuse_class_declaration_visited) return;
-              const globalContext = visit.globalContext as GlobalContext;
 
               // prevent the same transformer from visiting the same node
               // Since we have done all the tranformers, but need to return exactly same CLASS
@@ -190,14 +190,14 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
               ClassNode.$fuse_class_declaration_visited = true;
               // we need to generate a new variable which will be appened to body
               // e.g var _1_;
-              const NewSysVariableName = globalContext.getNextSystemVariable();
+              const NewSysVariableName = context.getNextSystemVariable();
 
-              const sequenceExpressions: ASTNode = { type: 'SequenceExpression', expressions: [] };
+              const sequenceExpressions: ASTNode = { expressions: [], type: 'SequenceExpression' };
               const classAssignment: ASTNode = {
-                type: 'AssignmentExpression',
-                left: { type: 'Identifier', name: NewSysVariableName },
+                left: { name: NewSysVariableName, type: 'Identifier' },
                 operator: '=',
                 right: ClassNode,
+                type: 'AssignmentExpression',
               };
               sequenceExpressions.expressions.push(classAssignment);
               // convert expression statements to AssignmentExpression
@@ -205,31 +205,31 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
               for (const oldStatement of statements) {
                 oldStatement.expression.left.object.name = NewSysVariableName;
                 const n: ASTNode = {
-                  type: 'AssignmentExpression',
                   left: oldStatement.expression.left,
                   operator: '=',
                   right: oldStatement.expression.right,
+                  type: 'AssignmentExpression',
                 };
                 sequenceExpressions.expressions.push(n);
               }
-              sequenceExpressions.expressions.push({ type: 'Identifier', name: NewSysVariableName });
+              sequenceExpressions.expressions.push({ name: NewSysVariableName, type: 'Identifier' });
 
               // generate a declaration
               const sysVariableDeclaration: ASTNode = {
-                type: 'VariableDeclaration',
-                kind: 'var',
                 declarations: [
                   {
-                    type: 'VariableDeclarator',
-                    init: null,
                     id: {
-                      type: 'Identifier',
                       name: NewSysVariableName,
+                      type: 'Identifier',
                     },
+                    init: null,
+                    type: 'VariableDeclarator',
                   },
                 ],
+                kind: 'var',
+                type: 'VariableDeclaration',
               };
-              return { replaceWith: sequenceExpressions, prependToBody: [sysVariableDeclaration] };
+              return schema.bodyPrepend([sysVariableDeclaration]).replace(sequenceExpressions);
             }
           }
         },

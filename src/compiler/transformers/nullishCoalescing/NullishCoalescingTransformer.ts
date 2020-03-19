@@ -1,8 +1,7 @@
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ISchema } from '../../core/nodeSchema';
 import { createUndefinedVariable, createVariableDeclaration } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
-import { GlobalContext } from '../../program/GlobalContext';
 
 export function createNullishStatement(props: ILocalContext) {
   const { genId } = props;
@@ -79,7 +78,7 @@ function drillExpressions(node: ASTNode, nodes: Array<ASTNode>) {
 }
 
 interface ILocalContext {
-  globalContext: GlobalContext;
+  schema: ISchema;
   genId?: () => string;
 }
 
@@ -87,21 +86,21 @@ export function NullishCoalescingTransformer(): ITransformer {
   return {
     commonVisitors: props => {
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const { node } = visit;
+        onEach: (schema: ISchema) => {
+          const { node } = schema;
 
           const nodes: Array<ASTNode> = [];
           if (!isNullishCoalescing(node)) return;
-          const globalContext = visit.globalContext as GlobalContext;
+
           drillExpressions(node, nodes);
 
           const startingNode = nodes[0];
           const declaration = createVariableDeclaration();
 
           const ctx: ILocalContext = {
-            globalContext,
+            schema,
             genId: () => {
-              const nextVar = globalContext.getNextSystemVariable();
+              const nextVar = schema.context.getNextSystemVariable();
               declaration.declarations.push(createUndefinedVariable(nextVar));
               return nextVar;
             },
@@ -122,7 +121,7 @@ export function NullishCoalescingTransformer(): ITransformer {
           let prepend: Array<ASTNode> = [];
           if (declaration.declarations.length) prepend = [declaration];
 
-          return { prependToBody: prepend, replaceWith: pointer.expression.expression };
+          return schema.bodyPrepend(prepend).replace(pointer.expression.expression);
         },
       };
     },

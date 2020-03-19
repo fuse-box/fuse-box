@@ -1,8 +1,7 @@
 import { path2RegexPattern } from '../../../utils/utils';
-import { IVisit } from '../../Visitor/Visitor';
+import { ISchema } from '../../core/nodeSchema';
 import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
-import { GlobalContext } from '../../program/GlobalContext';
 
 export interface CSSInJSXTransformerOptions {
   autoInject?: boolean;
@@ -118,8 +117,8 @@ export function CSSInJSXTransformer(options?: CSSInJSXTransformerOptions): ITran
       labelMapping['[filename]'] = filePath.replace(/(.+)(\\|\/)(.+)$/, '$3');
 
       return {
-        onEachNode: (visit: IVisit) => {
-          const { node, parent } = visit;
+        onEach: (schema: ISchema) => {
+          const { node, parent, replace } = schema;
 
           switch (node.type) {
             case 'CallExpression':
@@ -183,20 +182,18 @@ export function CSSInJSXTransformer(options?: CSSInJSXTransformerOptions): ITran
                 }
 
                 // Replace this node with new shiny stuff
-                return {
-                  replaceWith: {
-                    arguments: styleProperties.filter(Boolean),
-                    callee,
-                    type: 'CallExpression',
-                  },
-                };
+                return replace({
+                  arguments: styleProperties.filter(Boolean),
+                  callee,
+                  type: 'CallExpression',
+                });
               }
               break;
           }
         },
-        onTopLevelTraverse: (visit: IVisit) => {
-          const node = visit.node;
-          const globalContext = visit.globalContext as GlobalContext;
+        onProgramBody: (schema: ISchema) => {
+          const { context, node } = schema;
+
           if (node.type === 'ImportDeclaration') {
             if (compilerJsxFactory === 'jsx') {
               // @todo:
@@ -213,7 +210,7 @@ export function CSSInJSXTransformer(options?: CSSInJSXTransformerOptions): ITran
                   // fix this, remove specifier if compilerJsxFactory === 'jsx'
 
                   // set the globalContext.jsxFactory for the JSXTransformer
-                  globalContext.jsxFactory = node.specifiers[i].local.name;
+                  context.jsxFactory = node.specifiers[i].local.name;
                   // visit.globalContext.jsxFactory = node.specifiers[i].local.name;
                 } else {
                   importedEmotionFunctions.push(node.specifiers[i].local.name);
@@ -227,7 +224,7 @@ export function CSSInJSXTransformer(options?: CSSInJSXTransformerOptions): ITran
                 // set the globalContext.jsxFactory for the JSXTransformer
                 if (node.source.value === emotionCoreAlias) {
                   // visit.globalContext.jsxFactory = jsxFactory;
-                  globalContext.jsxFactory = jsxFactory;
+                  context.jsxFactory = jsxFactory;
                 }
                 node.specifiers.push({
                   imported: {

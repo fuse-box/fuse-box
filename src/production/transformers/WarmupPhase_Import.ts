@@ -1,4 +1,4 @@
-import { IVisit, IVisitorMod } from '../../compiler/Visitor/Visitor';
+import { ISchema } from '../../compiler/core/nodeSchema';
 import { getDynamicImport } from '../../compiler/helpers/importHelpers';
 import { ASTNode, ASTType } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
@@ -63,31 +63,30 @@ export function Phase_1_ImportLink(): ITransformer {
       }
 
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          if (!visit.parent || visit.parent.type === ASTType.Program) {
+        onEach: (schema: ISchema) => {
+          const { node, parent } = schema;
+          if (!parent || parent.type === ASTType.Program) {
             return;
           }
 
-          const { node, parent } = visit;
-
           if (isEligibleDynamicImport(node) || isEligibleRequire(node)) {
-            tree.importReferences.register({ module, productionContext, visit });
+            tree.importReferences.register({ module, productionContext, schema });
           }
           if (shouldStyleImportRemove(node, parent)) {
-            return { removeNode: true };
+            return schema.remove();
           }
         },
-        onTopLevelTraverse: (visit: IVisit) => {
-          const { node, parent } = visit;
+        onProgramBody: (schema: ISchema) => {
+          const { node, parent } = schema;
           if (isEligibleImportOrExport(node) || isEligibleRequire(node)) {
-            tree.importReferences.register({ module, productionContext, visit });
+            tree.importReferences.register({ module, productionContext, schema });
           }
 
           // we don't need the references in the code
           // those will become real css files
           // however, tracking should happen above (for css code splitting)
           if (shouldStyleImportRemove(node, parent)) {
-            return { removeNode: true };
+            return schema.remove();
           }
         },
       };

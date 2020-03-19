@@ -509,6 +509,7 @@ describe('Class constructor properties', () => {
         `,
         jsx: false,
       });
+
       expect(result.code).toMatchSnapshot();
     });
   });

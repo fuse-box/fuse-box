@@ -1,8 +1,7 @@
 import * as path from 'path';
 import { ensureFuseBoxPath } from '../../../utils/utils';
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { createRequireStatement } from '../../Visitor/helpers';
-import { isLocalDefined } from '../../helpers/astHelpers';
+import { ISchema } from '../../core/nodeSchema';
+import { createRequireStatement } from '../../helpers/helpers';
 import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
@@ -39,23 +38,23 @@ export function BundlePolyfillTransformer(): ITransformer {
       const dirName = ensureFuseBoxPath(path.dirname(publicPath));
 
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const { node } = visit;
+        onEach: (schema: ISchema) => {
+          const { getLocal, localIdentifier, node, replace } = schema;
 
-          if (visit.isLocalIdentifier) {
+          if (localIdentifier) {
             const name = node.name;
 
-            if (isLocalDefined(name, visit.scope)) {
+            if (getLocal(name)) {
               return;
             }
 
             switch (name) {
               case '__dirname':
-                return { replaceWith: { type: 'Literal', value: publicPath } };
+                return replace({ type: 'Literal', value: publicPath });
               case '__filename':
-                return { replaceWith: { type: 'Literal', value: dirName } };
+                return replace({ type: 'Literal', value: dirName });
               case 'global':
-                return { replaceWith: { name: isWebWorker ? 'self' : 'window', type: 'Identifier' } };
+                return replace({ name: isWebWorker ? 'self' : 'window', type: 'Identifier' });
             }
 
             /**
@@ -95,7 +94,7 @@ export function BundlePolyfillTransformer(): ITransformer {
                 });
               }
               if (statements.length) {
-                return { prependToBody: statements };
+                return schema.bodyPrepend(statements);
               }
             }
           }

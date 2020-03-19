@@ -1,4 +1,4 @@
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ISchema } from '../../core/nodeSchema';
 import { createUndefinedVariable, createVariableDeclaration } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
@@ -28,16 +28,16 @@ interface IChainItem {
 
 type IChainingCollection = Array<IChainItem>;
 
-function createOptionalContext(visit: IVisit) {
+function createOptionalContext(schema: ISchema) {
   const steps: Array<IChainingStep> = [];
-  const globalContext = visit.globalContext;
+
   const declaration = createVariableDeclaration();
 
   const self = {
     declaration,
     steps,
     genId: () => {
-      const nextVar = globalContext.getNextSystemVariable();
+      const nextVar = schema.context.getNextSystemVariable();
       declaration.declarations.push(createUndefinedVariable(nextVar));
       return nextVar;
     },
@@ -322,15 +322,15 @@ export function OptionalChaningTransformer(): ITransformer {
   return {
     commonVisitors: props => {
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const node = visit.node;
+        onEach: (schema: ISchema) => {
+          const node = schema.node;
           if (!VALID_NODES[node.type]) return;
-          const context = createOptionalContext(visit);
+          const context = createOptionalContext(schema);
 
           chainDrill(node, context);
 
           const statement = createStatement(context);
-          return { prependToBody: [context.declaration], replaceWith: statement };
+          return schema.bodyPrepend([context.declaration]).replace(statement);
         },
       };
     },

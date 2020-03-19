@@ -1,7 +1,6 @@
+import { transformModule } from '../../compiler/core/transformModule';
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
-import { createGlobalContext } from '../../compiler/program/GlobalContext';
-import { transpileModule } from '../../compiler/program/transpileModule';
 import { BASE_TRANSFORMERS, isTransformerEligible } from '../../compiler/transformer';
 import { IModule } from '../../moduleResolver/module';
 import { IProductionContext } from '../ProductionContext';
@@ -25,9 +24,8 @@ function runWarmupPhase(productionContext: IProductionContext, module: IModule) 
     }
   }
 
-  transpileModule({
-    ast: module.ast as ASTNode,
-    globalContext: createGlobalContext(),
+  transformModule({
+    root: module.ast as ASTNode,
     transformers: transformers,
   });
 }

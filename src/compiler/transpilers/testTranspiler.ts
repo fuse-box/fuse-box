@@ -26,7 +26,13 @@ export function testTranspile(props: ICompileModuleProps) {
     const ctx = createContext({
       envType: EnvironmentType.DEVELOPMENT,
 
-      publicConfig: { cache: false, devServer: false, entry: __filename },
+      publicConfig: {
+        cache: false,
+        compilerOptions: props.compilerOptions,
+        devServer: false,
+        entry: __filename,
+        target: 'browser',
+      },
       runProps: {},
     });
 

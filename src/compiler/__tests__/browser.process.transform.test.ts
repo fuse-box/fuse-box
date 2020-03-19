@@ -23,6 +23,7 @@ describe('Browser process transformer test', () => {
       }
     `,
     });
+
     expect(res.code).toMatchSnapshot();
   });
 
@@ -51,6 +52,7 @@ describe('Browser process transformer test', () => {
       }
     `,
     });
+
     expect(res.requireStatementCollection).toEqual([]);
   });
 

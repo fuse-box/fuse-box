@@ -1,31 +1,31 @@
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ISchema } from '../../core/nodeSchema';
 import { ASTNode, ASTType } from '../../interfaces/AST';
-import { computeBinaryExpression } from '../../static_compute/computeBinaryExpression';
 import { ITransformer } from '../../interfaces/ITransformer';
+import { computeBinaryExpression } from '../../static_compute/computeBinaryExpression';
 
 function enumStringValueExpression(enumName: string, property: string, value: string): ASTNode {
   return {
-    type: 'ExpressionStatement',
     expression: {
-      type: 'AssignmentExpression',
       left: {
-        type: 'MemberExpression',
-        object: {
-          type: 'Identifier',
-          name: enumName,
-        },
         computed: true,
+        object: {
+          name: enumName,
+          type: 'Identifier',
+        },
         property: {
           type: 'Literal',
           value: property,
         },
+        type: 'MemberExpression',
       },
       operator: '=',
       right: {
         type: 'Literal',
         value: value,
       },
+      type: 'AssignmentExpression',
     },
+    type: 'ExpressionStatement',
   };
 }
 
@@ -34,69 +34,69 @@ export function EnumTransformer(): ITransformer {
     target: { type: 'ts' },
     commonVisitors: props => {
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const node = visit.node;
+        onEach: (schema: ISchema) => {
+          const { node } = schema;
 
           if (node.type === ASTType.EnumDeclaration) {
             const enumName = node.id.name;
 
             const Declaration: ASTNode = {
-              type: 'VariableDeclaration',
-              kind: 'var',
               declarations: [
                 {
-                  type: 'VariableDeclarator',
-                  init: null,
                   id: {
-                    type: 'Identifier',
                     name: enumName,
+                    type: 'Identifier',
                   },
+                  init: null,
+                  type: 'VariableDeclarator',
                 },
               ],
+              kind: 'var',
+              type: 'VariableDeclaration',
             };
 
             const enumBody: Array<ASTNode> = [];
 
             const EnumWrapper: ASTNode = {
-              type: 'CallExpression',
-              callee: {
-                type: 'FunctionExpression',
-                params: [
-                  {
-                    type: 'Identifier',
-                    name: enumName,
-                  },
-                ],
-                body: {
-                  type: 'BlockStatement',
-                  body: enumBody,
-                },
-                async: false,
-                generator: false,
-                id: null,
-              },
               arguments: [
                 {
-                  type: 'LogicalExpression',
                   left: {
-                    type: 'Identifier',
                     name: enumName,
+                    type: 'Identifier',
                   },
+                  operator: '||',
                   right: {
-                    type: 'AssignmentExpression',
                     left: {
-                      type: 'Identifier',
                       name: enumName,
+                      type: 'Identifier',
                     },
                     operator: '=',
                     right: {
-                      type: 'ObjectExpression',
                       properties: [],
+                      type: 'ObjectExpression',
                     },
+                    type: 'AssignmentExpression',
                   },
-                  operator: '||',
+                  type: 'LogicalExpression',
                 },
               ],
+              callee: {
+                async: false,
+                body: {
+                  body: enumBody,
+                  type: 'BlockStatement',
+                },
+                generator: false,
+                id: null,
+                params: [
+                  {
+                    name: enumName,
+                    type: 'Identifier',
+                  },
+                ],
+                type: 'FunctionExpression',
+              },
+              type: 'CallExpression',
             };
             let index = 0;
             const computedValues = {};
@@ -128,12 +128,12 @@ export function EnumTransformer(): ITransformer {
                         // we replace the object directly
                         n.type = 'MemberExpression';
                         n.object = {
-                          type: 'Identifier',
                           name: enumName,
+                          type: 'Identifier',
                         };
                         n.property = {
-                          type: 'Identifier',
                           name: key,
+                          type: 'Identifier',
                         };
                       }
                     }
@@ -149,42 +149,42 @@ export function EnumTransformer(): ITransformer {
 
               if (rightValue) {
                 enumBody.push({
-                  type: 'AssignmentExpression',
                   left: {
-                    type: 'MemberExpression',
-                    object: {
-                      type: 'Identifier',
-                      name: enumName,
-                    },
                     computed: true,
+                    object: {
+                      name: enumName,
+                      type: 'Identifier',
+                    },
                     property: {
-                      type: 'AssignmentExpression',
                       left: {
-                        type: 'MemberExpression',
-                        object: {
-                          type: 'Identifier',
-                          name: enumName,
-                        },
                         computed: true,
+                        object: {
+                          name: enumName,
+                          type: 'Identifier',
+                        },
                         property: {
                           type: 'Literal',
                           value: memberName,
                         },
+                        type: 'MemberExpression',
                       },
                       operator: '=',
                       right: rightValue,
+                      type: 'AssignmentExpression',
                     },
+                    type: 'MemberExpression',
                   },
                   operator: '=',
                   right: {
                     type: 'Literal',
                     value: memberName,
                   },
+                  type: 'AssignmentExpression',
                 });
               }
             }
 
-            return { replaceWith: [Declaration, EnumWrapper] };
+            return schema.replace([Declaration, EnumWrapper]);
           }
         },
       };

@@ -1,4 +1,4 @@
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ISchema } from '../../core/nodeSchema';
 import { getDynamicImport } from '../../helpers/importHelpers';
 import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
@@ -8,8 +8,8 @@ export function DynamicImportTransformer(): ITransformer {
   return {
     commonVisitors: props => {
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const node = visit.node;
+        onEach: (schema: ISchema) => {
+          const { node } = schema;
 
           const dynamicImport = getDynamicImport(node);
           if (dynamicImport) {
@@ -69,12 +69,8 @@ export function DynamicImportTransformer(): ITransformer {
               },
               type: 'CallExpression',
             };
-            return {
-              replaceWith: callExpression,
-            };
+            return schema.replace(callExpression);
           }
-
-          return;
         },
       };
     },

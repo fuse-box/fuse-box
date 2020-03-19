@@ -16,26 +16,29 @@ exports[`scope test Import qualifiers should iqnore qualifer ref deep 1`] = `""`
 
 exports[`scope test Import qualifiers should replace qualifer ref 1`] = `
 "var oi_1 = require(\\"oi\\");
+let Bar = oi_1.Foo.baz;
 function oi() {
-  console.log(oi_1.Foo.baz);
+  console.log(Bar);
 }
 "
 `;
 
 exports[`scope test Import qualifiers should replace qualifer ref 2 1`] = `
 "var oi_1 = require(\\"oi\\");
+let Bar = oi_1.Foo;
 function oi() {
-  console.log(oi_1.Foo);
+  console.log(Bar);
 }
 "
 `;
 
 exports[`scope test Import qualifiers should replace qualifer ref 2 times correctly 1`] = `
 "var oi_1 = require(\\"oi\\");
+let Bar = oi_1.Foo.hey;
 function oi() {
-  console.log(oi_1.Foo.hey);
+  console.log(Bar);
   function other() {
-    console.log(oi_1.Foo.hey);
+    console.log(Bar);
   }
 }
 "
@@ -43,8 +46,9 @@ function oi() {
 
 exports[`scope test Import qualifiers should replace qualifer ref and respect local scope 1`] = `
 "var oi_1 = require(\\"oi\\");
+let Bar = oi_1.Foo.hey;
 function oi() {
-  console.log(oi_1.Foo.hey);
+  console.log(Bar);
   function other(Bar) {
     console.log(Bar);
   }

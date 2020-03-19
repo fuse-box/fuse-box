@@ -1,16 +1,18 @@
 import { Context } from '../../core/context';
 import { IModule } from '../../moduleResolver/module';
 import { IProductionContext } from '../../production/ProductionContext';
-import { IVisit, IVisitorMod } from '../Visitor/Visitor';
+import { ISchema } from '../core/nodeSchema';
 import { ISerializableTransformationContext } from '../transformer';
 import { ASTNode } from './AST';
 import { ImportType } from './ImportType';
 
-export type ITranformerCallback = (visit: IVisit) => undefined | IVisitorMod | void;
+export type ITransformerList = Array<ITransformerVisitors | undefined>;
+
+export type ITranformerCallbackController = (schema: ISchema) => any;
 
 export interface ITransformerVisitors {
-  onEachNode?: ITranformerCallback;
-  onTopLevelTraverse?: ITranformerCallback;
+  onEach?: ITranformerCallbackController;
+  onProgramBody?: ITranformerCallbackController;
 }
 
 export interface IRequireStatementModuleOptions {

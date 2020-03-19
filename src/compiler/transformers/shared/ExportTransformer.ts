@@ -1,16 +1,9 @@
 import { BUNDLE_RUNTIME_NAMES } from '../../../bundleRuntime/bundleRuntimeCore';
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import {
-  ES_MODULE_EXPRESSION,
-  createEsModuleDefaultInterop,
-  createExports,
-  createVariableDeclaration,
-} from '../../Visitor/helpers';
-import { isLocalDefined } from '../../helpers/astHelpers';
+import { ISchema } from '../../core/nodeSchema';
+import { createEsModuleDefaultInterop, createExports, createVariableDeclaration } from '../../helpers/helpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
-import { GlobalContext } from '../../program/GlobalContext';
 
 const IGNORED_DECLARATIONS = {
   [ASTType.InterfaceDeclaration]: 1,
@@ -41,7 +34,6 @@ const INTERESTED_NODES = {
 export function ExportTransformer(): ITransformer {
   return {
     commonVisitors: props => {
-      const definedLocallyProcessed: Record<string, number> = {};
       const {
         transformationContext: { compilerOptions },
       } = props;
@@ -49,17 +41,19 @@ export function ExportTransformer(): ITransformer {
       let USE_MODULE_EXPORTS = false;
 
       const esModuleInterop = compilerOptions.esModuleInterop;
+      let exportAfterDeclaration;
+      const definedLocallyProcessed: Record<string, number> = {};
       return {
-        onEachNode: (visit: IVisit) => {
-          const global = visit.globalContext as GlobalContext;
-          const node = visit.node;
+        onEach: (schema: ISchema) => {
+          const { context, node, parent } = schema;
+
           // handle a case where user set his own "exports". We need to change it
           // this is a very VERY rare case
           // and we do it because Babel supports (TypeScript will not compile the following code correctly)
           // var exports = {}
           // export { exports as default };
 
-          if (visit.parent && visit.parent.type === ASTType.Program) {
+          if (parent && parent.type === ASTType.Program) {
             if (node.type == ASTType.VariableDeclaration && node.declarations) {
               for (const decl of node.declarations) {
                 if (decl.id && decl.id.name === 'exports') {
@@ -69,31 +63,28 @@ export function ExportTransformer(): ITransformer {
             }
           }
 
-          if (visit.parent && visit.parent.type !== ASTType.Program) return;
+          if (parent && parent.type !== ASTType.Program) return;
 
-          if (global.exportAfterDeclaration && !visit.node.$fuse_visited) {
-            const node = visit.node;
+          if (exportAfterDeclaration && !node.$fuse_visited) {
             const definedLocally: Array<string> = [];
 
-            for (const key in global.exportAfterDeclaration) {
+            for (const key in exportAfterDeclaration) {
               if (definedLocallyProcessed[key] === 1) {
-              } else if (isLocalDefined(key, visit.scope)) {
+              } else if (schema.getLocal(key)) {
                 definedLocally.push(key);
               }
             }
 
-            if (definedLocally.length && !visit.node.$fuse_visited) {
+            if (definedLocally.length && !node.$fuse_visited) {
               const newNodes = [];
 
-              const response: IVisitorMod = {};
               for (const localVar of definedLocally) {
                 definedLocallyProcessed[localVar] = 1;
-                const targetAfter = global.exportAfterDeclaration[localVar];
+                const targetAfter = exportAfterDeclaration[localVar];
                 if (targetAfter) {
-                  if (!response.appendToBody) response.appendToBody = [];
                   for (const item of targetAfter.targets) {
                     const ast = createExports({
-                      exportsKey: global.namespace,
+                      exportsKey: context.moduleExportsName,
                       exportsVariableName: item,
                       property: {
                         name: localVar,
@@ -102,32 +93,35 @@ export function ExportTransformer(): ITransformer {
                       useModule: USE_MODULE_EXPORTS,
                     });
 
-                    response.appendToBody.push(ast);
+                    schema.bodyAppend([ast]);
                   }
                 }
               }
               if (newNodes.length) {
                 node.$fuse_visited = true;
-
-                // console.log('new nodes', newNodes);
-                // return { replaceWith: [node].concat(newNodes) };
-                response.insertAfterThisNode = newNodes;
+                schema.insertAfter(newNodes);
               }
-              if (response.insertAfterThisNode || response.appendToBody) {
-                // make sure exports.__eModule is injected
-                if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
-                  global.esModuleStatementInjected = true;
-                  response.prependToBody = [ES_MODULE_EXPRESSION];
-                }
-                return response;
-              }
+              return schema.ensureESModuleStatement(compilerOptions);
             }
           }
         },
-        onTopLevelTraverse: (visit: IVisit) => {
-          const node = visit.node;
+        onProgramBody: (schema: ISchema) => {
+          const { context, node, parent } = schema;
+          // handle a case where user set his own "exports". We need to change it
+          // this is a very VERY rare case
+          // and we do it because Babel supports (TypeScript will not compile the following code correctly)
+          // var exports = {}
+          // export { exports as default };
 
-          const global = visit.globalContext as GlobalContext;
+          if (parent && parent.type === ASTType.Program) {
+            if (node.type == ASTType.VariableDeclaration && node.declarations) {
+              for (const decl of node.declarations) {
+                if (decl.id && decl.id.name === 'exports') {
+                  USE_MODULE_EXPORTS = true;
+                }
+              }
+            }
+          }
 
           const type = node.type;
 
@@ -145,7 +139,7 @@ export function ExportTransformer(): ITransformer {
           // export interface HelloWorld{}
           if (type === 'ExportNamedDeclaration') {
             if (node.declaration && IGNORED_DECLARATIONS[node.declaration.type]) {
-              return { removeNode: true };
+              return schema.remove();
             }
           }
 
@@ -157,7 +151,7 @@ export function ExportTransformer(): ITransformer {
            * Needs to be simply replaced, no tracking involved
            */
           if (node.source) {
-            const sourceVariable = global.getModuleName(node.source.value);
+            const sourceVariable = context.getModuleName(node.source.value);
 
             // export * from "a"
             if (node.type === 'ExportAllDeclaration') {
@@ -177,8 +171,8 @@ export function ExportTransformer(): ITransformer {
               if (props.onRequireCallExpression) {
                 props.onRequireCallExpression(ImportType.FROM, reqExpression);
               }
-              const response: IVisitorMod = {
-                replaceWith: {
+              schema.replace([
+                {
                   expression: {
                     arguments: [
                       {
@@ -203,14 +197,9 @@ export function ExportTransformer(): ITransformer {
                   },
                   type: 'ExpressionStatement',
                 },
-              };
+              ]);
 
-              // make sure exports.__eModule is injected
-              if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
-                global.esModuleStatementInjected = true;
-                response.prependToBody = [ES_MODULE_EXPRESSION];
-              }
-              return response;
+              return schema.ensureESModuleStatement(compilerOptions);
             }
 
             // export { foo } from "./bar"
@@ -244,7 +233,7 @@ export function ExportTransformer(): ITransformer {
                 type: 'VariableDeclaration',
               },
             ];
-            const response: IVisitorMod = { replaceWith: exportedNodes };
+
             if (type === 'ExportNamedDeclaration') {
               for (const specifier of node.specifiers) {
                 let targetVariable = sourceVariable;
@@ -261,7 +250,7 @@ export function ExportTransformer(): ITransformer {
                 }
                 exportedNodes.push(
                   createExports({
-                    exportsKey: global.namespace,
+                    exportsKey: context.moduleExportsName,
                     exportsVariableName: specifier.exported.name,
                     property: {
                       computed: false,
@@ -280,13 +269,9 @@ export function ExportTransformer(): ITransformer {
                 );
               }
             }
+            schema.ensureESModuleStatement(compilerOptions);
 
-            // make sure exports.__eModule is injected
-            if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
-              global.esModuleStatementInjected = true;
-              response.prependToBody = [ES_MODULE_EXPRESSION];
-            }
-            return response;
+            return schema.replace(exportedNodes);
           }
 
           /**
@@ -297,7 +282,7 @@ export function ExportTransformer(): ITransformer {
           if (type === 'ExportDefaultDeclaration') {
             if (node.declaration) {
               if (node.declaration.type === ASTType.InterfaceDeclaration) {
-                return { removeNode: true };
+                return schema.remove();
               }
               // Looking at this case:
               //      console.log(foo)
@@ -320,42 +305,33 @@ export function ExportTransformer(): ITransformer {
                  * }
                  */
                 let statement: ASTNode = considerDecorators(node);
-                const response: IVisitorMod = {
-                  replaceWith: [
-                    statement,
-                    createExports({
-                      exportsKey: global.namespace,
-                      exportsVariableName: 'default',
-                      property: {
-                        name: node.declaration.id.name,
-                        type: 'Identifier',
-                      },
-                      useModule: USE_MODULE_EXPORTS,
-                    }),
-                  ],
-                };
+
+                schema.replace([
+                  statement,
+                  createExports({
+                    exportsKey: context.moduleExportsName,
+                    exportsVariableName: 'default',
+                    property: {
+                      name: node.declaration.id.name,
+                      type: 'Identifier',
+                    },
+                    useModule: USE_MODULE_EXPORTS,
+                  }),
+                ]);
                 // make sure exports.__eModule is injected
-                if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
-                  global.esModuleStatementInjected = true;
-                  response.prependToBody = [ES_MODULE_EXPRESSION];
-                }
-                return response;
+                return schema.ensureESModuleStatement(compilerOptions);
               }
 
-              const response: IVisitorMod = {
-                replaceWith: createExports({
-                  exportsKey: global.namespace,
+              schema.replace([
+                createExports({
+                  exportsKey: context.moduleExportsName,
                   exportsVariableName: 'default',
                   property: node.declaration,
                   useModule: USE_MODULE_EXPORTS,
                 }),
-              };
+              ]);
               // make sure exports.__eModule is injected
-              if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
-                global.esModuleStatementInjected = true;
-                response.prependToBody = [ES_MODULE_EXPRESSION];
-              }
-              return response;
+              return schema.ensureESModuleStatement(compilerOptions);
             }
           }
 
@@ -374,15 +350,13 @@ export function ExportTransformer(): ITransformer {
 
             if (node.specifiers && node.specifiers.length) {
               for (const specifier of node.specifiers) {
+                // console.log(schema.getLocal(specifier.local.name), context.coreReplacements[specifier.local.name]);
                 // if the variable present in the scope...
                 // or picked up by the identifierReplacement ( we can leave that for GlobalContextTranformer)
-                if (
-                  isLocalDefined(specifier.local.name, visit.scope) ||
-                  global.identifierReplacement[specifier.local.name]
-                ) {
+                if (schema.getLocal(specifier.local.name) || context.coreReplacements[specifier.local.name]) {
                   newNodes.push(
                     createExports({
-                      exportsKey: global.namespace,
+                      exportsKey: schema.context.moduleExportsName,
                       exportsVariableName: specifier.exported.name,
                       property: {
                         name: specifier.local.name,
@@ -393,10 +367,8 @@ export function ExportTransformer(): ITransformer {
                   );
                 } else {
                   // if none was decleared, it must be declared earlier (so we check if later with onEachNode in this transformer )
-                  let exportAfterDeclaration = global.exportAfterDeclaration;
-                  if (!exportAfterDeclaration) {
-                    global.exportAfterDeclaration = exportAfterDeclaration = {};
-                  }
+
+                  if (!exportAfterDeclaration) exportAfterDeclaration = {};
 
                   if (!exportAfterDeclaration[specifier.local.name]) {
                     exportAfterDeclaration[specifier.local.name] = { targets: [] };
@@ -407,13 +379,8 @@ export function ExportTransformer(): ITransformer {
                   exportAfterDeclaration[specifier.local.name].targets.push(specifier.exported.name);
                 }
               }
-              const response: IVisitorMod = { replaceWith: newNodes };
-              // make sure exports.__eModule is injected
-              if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
-                global.esModuleStatementInjected = true;
-                response.prependToBody = [ES_MODULE_EXPRESSION];
-              }
-              return response;
+              schema.replace(newNodes);
+              return schema.ensureESModuleStatement(compilerOptions);
             }
             /**
              * ************************************************************************
@@ -426,24 +393,22 @@ export function ExportTransformer(): ITransformer {
               if (node.declaration.id && node.declaration.id.name) {
                 const statement = considerDecorators(node);
 
-                return {
-                  replaceWith: [
-                    statement,
-                    createExports({
-                      exportsKey: global.namespace,
-                      exportsVariableName: node.declaration.id.name,
-                      property: {
-                        name: node.declaration.id.name,
-                        type: 'Identifier',
-                      },
-                      useModule: USE_MODULE_EXPORTS,
-                    }),
-                  ],
-                };
+                return schema.replace([
+                  statement,
+                  createExports({
+                    exportsKey: context.moduleExportsName,
+                    exportsVariableName: node.declaration.id.name,
+                    property: {
+                      name: node.declaration.id.name,
+                      type: 'Identifier',
+                    },
+                    useModule: USE_MODULE_EXPORTS,
+                  }),
+                ]);
               }
               if (node.declaration.type === 'VariableDeclaration') {
                 if (node.declaration.declare) {
-                  return { ignoreChildren: true, removeNode: true };
+                  return schema.remove();
                 }
                 /**
                  * ******************************************************************
@@ -455,8 +420,8 @@ export function ExportTransformer(): ITransformer {
                   let newNodes = [];
                   for (const declaration of node.declaration.declarations) {
                     if (!declaration.declare) {
-                      global.identifierReplacement[declaration.id.name] = {
-                        first: global.namespace,
+                      context.coreReplacements[declaration.id.name] = {
+                        first: context.moduleExportsName,
                         second: declaration.id.name,
                       };
 
@@ -467,7 +432,7 @@ export function ExportTransformer(): ITransformer {
 
                         newNodes.push(
                           createExports({
-                            exportsKey: global.namespace,
+                            exportsKey: context.moduleExportsName,
                             exportsVariableName: declaration.id.name,
                             property: declaration.init,
                             useModule: USE_MODULE_EXPORTS,
@@ -476,14 +441,10 @@ export function ExportTransformer(): ITransformer {
                       }
                     }
                   }
-                  const response: IVisitorMod = { replaceWith: newNodes };
+                  schema.replace(newNodes);
 
                   // make sure exports.__eModule is injected
-                  if (compilerOptions.esModuleStatement && !global.esModuleStatementInjected) {
-                    global.esModuleStatementInjected = true;
-                    response.prependToBody = [ES_MODULE_EXPRESSION];
-                  }
-                  return response;
+                  return schema.ensureESModuleStatement(compilerOptions);
                 }
               }
             }

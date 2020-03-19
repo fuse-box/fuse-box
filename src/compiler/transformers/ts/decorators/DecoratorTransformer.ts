@@ -1,5 +1,5 @@
-import { IVisit, IVisitorMod } from '../../../Visitor/Visitor';
-import { createRequireStatement, isValidMethodDefinition } from '../../../Visitor/helpers';
+import { ISchema } from '../../../core/nodeSchema';
+import { createRequireStatement, isValidMethodDefinition } from '../../../helpers/helpers';
 import { ASTNode } from '../../../interfaces/AST';
 import { ITransformer } from '../../../interfaces/ITransformer';
 import { ImportType } from '../../../interfaces/ImportType';
@@ -34,8 +34,8 @@ export function DecoratorTransformer(): ITransformer {
       const emitDecoratorMetadata = compilerOptions.emitDecoratorMetadata;
 
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const { node } = visit;
+        onEach: (schema: ISchema) => {
+          const { node, replace } = schema;
 
           let targetClassBody: Array<ASTNode>;
           let className;
@@ -179,17 +179,18 @@ export function DecoratorTransformer(): ITransformer {
             if (classDecorator) {
               statements.push(classDecorator.expressionStatement);
             }
-            const mod: IVisitorMod = {};
+
             if (statements.length) {
-              mod.replaceWith = [node].concat(statements);
+              replace([node].concat(statements));
               if (!helperInserted) {
                 helperInserted = true;
                 const helper = createRequireStatement('fuse_helpers_decorate', helperModule);
                 if (props.onRequireCallExpression)
                   props.onRequireCallExpression(ImportType.REQUIRE, helper.reqStatement);
-                mod.prependToBody = [helper.statement];
+
+                schema.bodyPrepend([helper.statement]);
               }
-              return mod;
+              return schema;
             }
           }
         },

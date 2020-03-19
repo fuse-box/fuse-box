@@ -18,14 +18,11 @@ const _isLocalIdentifierRulesExceptionNodes = {
   //  [ASTType.VariableDeclarator]: 1,
 };
 export function isLocalIdentifier(node: ASTNode, parent: ASTNode, propertyName: string) {
+  if (propertyName === 'params') return;
   if (node.type === 'Identifier') {
-    if (propertyName === 'params') return;
     if (propertyName === 'superClass') return true;
+    if (_isLocalIdentifierRulesExceptionNodes[parent.type] || parent.$assign_pattern) return;
     if (parent) {
-      if (_isLocalIdentifierRulesExceptionNodes[parent.type]) return;
-      if (parent.$assign_pattern) {
-        return;
-      }
       if (parent.computed) return true;
       return parent.property !== node && !parent.computed && parent.key !== node;
     }

@@ -1,4 +1,4 @@
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ISchema } from '../../core/nodeSchema';
 import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { computeBoolean } from '../../static_compute/computeBoolean';
@@ -20,8 +20,9 @@ export function BundleFastConditionUnwrapper(): ITransformer {
       const isServer = compilerOptions.buildTarget === 'server';
 
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const { node } = visit;
+        onEach: (schema: ISchema) => {
+          const { node } = schema;
+
           if (node.type === 'IfStatement') {
             let operator = node.test.operator;
             let rightValue;
@@ -75,10 +76,12 @@ export function BundleFastConditionUnwrapper(): ITransformer {
 
             if (shouldTranspile) {
               if (replacement) {
-                if (replacement.body) return { replaceWith: replacement.body };
-                else if (replacement.type === 'ExpressionStatement') return { replaceWith: replacement };
+                if (replacement.body) {
+                  return schema.replace(replacement.body);
+                } else if (replacement.type === 'ExpressionStatement') return schema.replace(replacement);
               } else {
-                return { removeNode: true };
+                console.log('REMOOOVE');
+                return schema.remove();
               }
             }
           }
