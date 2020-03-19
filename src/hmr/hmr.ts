@@ -130,7 +130,7 @@ export function createHMR(ctx: Context) {
     const amount = moduleIdsForUpdate.length;
     ctx.log.info('hmr', '<dim>Sending $amount $modules to the client</dim>', {
       amount,
-      modules: amount > 1 ? 'modules' : 'module',
+      modules: amount !== 1 ? 'modules' : 'module',
     });
   }
 
