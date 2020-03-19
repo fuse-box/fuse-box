@@ -29,7 +29,7 @@ const { rm, task } = sparky<Context>(Context);
 task('default', async ctx => {
   ctx.runServer = true;
   const fuse = ctx.getConfig();
-  await fuse.runDev({ bundles: { app: 'app.js' } });
+  await fuse.runDev({ bundles: { app: 'app.js', styles: { path: 'styles/oi.css' } } });
 });
 
 task('preview', async ctx => {
@@ -37,7 +37,7 @@ task('preview', async ctx => {
   ctx.runServer = true;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: false, bundles: { app: 'app.js' } });
+  await fuse.runProd({ bundles: { app: 'app.js' } });
 });
 task('dist', async ctx => {
   ctx.runServer = false;

@@ -7,6 +7,10 @@ async function main() {
   const t = measureTime('start');
   const code = await testTranspile({
     compilerOptions: {
+      buildTarget: 'browser',
+
+      processEnv: { NODE_ENV: 'development' },
+
       esModuleInterop: true,
       esModuleStatement: true,
       experimentalDecorators: true,

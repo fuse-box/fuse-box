@@ -625,7 +625,6 @@ describe('scope test', () => {
         import Bar = Foo;
       `,
       });
-
       expect(result.code).toMatchSnapshot();
     });
 

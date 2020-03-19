@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { ImportType } from '../compiler/interfaces/ImportType';
 import { ITarget } from '../config/ITarget';
 import { path2Regex } from '../utils/utils';
 import { handleBrowserField } from './browserField';
@@ -6,13 +7,6 @@ import { NODE_BUILTIN_MODULES } from './built-inModules';
 import { TsConfigAtPath, fileLookup, ILookupResult } from './fileLookup';
 import { isNodeModule, nodeModuleLookup, INodeModuleLookup } from './nodeModuleLookup';
 import { pathsLookup } from './pathsLookup';
-
-export enum ImportType {
-  REQUIRE,
-  FROM,
-  RAW_IMPORT,
-  DYNAMIC,
-}
 
 export interface ITypescriptPathsConfig {
   baseURL: string;

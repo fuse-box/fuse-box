@@ -2,6 +2,7 @@ import * as path from 'path';
 import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { TS_EXTENSIONS } from '../config/extensions';
 import { PackageType } from '../moduleResolver/package';
+import { transformModule } from './core/transformModule';
 import { ASTNode } from './interfaces/AST';
 import { ITransformerResult } from './interfaces/ITranformerResult';
 import {
@@ -12,9 +13,6 @@ import {
 } from './interfaces/ITransformer';
 import { ITransformerRequireStatementCollection } from './interfaces/ITransformerRequireStatements';
 import { ImportType } from './interfaces/ImportType';
-import { createGlobalContext } from './program/GlobalContext';
-import { transpileModule } from './program/transpileModule';
-import { GlobalContextTransformer } from './transformers/GlobalContextTransformer';
 import { BrowserProcessTransformer } from './transformers/bundle/BrowserProcessTransformer';
 import { BuildEnvTransformer } from './transformers/bundle/BuildEnvTransformer';
 import { BundleFastConditionUnwrapper } from './transformers/bundle/BundleFastConditionTransformer';
@@ -38,9 +36,6 @@ export const USER_CUSTOM_TRANSFORMERS: Record<string, ITransformer> = {};
  * Order of those transformers MATTER!
  */
 export const BASE_TRANSFORMERS: Array<ITransformer> = [
-  // this should always come first
-  GlobalContextTransformer(),
-
   BuildEnvTransformer(),
 
   NullishCoalescingTransformer(),
@@ -140,12 +135,7 @@ export function transformCommonVisitors(props: ISerializableTransformationContex
       commonVisitors.push(transformer.commonVisitors(visitorProps));
     index++;
   }
-
-  transpileModule({
-    ast: ast,
-    globalContext: createGlobalContext(),
-    transformers: commonVisitors,
-  });
+  transformModule({ root: ast, transformers: commonVisitors });
 
   return { ast, requireStatementCollection };
 }

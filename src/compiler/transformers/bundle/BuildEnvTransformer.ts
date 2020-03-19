@@ -1,9 +1,8 @@
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ISchema } from '../../core/nodeSchema';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
 import { parseJavascript } from '../../parser';
-
 interface BrowserProcessTransformProps {
   env?: { [key: string]: string };
 }
@@ -60,15 +59,15 @@ export function BuildEnvTransformer(): ITransformer {
       const buildEnv = compilerOptions.buildEnv;
 
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const { node } = visit;
+        onEach: (schema: ISchema) => {
+          const { node } = schema;
           if (node.type === ASTType.MemberExpression && node.object.name === BUILD_ENV_NAME) {
             const propertyName = node.property.name;
             if (buildEnv[propertyName] !== undefined) {
               const ast = getEnvAST(buildEnv[propertyName]);
-              if (ast) return { replaceWith: ast };
+              if (ast) return schema.replace(ast);
             }
-            return { replaceWith: { name: 'undefined', type: ASTType.Identifier } as ASTNode };
+            return schema.replace({ name: 'undefined', type: ASTType.Identifier } as ASTNode);
           }
           return;
         },

@@ -1,6 +1,7 @@
 import * as path from 'path';
+import { ImportType } from '../../compiler/interfaces/ImportType';
 import { createRealNodeModule } from '../../utils/test_utils';
-import { ImportType, resolveModule } from '../resolver';
+import { resolveModule } from '../resolver';
 const cases = path.join(__dirname, 'cases/');
 const customModules = path.join(cases, '_modules');
 createRealNodeModule(

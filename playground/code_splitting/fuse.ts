@@ -10,7 +10,7 @@ class Context {
       devServer: this.runServer,
       entry: 'src/index.ts',
       target: this.target,
-      threading: { minFileSize: 0, threadAmount: 1 },
+
       webIndex: {
         template: 'src/index.html',
       },

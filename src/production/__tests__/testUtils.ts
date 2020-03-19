@@ -2,16 +2,13 @@ import * as appRoot from 'app-root-path';
 import { writeFileSync } from 'fs';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
-
-import { IPublicConfig } from '../../config/IConfig';
-import { Context, createContext } from '../../core/context';
 // import { fusebox } from '../../core/fusebox';
+import { transformModule } from '../../compiler/core/transformModule';
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
-import { createGlobalContext } from '../../compiler/program/GlobalContext';
-import { transpileModule } from '../../compiler/program/transpileModule';
-import { GlobalContextTransformer } from '../../compiler/transformers/GlobalContextTransformer';
 import { EnvironmentType } from '../../config/EnvironmentType';
+import { IPublicConfig } from '../../config/IConfig';
+import { Context, createContext } from '../../core/context';
 import { IModule } from '../../moduleResolver/module';
 import { ensureDir, fastHash } from '../../utils/utils';
 import { createProductionContext, IProductionContext } from '../ProductionContext';
@@ -75,7 +72,7 @@ export function customWarmupPhase(
   module: IModule,
   transformers: Array<ITransformer>,
 ) {
-  const customTransformers = [GlobalContextTransformer().commonVisitors()];
+  const customTransformers = [];
   for (const transformer of transformers) {
     if (transformer.productionWarmupPhase) {
       customTransformers.push(
@@ -88,9 +85,8 @@ export function customWarmupPhase(
     }
   }
 
-  transpileModule({
-    ast: module.ast as ASTNode,
-    globalContext: createGlobalContext(),
+  transformModule({
+    root: module.ast as ASTNode,
     transformers: customTransformers,
   });
 }

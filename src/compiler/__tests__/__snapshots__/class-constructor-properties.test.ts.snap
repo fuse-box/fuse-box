@@ -176,8 +176,8 @@ const foo = (_1_ = class A {}, _1_.oi = true, _1_), b = (_2_ = class _UnnamedCla
 `;
 
 exports[`Class constructor properties Static properties static props in export default class with decorators 1`] = `
-"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
-var _1_;
+"var _1_;
+var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
 let ApiService = (_1_ = class ApiService {}, _1_.foo = () => {}, _1_.bar = () => {}, _1_);
 ApiService = __fuse_decorate.d([Injectable()], ApiService);
 exports.default = ApiService;

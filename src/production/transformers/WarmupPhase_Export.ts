@@ -1,4 +1,4 @@
-import { IVisit, IVisitorMod } from '../../compiler/Visitor/Visitor';
+import { ISchema } from '../../compiler/core/nodeSchema';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
 import { ExportReferenceType } from '../module/ExportReference';
 
@@ -23,8 +23,8 @@ export function Phase_1_ExportLink(): ITransformer {
   return {
     productionWarmupPhase: ({ module, productionContext }) => {
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const { node } = visit;
+        onEach: (schema: ISchema) => {
+          const { node } = schema;
           const tree = module.moduleTree;
           const refs = tree.exportReferences.references;
 
@@ -41,11 +41,12 @@ export function Phase_1_ExportLink(): ITransformer {
           }
           return;
         },
-        onTopLevelTraverse: (visit: IVisit) => {
-          const { node } = visit;
+        onProgramBody: (schema: ISchema) => {
+          const { node } = schema;
           const tree = module.moduleTree;
+
           if (NODES_OF_INTEREST[node.type]) {
-            tree.exportReferences.register({ module: module, productionContext: productionContext, visit: visit });
+            tree.exportReferences.register({ module: module, productionContext: productionContext, schema: schema });
           }
         },
       };

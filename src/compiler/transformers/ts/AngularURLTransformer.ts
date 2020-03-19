@@ -1,5 +1,5 @@
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { createRequireCallExpression } from '../../Visitor/helpers';
+import { ISchema } from '../../core/nodeSchema';
+import { createRequireCallExpression } from '../../helpers/helpers';
 import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
@@ -11,8 +11,8 @@ export function AngularURLTransformer(test: RegExp): ITransformer {
     target: { test: test },
     commonVisitors: props => {
       return {
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const { node } = visit;
+        onEach: (schema: ISchema) => {
+          const { node } = schema;
           if (node.type === 'Property') {
             if (PropKeys[node.key.name]) {
               const value = node.value as ASTNode;

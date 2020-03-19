@@ -1,27 +1,25 @@
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { createExports } from '../../Visitor/helpers';
+import { ISchema } from '../../core/nodeSchema';
+import { createExports } from '../../helpers/helpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
-import { GlobalContext, createGlobalContext } from '../../program/GlobalContext';
-import { transpileModule } from '../../program/transpileModule';
 
 export function NamespaceTransformer(): ITransformer {
   return {
     target: { type: 'ts' },
     commonVisitors: props => {
       return {
-        onEachNode: (visit: IVisit) => {
-          if (visit.node.type === ASTType.ModuleDeclaration) {
-            return { ignoreChildren: true };
+        onEach: (schema: ISchema) => {
+          const { node } = schema;
+          if (node.type === ASTType.ModuleDeclaration) {
+            return schema.ignore();
           }
         },
-        onTopLevelTraverse: (visit: IVisit): IVisitorMod => {
-          let node = visit.node;
+        onProgramBody: (schema: ISchema) => {
+          let { context, node } = schema;
           if (node.declare) {
-            return { ignoreChildren: true, removeNode: true };
+            return schema.remove().ignore();
           }
           let withExport = false;
-          const globalContext = visit.globalContext as GlobalContext;
 
           if (node.type === 'ExportNamedDeclaration') {
             if (node.declaration && node.declaration.type === ASTType.ModuleDeclaration) {
@@ -35,14 +33,8 @@ export function NamespaceTransformer(): ITransformer {
             const mameSpaceName = node.id.name;
             // launch custom transpilation for that namespace
             // we skip children in onEachNode
-            transpileModule({
-              ...globalContext.programProps,
-              ast: nm,
-              globalContext: createGlobalContext({
-                namespace: mameSpaceName,
-              }),
-              namespace: mameSpaceName,
-            });
+
+            context.fork({ contextOverrides: { moduleExportsName: mameSpaceName }, root: nm });
 
             //node.body.context =
             const Declaration: ASTNode = {
@@ -108,7 +100,7 @@ export function NamespaceTransformer(): ITransformer {
             const nodes = [Declaration, FunctionBody];
             if (withExport) {
               const exportDeclaration = createExports({
-                exportsKey: globalContext.namespace,
+                exportsKey: context.moduleExportsName,
                 exportsVariableName: mameSpaceName,
                 property: {
                   name: mameSpaceName,
@@ -119,9 +111,7 @@ export function NamespaceTransformer(): ITransformer {
               nodes.push(exportDeclaration);
             }
             // replace it with a new node
-            return {
-              replaceWith: nodes,
-            };
+            return schema.replace(nodes);
           }
         },
       };

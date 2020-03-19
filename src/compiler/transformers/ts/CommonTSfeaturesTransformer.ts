@@ -1,8 +1,8 @@
-import { ITransformer } from '../../interfaces/ITransformer';
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ISchema } from '../../core/nodeSchema';
 import { ASTType } from '../../interfaces/AST';
+import { ITransformer } from '../../interfaces/ITransformer';
 
-const FUNC_EXPRESSIONS = { FunctionExpression: 1, FunctionDeclaration: 1 };
+const FUNC_EXPRESSIONS = { FunctionDeclaration: 1, FunctionExpression: 1 };
 // to test: function maybeUnwrapEmpty<T>(value: T[]): T[];
 // to test: (oi as any).foo
 
@@ -11,13 +11,8 @@ export function CommonTSfeaturesTransformer(): ITransformer {
     target: { type: 'ts' },
     commonVisitors: props => {
       return {
-        onTopLevelTraverse: (visit: IVisit): IVisitorMod => {
-          if (visit.node.declare) {
-            return { removeNode: true, ignoreChildren: true };
-          }
-        },
-        onEachNode: (visit: IVisit): IVisitorMod => {
-          const { node, parent, property } = visit;
+        onEach: (schema: ISchema) => {
+          const { node, parent, property } = schema;
 
           // handle "this" typings
           // e.g function hey(this: number, a) {}
@@ -28,15 +23,15 @@ export function CommonTSfeaturesTransformer(): ITransformer {
             node.type === 'Identifier' &&
             node.name === 'this'
           ) {
-            return { removeNode: true };
+            return schema.remove();
           }
 
           if (node.declare) {
-            return { removeNode: true, ignoreChildren: true };
+            return schema.remove();
           }
 
           if (node.type === ASTType.TypeAssertion || node.type === ASTType.NonNullExpression) {
-            return { replaceWith: node.expression };
+            return schema.replace([node.expression]);
           }
           // EmptyBodyFunctionExpression is a specific buntis key
           if (
@@ -44,28 +39,34 @@ export function CommonTSfeaturesTransformer(): ITransformer {
             node.value &&
             (node.value.type === 'EmptyBodyFunctionExpression' || !node.value.body)
           ) {
-            return { removeNode: true };
+            return schema.remove();
           }
           switch (node.type) {
-            case ASTType.ParameterProperty:
-              return { replaceWith: node.parameter };
-            case ASTType.AsExpression:
-              return { replaceWith: node.expression };
-            case ASTType.DeclareFunction:
-            case ASTType.TypeAliasDeclaration:
-            case ASTType.AbstractMethodDefinition:
-            case ASTType.InterfaceDeclaration:
-            case ASTType.AbstractClassProperty:
             case 'ClassProperty':
-              return { removeNode: true, ignoreChildren: true };
+            case ASTType.AbstractClassProperty:
+            case ASTType.AbstractMethodDefinition:
+            case ASTType.DeclareFunction:
+            case ASTType.InterfaceDeclaration:
+            case ASTType.TypeAliasDeclaration:
+              return schema.remove();
             case 'ExportNamedDeclaration':
               const decl = node.declaration;
               if (decl) {
                 if (decl.declare || decl.type === ASTType.InterfaceDeclaration) {
-                  return { removeNode: true, ignoreChildren: true };
+                  return schema.remove();
                 }
               }
               break;
+            case ASTType.AsExpression:
+              return schema.replace([node.expression]);
+
+            case ASTType.ParameterProperty:
+              return schema.replace([node.parameter]);
+          }
+        },
+        onProgramBody: (schema: ISchema) => {
+          if (schema.node.declare) {
+            return schema.remove();
           }
         },
       };

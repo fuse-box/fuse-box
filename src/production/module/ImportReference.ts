@@ -1,7 +1,6 @@
-import { IVisit } from '../../compiler/Visitor/Visitor';
+import { ISchema } from '../../compiler/core/nodeSchema';
 import { getDynamicImport } from '../../compiler/helpers/importHelpers';
-import { ASTNode } from '../../compiler/interfaces/AST';
-import { ASTType } from '../../compiler/interfaces/AST';
+import { ASTNode, ASTType } from '../../compiler/interfaces/AST';
 import { IModule } from '../../moduleResolver/module';
 import { IProductionContext } from '../ProductionContext';
 
@@ -20,25 +19,25 @@ export enum ImportSpecifierType {
 export interface IImportReferencesProps {
   module: IModule;
   productionContext: IProductionContext;
-  visit: IVisit;
+  schema: ISchema;
 }
 
 export interface IImportProps {
   module: IModule;
+  schema: ISchema;
   source: string;
   specifiers?: Array<IImportSpecifier>;
   type: ImportType;
-  visit: IVisit;
 }
 
 export interface IImport {
   module: IModule;
   removed: boolean;
+  schema: ISchema;
   source: string;
   specifiers: Array<IImportSpecifier>;
   target: IModule;
   type: ImportType;
-  visit: IVisit;
   remove: () => void;
 }
 
@@ -49,21 +48,21 @@ function Import(props: IImportProps): IImport {
     remove: function() {
       importReference.removed = true;
       // @todo finish this
-      if (props.visit.property && props.visit.parent) {
-        if (props.visit.parent[props.visit.property] instanceof Array) {
-          const index = props.visit.parent[props.visit.property].indexOf(props.visit.node);
+      if (props.schema.property && props.schema.parent) {
+        if (props.schema.parent[props.schema.property] instanceof Array) {
+          const index = props.schema.parent[props.schema.property].indexOf(props.schema.node);
           if (index > -1) {
-            props.visit.parent[props.visit.property].splice(index, 1);
+            props.schema.parent[props.schema.property].splice(index, 1);
           }
         }
       }
     },
     removed: false,
+    schema: props.schema,
     source: props.source,
     specifiers: props.specifiers,
     target,
     type: props.type,
-    visit: props.visit,
   };
 
   target.moduleTree.dependants.push(importReference);
@@ -75,12 +74,12 @@ export interface IImportSpecifier {
   local: string;
   name: string;
   removed: boolean;
+  schema: ISchema;
   type: ImportSpecifierType;
-  visit: IVisit;
   remove: () => void;
 }
 
-function ImportSpecifier(visit: IVisit, specifier: ASTNode): IImportSpecifier {
+function ImportSpecifier(schema: ISchema, specifier: ASTNode): IImportSpecifier {
   let local: string;
   let name: string;
   let type: ImportSpecifierType = ImportSpecifierType.OBJECT_SPECIFIER;
@@ -109,16 +108,16 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode): IImportSpecifier {
     remove: function() {
       importSpecifier.removed = true;
       // @todo finish this
-      if (visit.node.specifiers instanceof Array) {
-        const index = visit.node.specifiers.indexOf(specifier);
+      if (schema.node.specifiers instanceof Array) {
+        const index = schema.node.specifiers.indexOf(specifier);
         if (index > -1) {
-          visit.node.specifiers.splice(index, 1);
+          schema.node.specifiers.splice(index, 1);
         }
       }
     },
     removed: false,
+    schema,
     type,
-    visit,
   };
 
   return importSpecifier;
@@ -126,14 +125,14 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode): IImportSpecifier {
 
 // import './foo';
 function sideEffectImport(props: IImportReferencesProps, scope: IImportReferences) {
-  const { node } = props.visit;
+  const { node } = props.schema;
 
   scope.references.push(
     Import({
       module: props.module,
+      schema: props.schema,
       source: node.source.value,
       type: ImportType.SIDE_EFFECT_IMPORT,
-      visit: props.visit,
     }),
   );
 }
@@ -143,76 +142,76 @@ function sideEffectImport(props: IImportReferencesProps, scope: IImportReference
 // import zz as aa from 'zz'
 function regularImport(props: IImportReferencesProps, scope: IImportReferences) {
   let specifiers: Array<IImportSpecifier> = [];
-  const { node } = props.visit;
+  const { node } = props.schema;
 
   for (const specifier of node.specifiers) {
-    specifiers.push(ImportSpecifier(props.visit, specifier));
+    specifiers.push(ImportSpecifier(props.schema, specifier));
   }
 
   scope.references.push(
     Import({
       module: props.module,
+      schema: props.schema,
       source: node.source.value,
       specifiers,
       type: ImportType.IMPORT_SPECIFIERS,
-      visit: props.visit,
     }),
   );
 }
 
 // const bar = require('foo');
 function regularRequire(props: IImportReferencesProps, scope: IImportReferences) {
-  const { node } = props.visit;
+  const { node } = props.schema;
 
   scope.references.push(
     Import({
       module: props.module,
+      schema: props.schema,
       source: node.arguments[0].value,
       type: ImportType.SIDE_EFFECT_IMPORT,
-      visit: props.visit,
     }),
   );
 }
 
 // import _ = require('foo');
 function sideEffectImportRequire(props: IImportReferencesProps, scope: IImportReferences) {
-  const { node } = props.visit;
+  const { node } = props.schema;
 
   scope.references.push(
     Import({
       module: props.module,
+      schema: props.schema,
       source: node.moduleReference.expression.value,
       type: ImportType.SIDE_EFFECT_IMPORT,
-      visit: props.visit,
     }),
   );
 }
 
 // import('./module');
 function dynamicImport(props: IImportReferencesProps, scope: IImportReferences) {
-  const { node } = props.visit;
+  const { node } = props.schema;
   const { source } = getDynamicImport(node);
 
   scope.references.push(
     Import({
       module: props.module,
+      schema: props.schema,
       source,
       type: ImportType.DYNAMIC_IMPORT,
-      visit: props.visit,
     }),
   );
 }
 
 // export * from 'module';
 function exportAllImport(props: IImportReferencesProps, scope: IImportReferences) {
-  const { node } = props.visit;
+  const { node } = props.schema;
 
   scope.references.push(
     Import({
       module: props.module,
+      schema: props.schema,
       source: node.source.value,
       type: ImportType.EXPORT_FROM,
-      visit: props.visit,
     }),
   );
 }
@@ -220,19 +219,19 @@ function exportAllImport(props: IImportReferencesProps, scope: IImportReferences
 // export { foo, bar as baz } from 'module';
 function exportSpecifierImport(props: IImportReferencesProps, scope: IImportReferences) {
   let specifiers: Array<IImportSpecifier> = [];
-  const { node } = props.visit;
+  const { node } = props.schema;
 
   for (const specifier of node.specifiers) {
-    specifiers.push(ImportSpecifier(props.visit, specifier));
+    specifiers.push(ImportSpecifier(props.schema, specifier));
   }
 
   scope.references.push(
     Import({
       module: props.module,
+      schema: props.schema,
       source: node.source.value,
       specifiers,
       type: ImportType.EXPORT_FROM,
-      visit: props.visit,
     }),
   );
 }
@@ -246,7 +245,7 @@ export function ImportReferences(productionContext: IProductionContext, module: 
   const scope = {
     references: [],
     register: (props: IImportReferencesProps) => {
-      const { node } = props.visit;
+      const { node } = props.schema;
       if (node.type === ASTType.ImportDeclaration) {
         if (node.specifiers.length === 0) {
           // import './foo';
