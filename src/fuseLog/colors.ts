@@ -50,7 +50,7 @@ export function codeLog(input: string, vars?: { [key: string]: any }) {
   return findReplace(input, /(<(\/)?([a-z]+)>)|(([@\$])([a-z0-9_]+))/gi, args => {
     const [, , closing, name, , type, variable] = args;
     if (type) {
-      if (type === '$' && vars && vars[variable]) return vars[variable];
+      if (type === '$' && vars && vars[variable] !== undefined) return vars[variable];
       if (type === '@') {
         if (SYMBOLS[variable]) return SYMBOLS[variable];
         else return `@` + variable;
