@@ -1,6 +1,6 @@
 import { ASTNode } from '../interfaces/AST';
 import { ITranformerCallbackController, ITransformerList } from '../interfaces/ITransformer';
-import { nodeVisitor } from './NodeVisitor';
+import { nodeVisitor } from './nodeVisitor';
 import { ISharedContextOverrides } from './sharedContext';
 
 export interface ITransformModuleProps {

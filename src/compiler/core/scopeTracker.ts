@@ -54,8 +54,10 @@ export function scopeTracker(schema: ISchema): IBodyScope {
   const { node, parent } = schema;
 
   if (node.body) {
+    let body = node.body as Array<ASTNode>;
+
     const bodyScope: IBodyScope = {};
-    const bodyNodesLength = (node.body as Array<ASTNode>).length;
+    const bodyNodesLength = body.length;
 
     let index = 0;
 
@@ -88,7 +90,7 @@ export function scopeTracker(schema: ISchema): IBodyScope {
     }
 
     while (index < bodyNodesLength) {
-      const item = node.body[index];
+      const item = body[index];
       const type = item.type;
 
       // if (type === ASTType.ImportDeclaration && item.specifiers) {

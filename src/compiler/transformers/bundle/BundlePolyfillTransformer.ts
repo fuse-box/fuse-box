@@ -11,7 +11,10 @@ export type IBundleEssntialTransformerOptions = ITransformerSharedOptions;
 
 export const PolyfillEssentialConfig = {
   Buffer: 'buffer',
+  __dirname: '__dirname',
+  __filename: '__filename',
   buffer: 'buffer',
+  global: 'global',
   http: 'http',
   https: 'https',
   process: 'process',
@@ -44,24 +47,24 @@ export function BundlePolyfillTransformer(): ITransformer {
           if (localIdentifier) {
             const name = node.name;
 
-            if (getLocal(name)) {
-              return;
-            }
-
-            switch (name) {
-              case '__dirname':
-                return replace({ type: 'Literal', value: publicPath });
-              case '__filename':
-                return replace({ type: 'Literal', value: dirName });
-              case 'global':
-                return replace({ name: isWebWorker ? 'self' : 'window', type: 'Identifier' });
-            }
-
             /**
              * *********************************************************************************
              * Polyfills stream buffer e.t.c
              */
             if (PolyfillEssentialConfig[name]) {
+              if (getLocal(name)) {
+                return;
+              }
+
+              switch (name) {
+                case '__dirname':
+                  return replace({ type: 'Literal', value: publicPath });
+                case '__filename':
+                  return replace({ type: 'Literal', value: dirName });
+                case 'global':
+                  return replace({ name: isWebWorker ? 'self' : 'window', type: 'Identifier' });
+              }
+
               if (VariablesInserted[name]) return;
               VariablesInserted[name] = 1;
               const statements: Array<ASTNode> = [];

@@ -1,7 +1,7 @@
 import { ITarget } from '../../config/ITarget';
 import { ImportType } from '../interfaces/ImportType';
 import { initCommonTransform } from '../testUtils';
-import { BundlePolyfillTransformer, PolyfillEssentialConfig } from '../transformers/bundle/BundlePolyfillTransformer';
+import { BundlePolyfillTransformer } from '../transformers/bundle/BundlePolyfillTransformer';
 import { RequireStatementInterceptor } from '../transformers/bundle/RequireStatementInterceptor';
 
 const testTranspile = (props: { code: string; fileName?: string; target?: ITarget }) => {
@@ -17,6 +17,17 @@ const testTranspile = (props: { code: string; fileName?: string; target?: ITarge
     code: props.code,
     transformers: [BundlePolyfillTransformer(), RequireStatementInterceptor()],
   });
+};
+
+const PolyfillEssentialConfig = {
+  Buffer: 'buffer',
+
+  buffer: 'buffer',
+
+  http: 'http',
+  https: 'https',
+  process: 'process',
+  stream: 'stream',
 };
 
 describe('Bundle polyfill transform test', () => {

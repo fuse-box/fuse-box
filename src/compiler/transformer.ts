@@ -135,6 +135,7 @@ export function transformCommonVisitors(props: ISerializableTransformationContex
       commonVisitors.push(transformer.commonVisitors(visitorProps));
     index++;
   }
+
   transformModule({ root: ast, transformers: commonVisitors });
 
   return { ast, requireStatementCollection };
