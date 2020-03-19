@@ -1,8 +1,8 @@
 import { generateModuleNameFromSource } from '../helpers/astHelpers';
 import { createMemberExpression } from '../helpers/helpers';
 import { ASTNode, ASTType } from '../interfaces/AST';
-import { INodeVisitorProps, IVisitNodeProps } from './NodeVisitor';
 import { ISchema } from './nodeSchema';
+import { INodeVisitorProps, IVisitNodeProps } from './nodeVisitor';
 import { transformModule } from './transformModule';
 
 export interface ISharedContextProps {

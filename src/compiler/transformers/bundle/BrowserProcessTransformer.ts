@@ -53,12 +53,13 @@ export function BrowserProcessTransformer(): ITransformer {
 
           const { getLocal, node, parent } = schema;
 
-          if (getLocal('process')) {
-            return;
-          }
           const accessName = getAccessName(node);
           if (!accessName) return;
           if (accessName !== 'process') return;
+
+          if (getLocal('process')) {
+            return;
+          }
 
           const accessList = isPropertyOrPropertyAccess(node, parent, 'process');
 

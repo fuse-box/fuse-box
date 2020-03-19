@@ -7,7 +7,6 @@ import { ITransformModuleProps } from './transformModule';
 export interface INodeVisitorProps {
   ast: ASTNode;
   contextOverrides?: ISharedContextOverrides;
-  topLevelOnly?: boolean;
   visitorProps: ITransformModuleProps;
   fn: (schema: ISchema) => any;
   programBodyFn?: (schema: ISchema) => any;
@@ -86,6 +85,7 @@ export function nodeVisitor(rootProps: INodeVisitorProps) {
     // program body traversal
     const body = root.body as Array<ASTNode>;
     userFunc = rootProps.programBodyFn;
+
     for (const item of body) {
       visitNode({
         ignoreChildren: true,

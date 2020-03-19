@@ -80,7 +80,6 @@ export function BundleFastConditionUnwrapper(): ITransformer {
                   return schema.replace(replacement.body);
                 } else if (replacement.type === 'ExpressionStatement') return schema.replace(replacement);
               } else {
-                console.log('REMOOOVE');
                 return schema.remove();
               }
             }

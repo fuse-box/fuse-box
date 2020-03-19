@@ -1,7 +1,7 @@
 import { ICompilerOptions } from '../../compilerOptions/interfaces';
 import { ES_MODULE_EXPRESSION, isLocalIdentifier } from '../helpers/helpers';
 import { ASTNode, ASTType } from '../interfaces/AST';
-import { IVisitNodeProps } from './NodeVisitor';
+import { IVisitNodeProps } from './nodeVisitor';
 import { scopeTracker, INodeScope, ISchemaRecord } from './scopeTracker';
 import { SharedContext } from './sharedContext';
 
@@ -10,8 +10,15 @@ export interface ILocalIdentifier {
   name: string;
 }
 
-export interface ISchema extends IVisitNodeProps {
+export interface ISchema {
   _childrenIgnored?: boolean;
+
+  id?: number;
+  ignoreChildren?: boolean;
+  node?: ASTNode;
+  parent?: ASTNode;
+  property?: string;
+  scope?: INodeScope;
 
   context: SharedContext;
   localIdentifier?: ILocalIdentifier;
@@ -102,10 +109,11 @@ export function createSchema(props: IVisitNodeProps, context: SharedContext): IS
   };
   for (const i in props) self[i] = props[i];
 
-  // scope
   let scope = props.scope;
   if (!scope) scope = [];
+
   let bodyScope = scopeTracker(self);
+
   let currentScope = [];
   if (bodyScope) {
     for (const x of scope) currentScope.push(x);

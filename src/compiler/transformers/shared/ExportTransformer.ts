@@ -71,6 +71,7 @@ export function ExportTransformer(): ITransformer {
             for (const key in exportAfterDeclaration) {
               if (definedLocallyProcessed[key] === 1) {
               } else if (schema.getLocal(key)) {
+                definedLocallyProcessed[key] = 1;
                 definedLocally.push(key);
               }
             }
@@ -79,7 +80,6 @@ export function ExportTransformer(): ITransformer {
               const newNodes = [];
 
               for (const localVar of definedLocally) {
-                definedLocallyProcessed[localVar] = 1;
                 const targetAfter = exportAfterDeclaration[localVar];
                 if (targetAfter) {
                   for (const item of targetAfter.targets) {
@@ -353,7 +353,9 @@ export function ExportTransformer(): ITransformer {
                 // console.log(schema.getLocal(specifier.local.name), context.coreReplacements[specifier.local.name]);
                 // if the variable present in the scope...
                 // or picked up by the identifierReplacement ( we can leave that for GlobalContextTranformer)
-                if (schema.getLocal(specifier.local.name) || context.coreReplacements[specifier.local.name]) {
+
+                //if (schema.getLocal(specifier.local.name) || context.coreReplacements[specifier.local.name]) {
+                if (context.coreReplacements[specifier.local.name]) {
                   newNodes.push(
                     createExports({
                       exportsKey: schema.context.moduleExportsName,
