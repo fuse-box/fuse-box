@@ -15,6 +15,7 @@ build
 dist
 node_modules
 npm-debug.log*
+yarn-error.log
 coverage/
 sourcemaps.js.map
 yarn.lock
