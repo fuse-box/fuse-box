@@ -4,7 +4,7 @@ import { fileExists, makeFuseBoxPath, readFile } from '../utils/utils';
 import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
-import { realpathSync } from 'fs';
+import { realpathSync, lstatSync } from 'fs';
 
 const NODE_MODULE_REGEX = /^(([^\.][\.a-z0-9@\-_]*)(\/)?([_a-z0-9.@-]+)?(\/)?(.*))$/i;
 
@@ -72,14 +72,22 @@ export function parseExistingModulePaths(fileAbsPath: string): string[] {
   return existing;
 }
 
+function isDirectory(path: string) {
+  return fileExists(path) && lstatSync(path).isDirectory();
+}
+
 const CACHED_LOCAL_MODULES: { [key: string]: string | null } = {};
-export function findTargetFolder(props: IResolverProps, name: string): string {
+export function findTargetFolder(props: IResolverProps, name: string): { error: string } | { folder: string, isUser: boolean } {
   // handle custom modules here
   if (props.modules) {
     for (const i in props.modules) {
       const f = path.join(props.modules[i], name);
       if (fileExists(f)) {
-        return realpathSync(f);
+        // Currently returning isUser: true for these
+        // because the user can inject custom modules
+        // but maybe this should be false for built-in modules
+        // which also come through here
+        return { folder: realpathSync(f), isUser: true };
       }
     }
   }
@@ -91,15 +99,14 @@ export function findTargetFolder(props: IResolverProps, name: string): string {
     try {
       const pnp = require('pnpapi');
       const folder = pnp.resolveToUnqualified(name, props.filePath, { considerBuiltins: false });
-      return folder;
+      const physical = pnp.resolveVirtual && pnp.resolveVirtual(folder) || folder;
+      const isUser = isDirectory(physical);
+      return { folder, isUser };
     } catch (e) {
-      // Ignore error here, since it will be handled later
-      // Don't ignore these errors, because PnP returns very useful errors and
-      console.error(e);
+      // If this is PnP and PnP says it doesn't exist,
+      // don't continue trying the rest of the node_modules stuff
+      return { error: e.message }
     }
-    // If this is PnP and PnP says it doesn't exist,
-    // don't continue trying the rest of the node_modules stuff
-    return;
   }
 
   const paths = parseExistingModulePaths(props.filePath);
@@ -107,7 +114,8 @@ export function findTargetFolder(props: IResolverProps, name: string): string {
   for (let i = paths.length - 1; i >= 0; i--) {
     const attempted = path.join(paths[i], name);
     if (fileExists(path.join(attempted, "package.json"))) {
-      return realpathSync(attempted);
+      const folder = realpathSync(attempted);
+      return { folder, isUser: !/node_modules/.test(folder) }
     }
   }
 
@@ -119,28 +127,38 @@ export function findTargetFolder(props: IResolverProps, name: string): string {
   if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
     const attempted = path.join(localModuleRoot, name);
     if (fileExists(path.join(attempted, "package.json"))) {
-      return realpathSync(attempted);
+      const folder = realpathSync(attempted);
+      return { folder, isUser: !/node_modules/.test(folder) }
     }
   }
+
+  return { error: `Cannot resolve "${name}"` };
 }
-export interface INodeModuleLookup {
-  error?: string;
+
+export type INodeModuleLookup = {
   // TODO: not used?
-  isEntry?: boolean;
-  meta?: IPackageMeta;
-  targetAbsPath?: string;
+  isEntry: boolean;
+  meta: IPackageMeta;
+  targetAbsPath: string;
   // TODO: not used?
   targetExtension?: string;
   // TODO: not used?
   targetFuseBoxPath?: string;
+  // true when the module is expected to be modifed by the user
+  // Usually not packages that are downloaded and installed by the package manager
+  // but packages that are linked to, either manually or by the package manager (e.g. workspace)
+  isUser: boolean;
 }
 
-export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
-  let folder: string;
+export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): { error: string } | INodeModuleLookup {
   const { name: moduleName, target } = parsed;
 
   // Resolve the module name to a folder
-  folder = findTargetFolder(props, moduleName);
+  const result = findTargetFolder(props, moduleName);
+  if ("error" in result) {
+    return result;
+  }
+  const { folder, isUser } = result;
   if (!folder) {
     return { error: `Cannot resolve "${moduleName}"` };
   }
@@ -163,7 +181,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   const isBrowser = props.buildTarget === 'browser';
 
   const isEntry = !target;
-  const targetResolver = props.tsTargetResolver || fileLookup;
+  const targetResolver = (isUser && props.tsTargetResolver) || fileLookup;
   const resolved = targetResolver({ fileDir: folder, target: target || "", isBrowserBuild: isBrowser });
   if (!resolved || !resolved.fileExists) {
     const spec = target ? `"${target}"` : "an entry point";
@@ -194,5 +212,6 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
     targetFuseBoxPath,
     targetExtension,
     meta: pkg,
+    isUser,
   };
 }

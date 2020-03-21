@@ -56,7 +56,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         else if (isFileStrategy && existsSync(META_FILE)) {
           try {
             meta = readJSONFile(META_FILE);
-          } catch (e) {}
+          } catch (e) { }
         }
         if (!meta) {
           META_JSON_CACHE[META_FILE] = meta = { currentId: 0, modules: {}, packages: {} };
@@ -175,7 +175,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     const pkg = packages[meta.packageId];
     if (!pkg) return;
 
-    if (pkg.isExternalPackage) if (!restorePackage(pkg, mrc)) return;
+    if (pkg.meta) if (!restorePackage(pkg, mrc)) return;
 
     for (const dependencyId of meta.dependencies) {
       const target = modules[dependencyId];
@@ -280,6 +280,20 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         }
       }
     }
+
+    // for any dependencies that have package.json
+    // if the package.json changes, then the "main" might change
+    // which might change the target.absPath
+    // so we can no longer trust the dependencies and have to look them up again
+    for (const depId of meta.dependencies) {
+      const target = modules[depId];
+      const pkg = target && packages[target.packageId];
+      if (pkg && !pkg.isExternalPackage && pkg.mtime && pkg.meta && pkg.meta.packageJSONLocation && pkg.mtime !== getFileModificationTime(pkg.meta.packageJSONLocation)) {
+        shouldBreakCachedModule = true;
+        break;
+      }
+    }
+
     if (shouldBreakCachedModule) {
       // should be resolved
       bundleContext.modules[absPath] = undefined;
@@ -297,7 +311,10 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
           // interrupt everything
           return;
         }
-      } else restoreModuleSafely(target.absPath, mrc);
+      }
+      else {
+        restoreModuleSafely(target.absPath, mrc);
+      }
     }
     const module = restoreModule(meta, metaPackage);
     if (module) bundleContext.modules[module.absPath] = module;
@@ -323,7 +340,8 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
 
     if (modulePackage.isExternalPackage) {
       if (!restorePackage(modulePackage, mrc)) return busted;
-    } else {
+    }
+    else {
       // restore local files (check the modification time on each)
       return { module: restoreModuleSafely(absPath, mrc), mrc };
     }
@@ -337,7 +355,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       const pkg = bundleContext.packages[packageId];
       if (!packages[pkg.publicName]) {
         shouldWriteMeta = true;
-        if (pkg.isExternalPackage) {
+        if (pkg.meta) {
           pkg.deps = [];
           pkg.mtime = getFileModificationTime(pkg.meta.packageJSONLocation);
         }
@@ -354,7 +372,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         const fileMeta = module.getMeta();
         modules[module.id] = fileMeta;
         const pkg = packages[module.pkg.publicName];
-        if (pkg.isExternalPackage) if (!pkg.deps.includes(module.id)) pkg.deps.push(module.id);
+        if (pkg.meta) if (!pkg.deps.includes(module.id)) pkg.deps.push(module.id);
         if (module.breakDependantsCache) {
           breakingCacheIds.push(module.id);
         }
