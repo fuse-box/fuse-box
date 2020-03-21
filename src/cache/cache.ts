@@ -220,9 +220,9 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       const depPackage = packages[meta.packageId];
       // a required dependency is missing
       // verifying and external package of the current package
-      if (!meta) return false;
       if (!depPackage) return false;
       // meta might be missing ?!
+
       const target = restoreModule(meta, pkg);
       // cache might be missing?
       if (!target) return false;
@@ -246,11 +246,6 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     const meta = findModuleMeta(absPath);
 
     const metaPackage = packages[meta.packageId];
-    // not present in meta
-    if (!meta) {
-      mrc.modulesRequireResolution.push({ absPath, pkg: metaPackage });
-      return;
-    }
 
     // file was removed
     if (!fileExists(meta.absPath)) {
