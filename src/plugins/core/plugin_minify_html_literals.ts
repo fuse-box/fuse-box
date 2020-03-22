@@ -22,7 +22,7 @@ export function pluginMinifyHtmlLiterals(...options: IPluginMinifyHtmlLiterals[]
         if (!isNodeModuleInstalled('minify-html-literals')) {
           ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
             'Module "minify-html-literals" is required, Please install it using the following command',
-            `${getPackageManagerName()} install minify-html-literals --save-dev`,
+            `${getPackageManagerData()} install minify-html-literals --save-dev`,
           ]);
           return;
         }
