@@ -13,12 +13,15 @@ export interface INodeVisitorProps {
 }
 
 export interface IVisitNodeProps {
+  avoidReVisit?: boolean;
+  avoidScope?: boolean;
   id?: number;
   ignoreChildren?: boolean;
   node?: ASTNode;
   parent?: ASTNode;
   property?: string;
   scope?: INodeScope;
+  skipPreact?: boolean;
   userFunc?: (schema: ISchema) => any;
 }
 
@@ -38,7 +41,7 @@ const IGNORED_KEYS = {
 };
 
 export function nodeVisitor(rootProps: INodeVisitorProps) {
-  let userFunc;
+  let userFunc = rootProps.fn;
 
   const sharedContext: SharedContext = createSharedContext({ root: rootProps.ast, rootProps, visitFn: visitNode });
   const contextOverrides = rootProps.contextOverrides;
@@ -84,19 +87,17 @@ export function nodeVisitor(rootProps: INodeVisitorProps) {
   if (rootProps.programBodyFn) {
     // program body traversal
     const body = root.body as Array<ASTNode>;
-    userFunc = rootProps.programBodyFn;
 
     for (const item of body) {
-      visitNode({
-        ignoreChildren: true,
-        node: item,
-        parent: root,
-        property: 'body',
-      });
+      const schema = createSchema(
+        { avoidReVisit: true, avoidScope: true, ignoreChildren: true, node: item, parent: root, property: 'body' },
+        sharedContext,
+      );
+      rootProps.programBodyFn(schema);
     }
     sharedContext.transform();
   }
-  userFunc = rootProps.fn;
+
   visitNode({ node: root });
   sharedContext.finalize();
   sharedContext.transform();

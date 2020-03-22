@@ -196,6 +196,30 @@ console.log(hey);
 "
 `;
 
+exports[`scope test should correctly transpile export default with defined case : 2 1`] = `
+"exports.SomeName = SomeName;
+var SomeName = () => {};
+"
+`;
+
+exports[`scope test should correctly transpile export default with defined case : 3 1`] = `
+"var type_1 = require(\\"./type\\");
+exports.SomeName = type_1.SomeName;
+"
+`;
+
+exports[`scope test should correctly transpile export default with defined const 1`] = `
+"const SomeName = () => {};
+exports.default = SomeName;
+"
+`;
+
+exports[`scope test should correctly transpile export default with defined var 1`] = `
+"exports.default = SomeName;
+var SomeName = () => {};
+"
+`;
+
 exports[`scope test should handle hoisted var Buffer 1`] = `
 "'use strict';
 var base64 = require('base64-js');

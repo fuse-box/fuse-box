@@ -422,6 +422,54 @@ describe('scope test', () => {
     expect(result.code).toMatchSnapshot();
   });
 
+  it('should correctly transpile export default with defined const', () => {
+    const result = testTranspile({
+      code: `
+      import { SomeName } from './type';
+      const SomeName = () => {};
+      export default SomeName;
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should correctly transpile export default with defined var', () => {
+    const result = testTranspile({
+      code: `
+      import { SomeName } from './type';
+      export default SomeName;
+      var SomeName = () => {};
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should correctly transpile export default with defined case : 2', () => {
+    const result = testTranspile({
+      code: `
+      import { SomeName } from './type';
+      export { SomeName }
+      var SomeName = () => {};
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should correctly transpile export default with defined case : 3', () => {
+    const result = testTranspile({
+      code: `
+      import { SomeName } from './type';
+      export { SomeName }
+
+      `,
+    });
+    console.log(result.code);
+    expect(result.code).toMatchSnapshot();
+  });
+
   it('should handle multiple scenarious at one', () => {
     const result = testTranspile({
       code: `

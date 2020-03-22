@@ -1,8 +1,3 @@
-import './foo.scss';
-import { AObject } from './hey';
+import * as saga from 'redux-saga';
 
-import SomeType = AObject.b;
-
-function hey() {
-  console.log(SomeType);
-}
+console.log(saga.takeEvery([], function() {}));

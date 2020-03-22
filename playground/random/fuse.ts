@@ -13,7 +13,7 @@ class Context {
 
       //threading: { threadAmount: 1 },
 
-      cache: { enabled: true, root: './.cache' },
+      cache: { enabled: false, root: './.cache' },
       devServer: true,
       watcher: true,
       webIndex: {

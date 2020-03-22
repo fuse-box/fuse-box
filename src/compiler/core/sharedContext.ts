@@ -72,6 +72,7 @@ export class SharedContext {
 
       if (traced && traced.first) {
         const origin = schema.getLocal(localIdentifier.name);
+
         if (!origin || (origin && REF_ALLOWED[origin.node.type])) {
           traced.inUse = true;
 
