@@ -20,6 +20,14 @@ function convertQualifiedName(node: ASTNode) {
   return node;
 }
 
+function getQualifierId(node: ASTNode) {
+  if (node.left) {
+    if (node.left.type === ASTType.Identifier) return node.left.name;
+    return getQualifierId(node.left);
+  }
+  if (node.type === ASTType.Identifier) return node.name;
+}
+
 export function ImportTransformer(): ITransformer {
   return {
     commonVisitors: props => {
@@ -27,6 +35,7 @@ export function ImportTransformer(): ITransformer {
         transformationContext: { compilerOptions },
       } = props;
       const esModuleInterop = compilerOptions.esModuleInterop;
+      const qualifierRefs = {};
 
       return {
         onProgramBody: (schema: ISchema) => {
@@ -35,6 +44,7 @@ export function ImportTransformer(): ITransformer {
           if (node.type === ASTType.ImportEqualsDeclaration) {
             const moduleReference = node.moduleReference;
             const moduleIdName = node.id.name;
+            const qualifierId = getQualifierId(moduleReference);
             if (moduleReference.type === ASTType.QualifiedName || moduleReference.type === ASTType.Identifier) {
               // considering the following scenario ->
               // import { some } from "some"
@@ -45,13 +55,18 @@ export function ImportTransformer(): ITransformer {
               context.onRef(moduleIdName, localSchema => {
                 // waiting for reference. If reference lead to nothing
                 // that means we're referencing "mport SomeType" which is ignored by the scope tracker
-                if (!localSchema.getLocal(moduleIdName)) isReferenced = true;
+                if (!localSchema.getLocal(moduleIdName)) {
+                  isReferenced = true;
+                }
               });
 
               return context.onComplete(() => {
                 const memberReference = createVariableDeclaration(moduleIdName, convertQualifiedName(moduleReference));
-                if (isReferenced) schema.replace(memberReference);
-                else schema.remove();
+                if (isReferenced) {
+                  // set the flag for the import to know that it is being in use
+                  qualifierRefs[qualifierId] = 1;
+                  schema.replace(memberReference, { forceRevisit: true });
+                } else schema.remove();
               }, 0); // prioritise the callback to be ahead of imports
             } else {
               const reqStatement = createRequireStatement(node.moduleReference.expression.value, node.id.name);
@@ -106,9 +121,15 @@ export function ImportTransformer(): ITransformer {
               }
 
               let atLeastOneInUse = false;
+
               for (const specifier of node.specifiers) {
                 const localName = specifier.local.name;
                 const traced = context.coreReplacements[localName];
+                // the only exception when when we check if the qualifier is referenced
+                if (qualifierRefs[localName]) {
+                  atLeastOneInUse = true;
+                  break;
+                }
                 if (traced && traced.inUse) {
                   atLeastOneInUse = true;
                   break; // we just need to know if we need to keep the node
@@ -131,7 +152,8 @@ export function ImportTransformer(): ITransformer {
                 if (props.onRequireCallExpression) {
                   props.onRequireCallExpression(ImportType.FROM, reqStatement.reqStatement);
                 }
-                schema.replace(statements, { stopPropagation: true });
+
+                schema.replace(statements);
                 schema.ensureESModuleStatement(compilerOptions);
                 return schema;
               } else return schema.remove();

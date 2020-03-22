@@ -352,7 +352,7 @@ export function ExportTransformer(): ITransformer {
               for (const specifier of node.specifiers) {
                 // console.log(schema.getLocal(specifier.local.name), context.coreReplacements[specifier.local.name]);
                 // if the variable present in the scope...
-                // or picked up by the identifierReplacement ( we can leave that for GlobalContextTranformer)
+                // or picked up by the identifierReplacement ( we can leave that for schema transformer to take care)
 
                 //if (schema.getLocal(specifier.local.name) || context.coreReplacements[specifier.local.name]) {
                 if (context.coreReplacements[specifier.local.name]) {

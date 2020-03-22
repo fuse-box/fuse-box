@@ -10,6 +10,10 @@ export interface ILocalIdentifier {
   name: string;
 }
 
+interface IRevisitOptions {
+  forceRevisit?: boolean;
+  stopPropagation?: boolean;
+}
 export interface ISchema {
   _childrenIgnored?: boolean;
 
@@ -31,7 +35,7 @@ export interface ISchema {
   ignore?: () => ISchema;
   insertAfter: (nodes: Array<ASTNode>) => ISchema;
   remove: () => ISchema;
-  replace: (nodes: ASTNode | Array<ASTNode>, options?: { stopPropagation?: boolean }) => ISchema;
+  replace: (nodes: ASTNode | Array<ASTNode>, options?: IRevisitOptions) => ISchema;
 }
 
 interface IControllerTempState {
@@ -42,7 +46,9 @@ export function createSchema(props: IVisitNodeProps, context: SharedContext): IS
   const state: IControllerTempState = {};
 
   function revisit(nodes: Array<ASTNode>) {
-    for (const node of nodes) context.visit({ ...props, ignoreChildren: false, node: node });
+    if (!props.avoidReVisit) {
+      for (const node of nodes) context.visit({ ...props, ignoreChildren: false, node: node });
+    }
   }
   const self: ISchema = {
     context,
@@ -93,7 +99,7 @@ export function createSchema(props: IVisitNodeProps, context: SharedContext): IS
       self._childrenIgnored = true;
       return self;
     },
-    replace: (nodes: ASTNode | Array<ASTNode>, options?: { stopPropagation?: boolean }) => {
+    replace: (nodes: ASTNode | Array<ASTNode>, options?: IRevisitOptions) => {
       nodes = [].concat(nodes);
       context._replace.push({ nodes, schema: self });
 
@@ -102,12 +108,16 @@ export function createSchema(props: IVisitNodeProps, context: SharedContext): IS
       let stopPropagation = false;
       if (options) {
         if (options.stopPropagation) stopPropagation = true;
+        if (options.forceRevisit) {
+          for (const node of nodes) context.visit({ ...props, ignoreChildren: false, node: node });
+        }
       }
       if (!stopPropagation) revisit(nodes);
       return self;
     },
   };
   for (const i in props) self[i] = props[i];
+  if (props.avoidScope) return self;
 
   let scope = props.scope;
   if (!scope) scope = [];

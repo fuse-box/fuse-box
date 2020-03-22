@@ -3,6 +3,7 @@
   "dependencies": {
     "array-includes": "3.1.1",
     "lit-element": "^2.2.1",
+    "redux-saga": "^0.16.2",
     "socket.io-client": "^2.3.0"
   },
   "description": "",
