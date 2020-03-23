@@ -1,5 +1,6 @@
 import * as appRoot from 'app-root-path';
 import * as path from 'path';
+import * as fs from 'fs';
 import { readFile } from './utils/utils';
 
 const VERSION = require('./../package.json').version;
@@ -20,6 +21,18 @@ export const env = {
   WORKER_THREAD,
   isTest: !!process.env.JEST_TEST,
 };
+
+export function getPackageManagerData() {
+  if (fs.existsSync(path.join(FUSE_ROOT, './.yarnrc'))
+      || fs.existsSync(path.join(FUSE_ROOT, './yarn.lock'))) {
+    return {name: 'yarn', installCmd: 'yarn add', installDevCmd: 'yarn add --dev'}
+  } else if (fs.existsSync(path.join(FUSE_ROOT, './pnpm-lock.yaml'))) {
+    return {name: 'pnpm', installCmd: 'pnpm add', installDevCmd: 'pnpm add --save-dev'}
+  } else {
+    // package-lock.json
+    return {name: 'npm', installCmd: 'npm install', installDevCmd: 'npm install --save-dev'}
+  }
+}
 
 export function getDevelopmentApi() {
   const contents = readFile(path.join(env.FUSE_MODULES, 'fuse-loader/index.js'));

@@ -6,13 +6,14 @@ import { isNodeModuleInstalled } from '../../utils/utils';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
+import { getPackageManagerData } from '../../env';
 
 export function pluginLessCapture(props: { ctx: Context; module: IModule; opts: IPluginCommon }) {
   const { ctx, module, opts } = props;
   if (!isNodeModuleInstalled('less')) {
     ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
       'Module "less" is required, Please install it using the following command',
-      'npm install less --save-dev',
+      `${getPackageManagerData().installDevCmd} less`,
     ]);
     return;
   }
