@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "jsx": "react",
+        "esModuleInterop": true,
+        "target": "ES6",
+        "module": "es6",
+        "moduleResolution": "node",
+        "strict": true,
+        "sourceMap": true,
+        "declarationMap": true,
+        "declaration": true,
+        "rootDir": ".",
+        "outDir": "dist-fuse",
+        "composite": true,
+        "incremental": true,
+        "tsBuildInfoFile": "dist-fuse/.tsbuildinfo",
+        "allowJs": true,
+        "resolveJsonModule": true
+    },
+    "files": [
+        "fuse.ts"
+    ]
+}
