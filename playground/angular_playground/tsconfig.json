@@ -17,5 +17,10 @@
     "sourceMap": true,
     "target": "esnext",
     "typeRoots": ["node_modules/@types"]
-  }
+  },
+  "references": [
+    {
+      "path": "tsconfig2.json"
+    }
+  ]
 }
