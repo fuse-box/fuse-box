@@ -33,10 +33,9 @@ export function isNodeModule(path: string): undefined | IModuleParsed {
   return result;
 }
 
-function parentDir(normalizedPath: string): string | undefined {
+function parentDir(normalizedPath: string): undefined | string {
   const parent = path.dirname(normalizedPath);
-  if (parent === normalizedPath)
-    return undefined;
+  if (parent === normalizedPath) return undefined;
   return parent;
 }
 
@@ -45,9 +44,8 @@ export function parseAllModulePaths(fileAbsPath: string): string[] {
   const paths = [];
   for (let dir = parentDir(start); dir !== undefined; dir = parentDir(dir)) {
     const name = path.basename(dir);
-    if (name === "node_modules")
-      continue;
-    paths.unshift(path.join(dir, "node_modules"));
+    if (name === 'node_modules') continue;
+    paths.unshift(path.join(dir, 'node_modules'));
   }
 
   return paths;
@@ -106,7 +104,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
 
   for (let i = paths.length - 1; i >= 0; i--) {
     const attempted = path.join(paths[i], parsed.name);
-    if (fileExists(path.join(attempted, "package.json"))) {
+    if (fileExists(path.join(attempted, 'package.json'))) {
       return attempted;
     }
   }
@@ -118,7 +116,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
 
   if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
     const attempted = path.join(localModuleRoot, parsed.name);
-    if (fileExists(path.join(attempted, "package.json"))) {
+    if (fileExists(path.join(attempted, 'package.json'))) {
       return attempted;
     }
   }

@@ -7,11 +7,11 @@ import { fileExists, readFile } from '../utils/utils';
 export interface ILookupProps {
   fileDir?: string;
   filePath?: string;
+  isBrowserBuild?: boolean;
   isDev?: boolean;
   javascriptFirst?: boolean;
   target: string;
   typescriptFirst?: boolean;
-  isBrowserBuild?: boolean;
 }
 
 export interface TsConfigAtPath {
@@ -45,11 +45,23 @@ export function fileLookup(props: ILookupProps): ILookupResult {
   if (!props.fileDir && !props.filePath) {
     throw new Error('Failed to lookup. Provide either fileDir or filePath');
   }
-  const jsFirst = (props.javascriptFirst && !props.typescriptFirst);
-  return resolveSubmodule(props.filePath ? path.dirname(props.filePath) : props.fileDir, props.target, true, jsFirst, props.isBrowserBuild);
+  const jsFirst = props.javascriptFirst && !props.typescriptFirst;
+  return resolveSubmodule(
+    props.filePath ? path.dirname(props.filePath) : props.fileDir,
+    props.target,
+    true,
+    jsFirst,
+    props.isBrowserBuild,
+  );
 }
 
-function resolveSubmodule(base: string, target: string, checkPackage: boolean, jsFirst: boolean, isBrowserBuild: boolean) {
+function resolveSubmodule(
+  base: string,
+  target: string,
+  checkPackage: boolean,
+  jsFirst: boolean,
+  isBrowserBuild: boolean,
+) {
   const exact = path.join(base, target);
 
   // If an exact file exists, return it
@@ -58,7 +70,7 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
       absPath: exact,
       extension: path.extname(exact),
       fileExists: true,
-    }
+    };
   }
 
   // If a file exists after adding an extension, return it
@@ -70,7 +82,7 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
         absPath: withExtension,
         extension: extension,
         fileExists: true,
-      }
+      };
     }
   }
 
@@ -82,7 +94,7 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
     if (isFileSync(packageJSONPath)) {
       const packageJSON = JSON.parse(readFile(packageJSONPath));
 
-      if (isBrowserBuild && packageJSON['browser'] && typeof packageJSON['browser'] === "string") {
+      if (isBrowserBuild && packageJSON['browser'] && typeof packageJSON['browser'] === 'string') {
         const browser = packageJSON['browser'];
         const subresolution = resolveSubmodule(exact, browser, false, jsFirst, isBrowserBuild);
         return subresolution;
@@ -107,10 +119,10 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
           ...subresolution,
           customIndex: true,
           isDirectoryIndex: true,
-          tsConfigAtPath: loadTsConfig(exact),
           // TODO: not used?
           monorepoModulesPaths,
-        }
+          tsConfigAtPath: loadTsConfig(exact),
+        };
       }
 
       if (packageJSON['ts:main']) {
@@ -121,7 +133,7 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
             ...subresolution,
             customIndex: true,
             isDirectoryIndex: true,
-          }
+          };
         }
       }
 
@@ -133,7 +145,7 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
             ...subresolution,
             customIndex: true,
             isDirectoryIndex: true,
-          }
+          };
         }
       }
 
@@ -143,8 +155,8 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
         if (subresolution.fileExists) {
           return {
             ...subresolution,
-            isDirectoryIndex: true,
             customIndex: true,
+            isDirectoryIndex: true,
           };
         }
       }
@@ -164,7 +176,7 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
         extension: extension,
         fileExists: true,
         isDirectoryIndex: true,
-      }
+      };
     }
   }
 
@@ -173,9 +185,9 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
     return {
       absPath: asJson,
       customIndex: true,
-      extension: ".json",
+      extension: '.json',
       fileExists: true,
-    }
+    };
   }
 
   return {
@@ -183,7 +195,6 @@ function resolveSubmodule(base: string, target: string, checkPackage: boolean, j
     fileExists: false,
   };
 }
-
 
 function loadTsConfig(packageDir: string) {
   const tsConfig = path.resolve(packageDir, 'tsconfig.json');
