@@ -50,6 +50,22 @@ fuse.runDev({
 Note that `vendor` cannot be set without `app`, however having only one `app` field will generate only one bundle in
 your output folder.
 
+## Bundle exports
+
+In case if exports is needed:
+
+```ts
+fuse.runDev({
+  bundles: {
+    exported: true,
+    app: 'app.js',
+  },
+});
+```
+
+This will use either `exports` or `window` (depending on your target) and expose all exported variables in all specified
+entries of your application
+
 ## Configuring the styles output
 
 Styles are written to the filesystem only during `runProd` and it is intentional

@@ -62,6 +62,10 @@ export const createBuild = async (props: IBuildProps): Promise<IRunResponse> => 
     manifest,
     modules,
     onComplete: handler => handler(onCompleteHandler),
+    onWatch: userFn => {
+      userFn(bundles);
+      ctx.ict.on('rebundle', () => userFn(bundles));
+    },
   };
 
   ctx.ict.sync(rebundle ? 'rebundle' : 'complete', response);

@@ -159,11 +159,13 @@ describe('Bundle source test', () => {
           id: 1,
         },
       ];
-      source.expose = [{ moduleId: 1, name: 'FooLib' }];
+      source.entries = [{ id: 1 }];
+      source.exported = true;
       const result = source.generate({ runtimeCore: null });
 
       const { obj } = runWithoutApi(result.content.toString());
-      expect(obj['FooLib']).toEqual({ Foo: 'bar' });
+
+      expect(obj['Foo']).toEqual('bar');
     });
 
     it('should expose on window with target electron', () => {
@@ -176,11 +178,12 @@ describe('Bundle source test', () => {
           id: 1,
         },
       ];
-      source.expose = [{ moduleId: 1, name: 'FooLib' }];
+      source.entries = [{ id: 1 }];
+      source.exported = true;
       const result = source.generate({ runtimeCore: null });
 
       const { obj } = runWithoutApi(result.content.toString(), { target });
-      expect(obj['FooLib']).toEqual({ Foo: 'bar' });
+      expect(obj['Foo']).toEqual('bar');
     });
 
     it('should expose using "exports" for server', () => {
@@ -193,10 +196,11 @@ describe('Bundle source test', () => {
           id: 1,
         },
       ];
-      source.expose = [{ moduleId: 1, name: 'FooLib' }];
+      source.entries = [{ id: 1 }];
+      source.exported = true;
       const result = source.generate({ runtimeCore: null });
       const { serverExports } = runWithoutApi(result.content.toString(), { target });
-      expect(serverExports['FooLib']).toEqual({ Foo: 'bar' });
+      expect(serverExports['Foo']).toEqual('bar');
     });
   });
 

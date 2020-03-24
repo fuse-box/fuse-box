@@ -38,6 +38,7 @@ export interface IPublicOutputConfig {
    * That's how we determine relative paths for webIndex (index.html)
    */
   distRoot?: string;
+  exported?: boolean;
   mapping?: Array<{
     matching: string;
     target: IOutputBundleConfig;
@@ -47,29 +48,8 @@ export interface IPublicOutputConfig {
   vendor?: IOutputBundleConfig;
 }
 
-/*
- * Window exposure is a mechanism to expose certain path of the code to window
- *
- *  A call will be applied to the bottom of the bundle
- *  e.g
- *
- *  window[$exposedVariableName] = FuseBox.import($fuseBoxPath)
- *  Where $fuseBoxPath should look like $package/$modulePath
- *
- *  For example of an exposed config for project path would look like:
- *  {
- *     exposedVariableName : "foobar",
- *     fuseBoxPath : "default/foo.module.ts
- *  }
- */
-export interface IOutputExported {
-  exposedVariableName: string;
-  fuseBoxPath: string;
-}
-
 export interface IOutputBundleConfigAdvanced {
   codeSplitting?: ICodeSplittingProps;
-  exported?: boolean;
   /**
    * Isolated API works only for one bundle output.
    * e,g app : "./target.build.js"
@@ -100,6 +80,7 @@ export interface IOutputConfig {
   codeSplitting?: ICodeSplittingProps;
   cssSplitting?: boolean;
   distRoot?: string;
+  exported?: boolean;
   mapping?: Array<{
     matching: string;
     target: IOutputBundleConfigAdvanced;

@@ -1,3 +1,4 @@
+export { initCommonTransform as testTransform } from './compiler/testUtils';
 export { fusebox } from './core/fusebox';
 export { pluginAngular } from './plugins/core/plugin_angular';
 export { pluginConsolidate } from './plugins/core/plugin_consolidate';
