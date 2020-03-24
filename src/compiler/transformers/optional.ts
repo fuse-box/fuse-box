@@ -25,6 +25,7 @@ export function createCoreTransformerOption(name: string, opts: any): ICompilerO
 }
 
 export function getCoreTransformer(props: ICompilerOptionTransformer): ITransformer {
+  if (props.transformer) return props.transformer(props.opts);
   if (props.name) {
     const target = OptionalCoreTransformers[props.name];
     if (target) {

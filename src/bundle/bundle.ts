@@ -17,6 +17,7 @@ export interface Bundle {
   contents: string;
   data: Concat;
   entries?: Array<IModule>;
+  exposeEntries?: boolean;
   isCSSType?: boolean;
   priority: number;
   source: BundleSource;
@@ -109,7 +110,9 @@ export function createBundle(props: IBundleProps): Bundle {
     generate: async (opts?: { runtimeCore?: string; uglify?: boolean }) => {
       opts = opts || {};
       if (!self.config) self.prepare();
-      if (self.entries) source.entries = self.entries;
+      if (self.entries) {
+        source.entries = self.entries;
+      }
 
       ctx.ict.sync('before_bundle_write', { bundle: self });
       self.data = source.generate({ isIsolated: bundleConfig.isolatedApi, runtimeCore: opts.runtimeCore });

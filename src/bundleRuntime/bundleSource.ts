@@ -19,7 +19,7 @@ export type BundleSource = {
   codeSplittingMap?: ICodeSplittingMap;
   containsMaps?: boolean;
   entries: Array<IModule>;
-  expose?: Array<{ name: string; moduleId: number }>;
+  expose?: boolean;
   injection?: Array<string>;
   modules: Array<IModule>;
   generate: (opts: IBundleGenerateProps) => Concat;
@@ -105,9 +105,12 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
         else if (props.target === 'server') exposedGlobal = 'exports';
         // we cannot expose on web-worker target
         if (exposedGlobal) {
-          for (const item of self.expose) {
-            injectionCode.push(`${exposedGlobal}[${JSON.stringify(item.name)}] = ${ReqFn + '(' + item.moduleId + ')'}`);
+          let exposeCode = '';
+          for (const num of self.entries) {
+            exposeCode += `var obj = ${ReqFn + '(' + num + ')'}`;
+            exposeCode += `for(var key in obj) { if (obj.hasOwnProperty(key) ) {${exposedGlobal}[key] = obj[key]} }`;
           }
+          injectionCode.push(exposeCode);
         }
       }
 
