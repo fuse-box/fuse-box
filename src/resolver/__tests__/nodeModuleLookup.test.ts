@@ -151,6 +151,7 @@ describe('folder lookup', () => {
     const result = findTargetFolder({ filePath: target, target: 'a' }, 'd');
     expect(result).toEqual({
       folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-a/node_modules/b/node_modules/d`),
+      isUserOwned: false,
     })
   });
 
@@ -161,6 +162,7 @@ describe('folder lookup', () => {
     const result = findTargetFolder({ filePath: target, target: 'a' }, 'crazy-module');
     expect(result).toEqual({
       folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-a/node_modules/crazy-module`),
+      isUserOwned: false,
     })
   });
 
@@ -171,6 +173,7 @@ describe('folder lookup', () => {
     const result = findTargetFolder({ filePath: target, target: 'a' }, 'nm-lookup-test-b');
     expect(result).toEqual({
       folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-a/node_modules/nm-lookup-test-b`),
+      isUserOwned: false,
     })
   });
 
@@ -179,6 +182,7 @@ describe('folder lookup', () => {
     const result = findTargetFolder({ filePath: target, target: 'a' }, 'nm-lookup-test-b');
     expect(result).toEqual({
       folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-a/node_modules/nm-lookup-test-b`),
+      isUserOwned: false,
     })
   });
 
@@ -187,7 +191,8 @@ describe('folder lookup', () => {
     ensurePackageJson(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-b'));
     const result = findTargetFolder({ filePath: target, target: 'a' }, 'nm-lookup-test-b');
     expect(result).toEqual({
-      folder: P(__dirname, `node_modules/nm-lookup-test-b`),
+      folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-b`),
+      isUserOwned: false,
     })
   });
 
@@ -202,6 +207,7 @@ describe('folder lookup', () => {
     const result = findTargetFolder({ filePath: target, target: 'a' }, 'c');
     expect(result).toEqual({
       folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-a/node_modules/c`),
+      isUserOwned: false,
     })
   });
 
@@ -250,6 +256,7 @@ describe('folder lookup', () => {
 
       expect(result).toEqual({
         folder: P(PROJECT_NODE_MODULES, `fuse-box-flat-parent/node_modules/fuse-box-resolver-conflict`),
+        isUserOwned: false,
       });
     });
 
@@ -264,6 +271,7 @@ describe('folder lookup', () => {
 
       expect(result).toEqual({
         folder: P(PROJECT_NODE_MODULES, `fuse-box-flat-parent/node_modules/fuse-box-resolver-conflict`),
+        isUserOwned: false,
       });
     });
   });

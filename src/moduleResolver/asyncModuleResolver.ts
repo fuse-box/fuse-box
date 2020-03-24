@@ -66,8 +66,10 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
       }
       let pkg = bundleContext.getPackage(resolved.package.meta);
 
+      const pkgType = resolved.package.isUserOwned ? PackageType.USER_PACKAGE : PackageType.EXTERNAL_PACKAGE;
+
       if (!pkg) {
-        pkg = createPackage({ meta: resolved.package.meta, type: PackageType.EXTERNAL_PACKAGE });
+        pkg = createPackage({ meta: resolved.package.meta, type: pkgType });
         bundleContext.setPackage(pkg);
       }
       return { absPath, pkg };
