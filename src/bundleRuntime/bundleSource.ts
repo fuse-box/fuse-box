@@ -19,7 +19,7 @@ export type BundleSource = {
   codeSplittingMap?: ICodeSplittingMap;
   containsMaps?: boolean;
   entries: Array<IModule>;
-  expose?: boolean;
+  exported?: boolean;
   injection?: Array<string>;
   modules: Array<IModule>;
   generate: (opts: IBundleGenerateProps) => Concat;
@@ -99,15 +99,15 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
 
       // add exposed variables
       // for example on nodejs that will be "exports" on browser "window"
-      if (self.expose) {
+      if (self.exported) {
         let exposedGlobal;
         if (props.target === 'browser' || props.target === 'electron') exposedGlobal = 'window';
         else if (props.target === 'server') exposedGlobal = 'exports';
         // we cannot expose on web-worker target
         if (exposedGlobal) {
           let exposeCode = '';
-          for (const num of self.entries) {
-            exposeCode += `var obj = ${ReqFn + '(' + num + ')'}`;
+          for (const mod of self.entries) {
+            exposeCode += `var obj = ${ReqFn + '(' + mod.id + ')'};\n`;
             exposeCode += `for(var key in obj) { if (obj.hasOwnProperty(key) ) {${exposedGlobal}[key] = obj[key]} }`;
           }
           injectionCode.push(exposeCode);

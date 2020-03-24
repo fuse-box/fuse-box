@@ -17,7 +17,7 @@ export interface Bundle {
   contents: string;
   data: Concat;
   entries?: Array<IModule>;
-  exposeEntries?: boolean;
+  exported?: boolean;
   isCSSType?: boolean;
   priority: number;
   source: BundleSource;
@@ -112,6 +112,7 @@ export function createBundle(props: IBundleProps): Bundle {
       if (!self.config) self.prepare();
       if (self.entries) {
         source.entries = self.entries;
+        if (self.exported) source.exported = true;
       }
 
       ctx.ict.sync('before_bundle_write', { bundle: self });

@@ -7,6 +7,7 @@ import { ISplitEntries } from '../production/module/SplitEntries';
 export interface IRunOnCompleteHandler {
   electron?: IServerProcess;
   server?: IServerProcess;
+  onWatch?: (fn: () => void) => void;
 }
 
 export interface IRunResponse {
@@ -17,4 +18,5 @@ export interface IRunResponse {
   modules?: Array<IModule>;
   splitEntries?: ISplitEntries;
   onComplete: (fn: (props: IRunOnCompleteHandler) => void) => void;
+  onWatch?: (fn: (bundles: Array<IBundleWriteResponse>) => void) => void;
 }

@@ -44,6 +44,7 @@ export function outputConfigConverter(props: IOutputConfigProps): IOutputConfig 
     if (userConfig.codeSplitting) config.codeSplitting = userConfig.codeSplitting;
     if (userConfig.serverEntry) config.serverEntry = userConfig.serverEntry;
     if (userConfig.styles) config.styles = ensureBundleConfig(userConfig.styles, defaultPublicPath);
+    if (userConfig.exported) config.exported = userConfig.exported;
 
     if (userConfig.mapping) {
       config.mapping = [];

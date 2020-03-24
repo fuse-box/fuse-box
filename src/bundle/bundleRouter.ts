@@ -211,6 +211,7 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
       if (lastWebIndexed) {
         lastWebIndexed.containsApplicationEntryCall = true;
         lastWebIndexed.entries = entries;
+        lastWebIndexed.exported = outputConfig.exported;
       }
       return await Promise.all(
         writers.map(write => {
