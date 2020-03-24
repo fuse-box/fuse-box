@@ -1,5 +1,6 @@
 import * as appRoot from 'app-root-path';
 import * as path from 'path';
+const P = path.join; // use P for joining and normalizing paths
 import { resolve as pathResolve } from 'path';
 import '../../utils/test_utils';
 import { createRealNodeModule } from '../../utils/test_utils';
@@ -84,7 +85,7 @@ describe('NodeModule lookup', () => {
   const filePath = path.join(cases, 'src2/index.ts');
   it('should fail to look up a module', () => {
     const res = nodeModuleLookup({ filePath: filePath, target: '__foo' }, { name: '__foo' });
-    expect(res && res.error).toContain('Cannot resolve "__foo"');
+    expect('error' in res && res.error).toContain('Cannot resolve "__foo"');
   });
 
   it('should fail to look up a module without package.json', () => {
@@ -93,7 +94,7 @@ describe('NodeModule lookup', () => {
       { name: 'incomplete_module' },
     );
 
-    expect(res.error).toBeTruthy();
+    expect('error' in res && res.error).toBeTruthy();
   });
 
   it('should extract fuse-box info from package.json', () => {
@@ -101,7 +102,7 @@ describe('NodeModule lookup', () => {
       { filePath: filePath, modules: [modules], target: 'system_module' },
       { name: 'system_module' },
     );
-    expect(result.meta.fusebox.system).toEqual(true);
+    expect(!('error' in result) && result.meta.fusebox.system).toEqual(true);
   });
 
   it('should throw an error if an entry point is not found', () => {
@@ -110,7 +111,7 @@ describe('NodeModule lookup', () => {
       { filePath: filePath, modules: [modules], target: 'wrong_entry' },
       { name: 'wrong_entry' },
     );
-    expect(res.error).toContain('Failed to resolve an entry point in package');
+    expect('error' in res && res.error).toContain('Failed to resolve an entry point in package');
   });
 });
 
@@ -147,37 +148,47 @@ describe('folder lookup', () => {
   it('case 1', () => {
     const dir = ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/b/node_modules/c/'));
     const target = path.join(dir, 'foo/bar/index.js');
-    const targetFolder = findTargetFolder({ filePath: target, target: 'a' }, 'd');
-    expect(targetFolder).toMatchFilePath('node_modules/nm-lookup-test-a/node_modules/b/node_modules/d$');
+    const result = findTargetFolder({ filePath: target, target: 'a' }, 'd');
+    expect(result).toEqual({
+      folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-a/node_modules/b/node_modules/d`),
+    })
   });
 
   it('case 2', () => {
     const dir = ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/b/node_modules/c/'));
     ensurePackageJson(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/crazy-module/'));
     const target = path.join(dir, 'foo/bar/index.js');
-    const targetFolder = findTargetFolder({ filePath: target, target: 'a' }, 'crazy-module');
-    expect(targetFolder).toMatchFilePath('node_modules/nm-lookup-test-a/node_modules/crazy-module$');
+    const result = findTargetFolder({ filePath: target, target: 'a' }, 'crazy-module');
+    expect(result).toEqual({
+      folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-a/node_modules/crazy-module`),
+    })
   });
 
   it('case 3', () => {
     const dir = ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/b/node_modules/c/'));
     ensurePackageJson(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/nm-lookup-test-b'));
     const target = path.join(dir, 'foo/bar/index.js');
-    const targetFolder = findTargetFolder({ filePath: target, target: 'a' }, 'nm-lookup-test-b');
-    expect(targetFolder).toMatchFilePath('node_modules/nm-lookup-test-a/node_modules/nm-lookup-test-b$');
+    const result = findTargetFolder({ filePath: target, target: 'a' }, 'nm-lookup-test-b');
+    expect(result).toEqual({
+      folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-a/node_modules/nm-lookup-test-b`),
+    })
   });
 
   it('case 4', () => {
     const target = path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/index.js');
-    const targetFolder = findTargetFolder({ filePath: target, target: 'a' }, 'nm-lookup-test-b');
-    expect(targetFolder).toMatchFilePath('node_modules/nm-lookup-test-b$');
+    const result = findTargetFolder({ filePath: target, target: 'a' }, 'nm-lookup-test-b');
+    expect(result).toEqual({
+      folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-a/node_modules/nm-lookup-test-b`),
+    })
   });
 
   it('case 5 (not inside node_modules)', () => {
     const target = path.join(__dirname, 'nm-lookup-test-b');
     ensurePackageJson(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-b'));
-    const targetFolder = findTargetFolder({ filePath: target, target: 'a' }, 'nm-lookup-test-b');
-    expect(targetFolder).toMatchFilePath('node_modules/nm-lookup-test-b$');
+    const result = findTargetFolder({ filePath: target, target: 'a' }, 'nm-lookup-test-b');
+    expect(result).toEqual({
+      folder: P(__dirname, `node_modules/nm-lookup-test-b`),
+    })
   });
 
   it('case 6 (only package.json)', () => {
@@ -188,8 +199,10 @@ describe('folder lookup', () => {
     const shallow = ensureDir(path.join(PROJECT_NODE_MODULES, 'nm-lookup-test-a/node_modules/c'));
     ensurePackageJson(shallow);
     const target = path.join(deep, 'foo/bar/index.js');
-    const targetFolder = findTargetFolder({ filePath: target, target: 'a' }, 'c');
-    expect(targetFolder).toMatchFilePath('nm-lookup-test-a/node_modules/c$');
+    const result = findTargetFolder({ filePath: target, target: 'a' }, 'c');
+    expect(result).toEqual({
+      folder: P(PROJECT_NODE_MODULES, `nm-lookup-test-a/node_modules/c`),
+    })
   });
 
   describe('Nested lookup', () => {
@@ -227,25 +240,31 @@ describe('folder lookup', () => {
     );
 
     it('should look up nested with src/index.js', () => {
-      const targetFolder = findTargetFolder(
+      const result = findTargetFolder(
         {
           filePath: path.join(appRoot.path, 'node_modules/fuse-box-flat-parent/src/index.js'),
           target: 'fuse-box-resolver-conflict',
         },
         'fuse-box-resolver-conflict',
       );
-      expect(targetFolder).toMatchFilePath('fuse-box-flat-parent/node_modules/fuse-box-resolver-conflict$');
+
+      expect(result).toEqual({
+        folder: P(PROJECT_NODE_MODULES, `fuse-box-flat-parent/node_modules/fuse-box-resolver-conflict`),
+      });
     });
 
     it('should look up nested with index.js (direct)', () => {
-      const targetFolder = findTargetFolder(
+      const result = findTargetFolder(
         {
           filePath: path.join(appRoot.path, 'node_modules/fuse-box-flat-parent/index.js'),
           target: 'fuse-box-resolver-conflict',
         },
         'fuse-box-resolver-conflict',
       );
-      expect(targetFolder).toMatchFilePath('fuse-box-flat-parent/node_modules/fuse-box-resolver-conflict$');
+
+      expect(result).toEqual({
+        folder: P(PROJECT_NODE_MODULES, `fuse-box-flat-parent/node_modules/fuse-box-resolver-conflict`),
+      });
     });
   });
 });
