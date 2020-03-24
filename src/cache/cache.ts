@@ -175,7 +175,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     const pkg = packages[meta.packageId];
     if (!pkg) return;
 
-    if (pkg.isExternalPackage) if (!restorePackage(pkg, mrc)) return;
+    if (pkg.meta) if (!restorePackage(pkg, mrc)) return;
 
     for (const dependencyId of meta.dependencies) {
       const target = modules[dependencyId];
@@ -275,6 +275,19 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         }
       }
     }
+
+    // if any of our dependencies relied on the "main" field of a package.json
+    // and that package.json has changed,
+    // then the absPath of that dependency is possibly no longer valid and so we have to re-resolve everything
+    for (const depId of meta.dependencies) {
+      const target = modules[depId];
+      const pkg = target && packages[target.packageId];
+      if (pkg && !pkg.isExternalPackage && pkg.mtime && pkg.meta && pkg.meta.packageJSONLocation && pkg.mtime !== getFileModificationTime(pkg.meta.packageJSONLocation)) {
+        shouldBreakCachedModule = true;
+        break;
+      }
+    }
+
     if (shouldBreakCachedModule) {
       // should be resolved
       bundleContext.modules[absPath] = undefined;
@@ -332,7 +345,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       const pkg = bundleContext.packages[packageId];
       if (!packages[pkg.publicName]) {
         shouldWriteMeta = true;
-        if (pkg.isExternalPackage) {
+        if (pkg.meta) {
           pkg.deps = [];
           pkg.mtime = getFileModificationTime(pkg.meta.packageJSONLocation);
         }
@@ -349,7 +362,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         const fileMeta = module.getMeta();
         modules[module.id] = fileMeta;
         const pkg = packages[module.pkg.publicName];
-        if (pkg.isExternalPackage) if (!pkg.deps.includes(module.id)) pkg.deps.push(module.id);
+        if (pkg.meta) if (!pkg.deps.includes(module.id)) pkg.deps.push(module.id);
         if (module.breakDependantsCache) {
           breakingCacheIds.push(module.id);
         }

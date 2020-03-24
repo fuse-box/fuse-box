@@ -70,8 +70,30 @@ export function parseExistingModulePaths(fileAbsPath: string): string[] {
   return existing;
 }
 
+function isDirectory(path: string) {
+  return fileExists(path) && lstatSync(path).isDirectory();
+}
+
 export interface TargetFolder {
   folder: string;
+  /**
+   * True if this folder appears to be a user-owned folder (one that the user edits)
+   * as opposed to something downloaded by a package manager
+   */
+  isUserOwned: boolean;
+}
+
+const pnp = (process.versions as any).pnp ? require('pnpapi') : undefined;
+function isFolderUserOwned(realpath: string): boolean {
+  if (pnp) {
+    // in a pnp environment, anything that is not in an archive is probably user-owned
+    // this should support, workspaces, portals, and unplugged correctly
+    const physical = (pnp.resolveVirtual && pnp.resolveVirtual(realpath)) || realpath;
+    return isDirectory(physical);
+  } else {
+    // in a node_modules environment, anything that is really inside node_modules is *not* user-owned
+    return !/node_modules/.test(realpath);
+  }
 }
 
 const CACHED_LOCAL_MODULES: { [key: string]: string | null } = {};
@@ -81,19 +103,19 @@ export function findTargetFolder(props: IResolverProps, name: string): TargetFol
     for (const i in props.modules) {
       const f = path.join(props.modules[i], name);
       if (fileExists(f)) {
-        return { folder: realpathSync(f) };
+        const folder = realpathSync(f)
+        const isUserOwned = isFolderUserOwned(folder);
+        return { folder, isUserOwned };
       }
     }
   }
 
-  const isPnp = (process.versions as any).pnp;
-
   // Support for Yarn v2 PnP
-  if (isPnp) {
+  if (pnp) {
     try {
-      const pnp = require('pnpapi');
       const folder = pnp.resolveToUnqualified(name, props.filePath, { considerBuiltins: false });
-      return { folder };
+      const isUserOwned = isFolderUserOwned(folder);
+      return { folder, isUserOwned };
     } catch (e) {
       // If this is PnP and PnP says it doesn't exist,
       // don't continue trying the rest of the node_modules stuff
@@ -107,7 +129,8 @@ export function findTargetFolder(props: IResolverProps, name: string): TargetFol
     const attempted = path.join(paths[i], name);
     if (fileExists(path.join(attempted, 'package.json'))) {
       const folder = realpathSync(attempted);
-      return { folder };
+      const isUserOwned = isFolderUserOwned(folder);
+      return { folder, isUserOwned };
     }
   }
 
@@ -120,7 +143,8 @@ export function findTargetFolder(props: IResolverProps, name: string): TargetFol
     const attempted = path.join(localModuleRoot, name);
     if (fileExists(path.join(attempted, 'package.json'))) {
       const folder = realpathSync(attempted);
-      return { folder };
+      const isUserOwned = isFolderUserOwned(folder);
+      return { folder, isUserOwned };
     }
   }
 
@@ -130,6 +154,11 @@ export function findTargetFolder(props: IResolverProps, name: string): TargetFol
 export interface INodeModuleLookup {
   // TODO: not used?
   isEntry: boolean;
+  /**
+   * True if this folder appears to be a user-owned folder (one that the user edits)
+   * as opposed to something downloaded by a package manager
+   */
+  isUserOwned: boolean;
   meta: IPackageMeta;
   targetAbsPath: string;
   // TODO: not used?
@@ -146,7 +175,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   if ('error' in result) {
     return result;
   }
-  const { folder } = result;
+  const { folder, isUserOwned } = result;
   if (!folder) {
     return { error: `Cannot resolve "${moduleName}"` };
   }
@@ -170,7 +199,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
   const isEntry = !target;
   let targetResolver = fileLookup;
-  if (props.tsTargetResolver)
+  if (isUserOwned && props.tsTargetResolver)
     targetResolver = props.tsTargetResolver;
   const resolved = targetResolver({ fileDir: folder, isBrowserBuild: isBrowser, target: target || '' });
   if (!resolved || !resolved.fileExists) {
@@ -198,6 +227,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
   return {
     isEntry,
+    isUserOwned: isUserOwned,
     meta: pkg,
     targetAbsPath,
     targetExtension,
