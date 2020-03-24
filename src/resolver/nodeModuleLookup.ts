@@ -1,4 +1,4 @@
-import { realpathSync } from 'fs';
+import { lstatSync, realpathSync } from 'fs';
 import * as path from 'path';
 import { findUp } from '../utils/findUp';
 import { fileExists, makeFuseBoxPath, readFile } from '../utils/utils';
@@ -70,14 +70,18 @@ export function parseExistingModulePaths(fileAbsPath: string): string[] {
   return existing;
 }
 
+export interface TargetFolder {
+  folder: string;
+}
+
 const CACHED_LOCAL_MODULES: { [key: string]: string | null } = {};
-export function findTargetFolder(props: IResolverProps, name: string): string {
+export function findTargetFolder(props: IResolverProps, name: string): TargetFolder | { error: string } {
   // handle custom modules here
   if (props.modules) {
     for (const i in props.modules) {
       const f = path.join(props.modules[i], name);
       if (fileExists(f)) {
-        return realpathSync(f);
+        return { folder: realpathSync(f) };
       }
     }
   }
@@ -89,15 +93,12 @@ export function findTargetFolder(props: IResolverProps, name: string): string {
     try {
       const pnp = require('pnpapi');
       const folder = pnp.resolveToUnqualified(name, props.filePath, { considerBuiltins: false });
-      return folder;
+      return { folder };
     } catch (e) {
-      // Ignore error here, since it will be handled later
-      // Don't ignore these errors, because PnP returns very useful errors and
-      console.error(e);
+      // If this is PnP and PnP says it doesn't exist,
+      // don't continue trying the rest of the node_modules stuff
+      return { error: e.message };
     }
-    // If this is PnP and PnP says it doesn't exist,
-    // don't continue trying the rest of the node_modules stuff
-    return;
   }
 
   const paths = parseExistingModulePaths(props.filePath);
@@ -105,7 +106,8 @@ export function findTargetFolder(props: IResolverProps, name: string): string {
   for (let i = paths.length - 1; i >= 0; i--) {
     const attempted = path.join(paths[i], name);
     if (fileExists(path.join(attempted, 'package.json'))) {
-      return realpathSync(attempted);
+      const folder = realpathSync(attempted);
+      return { folder };
     }
   }
 
@@ -117,28 +119,34 @@ export function findTargetFolder(props: IResolverProps, name: string): string {
   if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
     const attempted = path.join(localModuleRoot, name);
     if (fileExists(path.join(attempted, 'package.json'))) {
-      return realpathSync(attempted);
+      const folder = realpathSync(attempted);
+      return { folder };
     }
   }
+
+  return { error: `Cannot resolve "${name}"` };
 }
+
 export interface INodeModuleLookup {
-  error?: string;
   // TODO: not used?
-  isEntry?: boolean;
-  meta?: IPackageMeta;
-  targetAbsPath?: string;
+  isEntry: boolean;
+  meta: IPackageMeta;
+  targetAbsPath: string;
   // TODO: not used?
   targetExtension?: string;
   // TODO: not used?
   targetFuseBoxPath?: string;
 }
 
-export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
-  let folder: string;
+export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup | { error: string } {
   const { name: moduleName, target } = parsed;
 
   // Resolve the module name to a folder
-  folder = findTargetFolder(props, moduleName);
+  const result = findTargetFolder(props, moduleName);
+  if ('error' in result) {
+    return result;
+  }
+  const { folder } = result;
   if (!folder) {
     return { error: `Cannot resolve "${moduleName}"` };
   }

@@ -156,8 +156,8 @@ export function resolveModule(props: IResolverProps): IResolver {
       }
       const pkg = nodeModuleLookup(props, moduleParsed);
 
-      if (pkg.error) {
-        return { error: pkg.error };
+      if ('error' in pkg) {
+        return pkg;
       }
 
       return {
