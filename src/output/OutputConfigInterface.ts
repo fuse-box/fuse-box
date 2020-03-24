@@ -69,7 +69,7 @@ export interface IOutputExported {
 
 export interface IOutputBundleConfigAdvanced {
   codeSplitting?: ICodeSplittingProps;
-  exported?: IOutputExported;
+  exported?: boolean;
   /**
    * Isolated API works only for one bundle output.
    * e,g app : "./target.build.js"

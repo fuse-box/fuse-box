@@ -1,3 +1,4 @@
+import { ITransformer } from '../compiler/interfaces/ITransformer';
 import { ITarget } from '../config/ITarget';
 
 export type ITypeScriptPaths = { [key: string]: Array<string> };
@@ -10,6 +11,7 @@ export interface ICompilerOptionTransformer {
   name?: string;
   opts?: Record<string, any>;
   script?: string;
+  transformer?: (options: any) => ITransformer;
 }
 
 export interface ICompilerOptions {

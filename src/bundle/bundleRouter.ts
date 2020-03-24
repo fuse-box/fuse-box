@@ -87,6 +87,7 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
       interopRequireDefault: ctx.compilerOptions.esModuleInterop,
       isIsolated: false,
       target: ctx.config.target,
+
       typescriptHelpersPath: typescriptHelpersPath,
     });
   }
