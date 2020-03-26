@@ -293,6 +293,28 @@ export function ensureScriptRoot(userPath: string) {
   return userPath;
 }
 
+/**
+ * Given a list of folders, exclude any that are contained in any others
+ * e.g.:
+ *   - "/one/two"
+ *   - "/one/two/three"  ❌ _exclude: contained by "/one/two"_
+ *   - "/four/five/six"
+ *   - "/four/five/six"  ❌ _exclude: duplicate_
+ * @param folders
+ */
+export function excludeRedundantFolders(folders: string[]): string[] {
+  // normalize and sort, so that all ancestors come before descendants
+  const sorted = folders.map(r => path.normalize(r)).sort();
+  let keep: string[] = []
+  for (const folder of sorted) {
+    // ignore anything if we have already seen it or its ancestor
+    if (keep.some(k => k === folder || folder.startsWith(`${k}${path.sep}`)))
+      continue;
+    keep.push(folder);
+  }
+  return keep;
+}
+
 export function getPathRelativeToConfig(props: { dirName: string; ensureDirExist?: boolean; fileName?: string }) {
   let target = props.fileName ? path.dirname(props.fileName) : props.dirName;
   const fileName = props.fileName && path.basename(props.fileName);

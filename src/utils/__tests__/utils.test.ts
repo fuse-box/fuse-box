@@ -13,6 +13,7 @@ import {
   parseVersion,
   beautifyBundleName,
   path2RegexPattern,
+  excludeRedundantFolders,
 } from '../utils';
 import { findUp } from '../findUp';
 import { join } from 'path';
@@ -209,5 +210,20 @@ describe('utils', () => {
         inclusive: false,
       })).toEqual(null);
     });
+  })
+
+  describe('excludeRedundantFolders - removes redundant root folders', () => {
+    const input: string[] = [
+      `/one/two/three`, // <-- exclude because of /one/two
+      `/one/two`,
+      `/three/four/five/..`,
+      `/three/four/size`, // <-- exclude because of /three/four/five/..
+    ];
+    const actual = excludeRedundantFolders(input);
+    const expected = [
+      '/one/two',
+      '/three/four',
+    ]
+    expect(actual).toEqual(expected);
   })
 });
