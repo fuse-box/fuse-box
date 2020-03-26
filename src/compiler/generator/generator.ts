@@ -812,7 +812,10 @@ export const baseGenerator = {
     const { length } = expressions;
     for (let i = 0; i < length; i++) {
       const expression = expressions[i];
-      state.write(quasis[i].value.raw);
+      const raw = quasis[i].value.raw;
+      const lines = raw.split('\n').length;
+      state.write(raw);
+      state.line = state.line + lines - 1;
       state.write('${');
       this[expression.type](expression, state);
       state.write('}');
@@ -821,8 +824,9 @@ export const baseGenerator = {
     const cooked = quasis[quasis.length - 1].value.raw;
     const cookedLength = cooked.split('\n').length;
     const shift = cookedLength - 1;
-    if (shift > 0) state.line = state.line + shift;
-
+    if (shift > 0) {
+      state.line = state.line + shift;
+    }
     state.write(cooked);
     state.write('`');
   },
@@ -984,10 +988,12 @@ class State {
   map(code, node) {
     if (node != null && node.loc != null) {
       const { mapping } = this;
+
       mapping.original = node.loc.start;
       mapping.name = node.name;
       this.sourceMap.addMapping(mapping);
     }
+
     if (code && code.length > 0) {
       if (this.lineEndSize > 0) {
         if (code.endsWith(this.lineEnd)) {
@@ -1004,6 +1010,7 @@ class State {
       } else {
         if (code[code.length - 1] === '\n') {
           // Case of inline comment
+          console.log('here...');
           this.line++;
           this.column = 0;
         } else {
