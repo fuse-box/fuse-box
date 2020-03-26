@@ -384,7 +384,7 @@ export const baseGenerator = {
     state.write(';');
   },
   DebuggerStatement(node, state) {
-    state.write('debugger;' + state.lineEnd);
+    state.write('debugger;' + state.lineEnd, node);
   },
   DoWhileStatement(node, state) {
     state.write('do ');
