@@ -60,13 +60,12 @@ describe('test case 3', () => {
     expect(mappings).toEqual(expectedMappings);
   });
 
-  it.skip('groups the set of mappings by package', () => {
+  it('groups the set of mappings by package', () => {
     const grouped = groupByPackage(expectedMappings);
     // in case the tester happens to have any packge.json above the fuse-box root,
     // tsreference will have added groups for those as it should
     // so we'll just ignore those here
-    for (const dir of ancestorsOf(fuseRoot))
-      grouped.delete(dir);
+    for (const dir of ancestorsOf(fuseRoot)) grouped.delete(dir);
     const expected = expectedGrouped;
     expect(grouped).toEqual(expected);
   });
@@ -104,7 +103,6 @@ describe('test case 3', () => {
     });
   });
 });
-
 
 function* ancestorsOf(absPath: string) {
   const start = path.normalize(absPath);
