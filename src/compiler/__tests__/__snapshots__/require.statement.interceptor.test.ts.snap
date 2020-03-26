@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Require statement intercepto it should preview typeof require is defined in the scope 1`] = `
+"function some(require) {
+  console.log(typeof require);
+}
+"
+`;
+
+exports[`Require statement intercepto it should replace typeof require 1`] = `
+"console.log(\\"function\\");
+"
+`;
