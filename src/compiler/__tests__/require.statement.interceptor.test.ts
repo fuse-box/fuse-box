@@ -72,4 +72,24 @@ describe('Require statement intercepto', () => {
     });
     expect(result.requireStatementCollection).toHaveLength(0);
   });
+
+  it('it should replace typeof require', () => {
+    const result = testTranspile({
+      code: `
+      console.log(typeof require);
+    `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('it should preview typeof require is defined in the scope', () => {
+    const result = testTranspile({
+      code: `
+      function some(require){
+        console.log(typeof require);
+      }
+    `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
 });
