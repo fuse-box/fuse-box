@@ -2,7 +2,7 @@ import { watch as chokidarWatch } from 'chokidar';
 import * as path from 'path';
 import { Context } from '../core/context';
 import { env } from '../env';
-import { ensureScriptRoot, path2RegexPattern } from '../utils/utils';
+import { ensureScriptRoot, path2RegexPattern, excludeRedundantFolders } from '../utils/utils';
 import { bindWatcherReactions } from './bindWatcherReactions';
 export type IWatcher = ReturnType<typeof createWatcher>;
 
@@ -43,9 +43,15 @@ export function createWatcher(ctx: Context) {
   let includePaths: Array<RegExp> = [];
   let ignorePaths: Array<RegExp> = [];
 
+  const { root } = props;
+  // ensure root is string[]
+  const roots = typeof root === "string" ? [root] : root;
+  // ensure roots are absolute paths
+  const absRoots = roots && roots.map(r => ensureScriptRoot(r));
+
   if (!props.include) {
-    if (props.root) {
-      includePaths = (typeof props.root === "string" ? [props.root] : props.root).map(path2RegexPattern)
+    if (absRoots) {
+      includePaths = absRoots.map(path2RegexPattern)
     }
     else {
       // taking an assumption that the watch directory should be next to the entry point
@@ -146,8 +152,11 @@ export function createWatcher(ctx: Context) {
       const userOptions = props.chokidarOptions || {};
       const finalOptions = { ...defaultOpts, ...userOptions };
 
-      const root = props.root || [`${env.APP_ROOT}`];
-      const watcher = chokidarWatch(root, finalOptions);
+      // if no user-roots are specified, use APP_ROOT
+      // ensure that SCRIPT_PATH gets watched
+      // and remove any redundant paths
+      const watchRoots = excludeRedundantFolders([...(absRoots || [env.APP_ROOT]), env.SCRIPT_PATH]);
+      const watcher = chokidarWatch(watchRoots, finalOptions);
       watcher.on('all', dispatchEvent);
     },
   };
