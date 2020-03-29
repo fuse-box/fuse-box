@@ -113,9 +113,14 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         // cleaning up
         ctx.linkedReferences[absPath] = undefined;
       } else {
-        if (getFileModificationTime(absPath) !== item.mtime) {
-          // reset modification time so it naver matches
+        const mtime = getFileModificationTime(absPath);
+        if (mtime !== item.mtime) {
+          // the referenced file was modified, so
+          // force all modules that depend on this file to be detected as modified
           for (const depId of item.deps) modules[depId].mtime = -1;
+
+          // our work here is done until the next time it is modified
+          item.mtime = mtime;
         }
       }
     }
@@ -216,6 +221,8 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     // package is in tact pulling out all the files
     for (const moduleId of pkg.deps) {
       const meta = modules[moduleId];
+      if (meta.mtime === -1)
+        return false;
 
       const depPackage = packages[meta.packageId];
       // a required dependency is missing
