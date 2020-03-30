@@ -82,7 +82,7 @@ describe('Require statement intercepto', () => {
     expect(result.code).toMatchSnapshot();
   });
 
-  it('it should preview typeof require is defined in the scope', () => {
+  it('it should replace typeof require is defined in the scope', () => {
     const result = testTranspile({
       code: `
       function some(require){
@@ -90,6 +90,29 @@ describe('Require statement intercepto', () => {
       }
     `,
     });
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('it should replace require ref', () => {
+    const result = testTranspile({
+      code: `
+      if (typeof require === 'function' && require) {
+        console.log(1);
+      }
+    `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('it should replace require ref 2', () => {
+    const result = testTranspile({
+      code: `
+      if (typeof require === 'function' && typeof require.ensure) {
+        console.log(1);
+      }
+    `,
+    });
+
     expect(result.code).toMatchSnapshot();
   });
 });
