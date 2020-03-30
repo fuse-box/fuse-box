@@ -122,6 +122,21 @@ exports[`Bundle polyfill transform test polyfills Should not add anything should
 "
 `;
 
+exports[`Bundle polyfill transform test polyfills Should not add anything should respect import 1`] = `
+"import global from \\"some\\";
+function main() {
+  console.log(global);
+}
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Should not add anything should respect local scope 1`] = `
+"function main(global) {
+  console.log(global);
+}
+"
+`;
+
 exports[`Bundle polyfill transform test polyfills Single reference shuold insert buffer 1`] = `
 "var buffer = require(\\"buffer\\");
 console.log(buffer);
