@@ -73,11 +73,6 @@ export function createSchema(props: IVisitNodeProps, context: SharedContext): IS
 
       const total = self.nodeScope.length - 1;
 
-      // while (i >= 0) {
-      //   const bodyScope = self.nodeScope[i];
-      //   if (bodyScope[name] && bodyScope[name].node) return bodyScope[name];
-      //   i--;
-      // }
       for (let i = total; i >= 0; i--) {
         const bodyScope = self.nodeScope[i];
         if (bodyScope[name] && bodyScope[name].node) return bodyScope[name];

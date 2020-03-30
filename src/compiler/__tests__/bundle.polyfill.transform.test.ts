@@ -166,6 +166,31 @@ describe('Bundle polyfill transform test', () => {
         });
         expect(result.code).toMatchSnapshot();
       });
+
+      it('should respect import', () => {
+        const result = testTranspile({
+          code: `
+            import global from "some"
+            function main(){
+              console.log(global)
+            }
+          `,
+        });
+        expect(result.code).toMatchSnapshot();
+      });
+
+      it('should respect local scope', () => {
+        const result = testTranspile({
+          code: `
+
+            function main(global){
+              console.log(global)
+            }
+          `,
+        });
+
+        expect(result.code).toMatchSnapshot();
+      });
     });
   });
 });

@@ -93,11 +93,11 @@ export function scopeTracker(schema: ISchema): IBodyScope {
       const item = body[index];
       const type = item.type;
 
-      // if (type === ASTType.ImportDeclaration && item.specifiers) {
-      //   for (const specifier of item.specifiers) {
-      //     bodyScope[specifier.local.name] = { node: specifier, schema };
-      //   }
-      // }
+      if (type === ASTType.ImportDeclaration && item.specifiers) {
+        for (const specifier of item.specifiers) {
+          bodyScope[specifier.local.name] = { node: specifier, schema };
+        }
+      }
 
       // Variable declarations
       // const foo = 1
