@@ -13,7 +13,7 @@ Replace any arbitrary string, in any specified files, with any other string.  *T
 
 <br>
 
-### [Custom Transform](./pluginTransform.md)
+### [Custom Transform](./pluginCustomTransform.md)
 
 "Transformations" are a part of TypeScript's compilation to Javascript.  This plugin allows you to add custom transformations.
 
