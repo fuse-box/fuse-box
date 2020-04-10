@@ -11,7 +11,7 @@ const testTranspile = (props: { code: string; jsx?: boolean }) => {
   return initCommonTransform({
     code: props.code,
     jsx: true,
-    props: { module: { props: { extension: '.tsx' } } },
+    props: { module: {} },
     transformers: [OptionalChaningTransformer()],
   });
 };
@@ -111,5 +111,17 @@ describe('Optional chaining', () => {
         expect(res.code).toEqual(TYPESCRIPT_SHAPSHOTS[str]);
       });
     }
+  });
+
+  describe('Corner cases', () => {
+    it('should handle asExpression', () => {
+      const res = testTranspile({
+        code: `
+        (a as string)?.b?.c;
+        a?.b?.c;
+        `,
+      });
+      expect(res).toMatchSnapshot();
+    });
   });
 });

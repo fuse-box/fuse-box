@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Optional chaining Corner cases should handle asExpression 1`] = `
+Object {
+  "code": "var _1_, _2_;
+var _3_, _4_;
+(_2_ = (_1_ = a) === null || _1_ === void 0 ? void 0 : _1_.b) === null || _2_ === void 0 ? void 0 : _2_.c;
+(_4_ = (_3_ = a) === null || _3_ === void 0 ? void 0 : _3_.b) === null || _4_ === void 0 ? void 0 : _4_.c;
+",
+  "requireStatementCollection": Array [],
+}
+`;

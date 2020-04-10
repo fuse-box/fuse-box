@@ -296,6 +296,10 @@ export function chainDrill(node: ASTNode, context: OptionalChainContext) {
     return context.steps.push({ computed: node.computed, expression: node });
   }
 
+  if (node.type === ASTType.AsExpression && node.expression) {
+    return chainDrill(node.expression, context);
+  }
+
   if (node.type === ASTType.OptionalMemberExpression) {
     if (node.property) context.steps.push({ computed: node.computed, expression: node.property, optional });
     if (node.object) {
