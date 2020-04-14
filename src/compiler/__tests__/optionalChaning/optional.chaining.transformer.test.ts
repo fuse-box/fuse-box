@@ -123,5 +123,41 @@ describe('Optional chaining', () => {
       });
       expect(res).toMatchSnapshot();
     });
+
+    it('should await expression 1', () => {
+      const res = testTranspile({
+        code: `
+        async function main(){
+          await a?.b
+        }
+        `,
+      });
+
+      expect(res.code).toMatchSnapshot();
+    });
+
+    it('should await expression 2', () => {
+      const res = testTranspile({
+        code: `
+        async function main(){
+          await a?.b()
+        }
+        `,
+      });
+
+      expect(res.code).toMatchSnapshot();
+    });
+
+    it('should await expression with ?? ', () => {
+      const res = testTranspile({
+        code: `
+        let b = async (a, c) => {
+          const b = await a?.a() ?? await c?.d;
+        };
+        `,
+      });
+
+      expect(res.code).toMatchSnapshot();
+    });
   });
 });

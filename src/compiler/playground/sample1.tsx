@@ -1,3 +1,3 @@
-import { SomeName } from './type';
-const SomeName = () => {};
-export default SomeName;
+async function main(a) {
+  await a?.b;
+}

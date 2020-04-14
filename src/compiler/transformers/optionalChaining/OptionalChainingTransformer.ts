@@ -5,6 +5,7 @@ import { ITransformer } from '../../interfaces/ITransformer';
 import { OptionalChainHelper, createOptionalChaningExpression } from './optionalChaningHelpers';
 
 const VALID_NODES = {
+  [ASTType.AwaitExpression]: 1,
   [ASTType.OptionalCallExpression]: 1,
   [ASTType.OptionalMemberExpression]: 1,
 };
@@ -35,6 +36,7 @@ function createOptionalContext(schema: ISchema) {
 
   const self = {
     declaration,
+    schema,
     steps,
     genId: () => {
       const nextVar = schema.context.getNextSystemVariable();
@@ -247,7 +249,10 @@ function createFlatExpression(context: OptionalChainContext): IFlatExpression {
 }
 
 function createStatement(context: OptionalChainContext) {
-  const { steps } = context;
+  const {
+    schema: { parent },
+    steps,
+  } = context;
   const flatCollection: IChainingCollection = [];
   let index: number;
   let current: IFlatExpression;
@@ -327,13 +332,34 @@ export function OptionalChaningTransformer(): ITransformer {
     commonVisitors: props => {
       return {
         onEach: (schema: ISchema) => {
-          const node = schema.node;
+          const { node } = schema;
           if (!VALID_NODES[node.type]) return;
+
+          let expressionNode = node;
+          let isAwaitExpression = false;
+          if (node.type === ASTType.AwaitExpression) {
+            // swap the node for await argument
+            // since that needs to replace with an expression call
+            if (node.argument && VALID_NODES[node.argument.type]) {
+              expressionNode = node.argument;
+              isAwaitExpression = true;
+            } else return;
+          }
+
           const context = createOptionalContext(schema);
 
-          chainDrill(node, context);
+          chainDrill(expressionNode, context);
 
-          const statement = createStatement(context);
+          let statement = createStatement(context);
+
+          if (isAwaitExpression) {
+            statement = {
+              arguments: [statement],
+              callee: { name: 'await', type: 'Identifier' },
+              type: 'CallExpression',
+            };
+          }
+
           return schema.bodyPrepend([context.declaration]).replace(statement);
         },
       };
