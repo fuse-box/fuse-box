@@ -19,12 +19,12 @@ export function pluginNodeNativeHandler(module: IModule) {
     module.ctx.taskManager.copyFile(target, fileDestination);
   }
 
-  module.contents = `module.exports = require("./${fileLocation}");`;
+  module.contents = `module.exports = require("./${fileLocation.replace(/\\/gi, '/')}");`;
 
-  // Scan all package directories for .so libraries and copy them to the output
+  // Scan all package directories for .so and .dll libraries and copy them to the output
   listDirectory(packageRoot)
     .filter(filepath => {
-      return /\.so$|\.so\./.test(getFilename(filepath));
+      return /\.dll|\.so$|\.so\./.test(getFilename(filepath));
     })
     .forEach(filepath => {
       const filename = pathRelative(packageRoot, filepath);
