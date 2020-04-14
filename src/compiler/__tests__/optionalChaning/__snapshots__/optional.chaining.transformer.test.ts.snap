@@ -1,5 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Optional chaining Corner cases should await expression 1 1`] = `
+"var _1_;
+async function main() {
+  await((_1_ = a) === null || _1_ === void 0 ? void 0 : _1_.b);
+}
+"
+`;
+
+exports[`Optional chaining Corner cases should await expression 2 1`] = `
+"var _1_;
+async function main() {
+  await((_1_ = a) === null || _1_ === void 0 ? void 0 : _1_.b());
+}
+"
+`;
+
+exports[`Optional chaining Corner cases should await expression with ??  1`] = `
+"var _1_;
+var _2_;
+let b = async (a, c) => {
+  const b = await((_1_ = a) === null || _1_ === void 0 ? void 0 : _1_.a()) ?? await((_2_ = c) === null || _2_ === void 0 ? void 0 : _2_.d);
+};
+"
+`;
+
 exports[`Optional chaining Corner cases should handle asExpression 1`] = `
 Object {
   "code": "var _1_, _2_;
