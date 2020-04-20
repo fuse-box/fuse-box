@@ -13,7 +13,7 @@ export interface IStylusRenderer {
 }
 export function stylusRender(props: IStylusRenderer): Promise<IStylesheetModuleResponse> {
   const Evaluator = require('stylus/lib/visitor/evaluator');
-  const Literal = require('stylus/lib/nodes/Literal');
+  const Literal = require('stylus/lib/nodes/literal');
   const stylus = require('stylus');
 
   const stylusImport = Evaluator.prototype.visitImport;
