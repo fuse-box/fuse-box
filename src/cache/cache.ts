@@ -221,8 +221,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     // package is in tact pulling out all the files
     for (const moduleId of pkg.deps) {
       const meta = modules[moduleId];
-      if (meta.mtime === -1)
-        return false;
+      if (meta.mtime === -1) return false;
 
       const depPackage = packages[meta.packageId];
       // a required dependency is missing
@@ -289,7 +288,14 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     for (const depId of meta.dependencies) {
       const target = modules[depId];
       const pkg = target && packages[target.packageId];
-      if (pkg && !pkg.isExternalPackage && pkg.mtime && pkg.meta && pkg.meta.packageJSONLocation && pkg.mtime !== getFileModificationTime(pkg.meta.packageJSONLocation)) {
+      if (
+        pkg &&
+        !pkg.isExternalPackage &&
+        pkg.mtime &&
+        pkg.meta &&
+        pkg.meta.packageJSONLocation &&
+        pkg.mtime !== getFileModificationTime(pkg.meta.packageJSONLocation)
+      ) {
         shouldBreakCachedModule = true;
         break;
       }
@@ -310,6 +316,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         if (!restorePackage(pkg, mrc)) {
           // package has failed
           // interrupt everything
+          mrc.modulesRequireResolution.push({ absPath, pkg: metaPackage });
           return;
         }
       } else restoreModuleSafely(target.absPath, mrc);
