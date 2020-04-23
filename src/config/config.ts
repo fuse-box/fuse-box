@@ -16,7 +16,8 @@ export function Configuration(ctx: Context): IConfig {
       if (existing) return existing;
       let publicPath = '/';
       if (self.webIndex && self.webIndex.publicPath) publicPath = self.webIndex.publicPath;
-      if (self.resources && self.resources.resourcePublicRoot) return publicPath;
+      if (self.resources && self.resources.resourcePublicRoot) publicPath = self.resources.resourcePublicRoot;
+      return publicPath;
     },
     getResourceConfig: (stylesheet?: IStyleSheetProps) => {
       let resources: IResourceConfig = {};
