@@ -249,10 +249,7 @@ function createFlatExpression(context: OptionalChainContext): IFlatExpression {
 }
 
 function createStatement(context: OptionalChainContext) {
-  const {
-    schema: { parent },
-    steps,
-  } = context;
+  const { steps } = context;
   const flatCollection: IChainingCollection = [];
   let index: number;
   let current: IFlatExpression;
