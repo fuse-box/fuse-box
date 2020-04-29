@@ -80,6 +80,7 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
     includePaths: [path.dirname(module.absPath)],
     outFile: module.absPath,
     sourceMapContents: requireSourceMap,
+    indentedSyntax: module.extension === ".sass",
     importer: function(url, prev) {
       // gathering imported dependencies in order to let the watcher pickup the right module
 
