@@ -11,13 +11,11 @@
 var base64 = require('base64-js');
 var ieee754 = require('ieee754');
 
-exports.Buffer = Buffer;
-exports.FuseShim = true;
-exports.SlowBuffer = SlowBuffer;
-exports.INSPECT_MAX_BYTES = 50;
+module.exports = Buffer
+
+var INSPECT_MAX_BYTES = 50;
 
 var K_MAX_LENGTH = 0x7fffffff;
-exports.kMaxLength = K_MAX_LENGTH;
 
 /**
  * If `Buffer.TYPED_ARRAY_SUPPORT`:
