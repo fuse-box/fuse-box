@@ -32,7 +32,7 @@ class Context {
       link: { useDefault: true },
       target: 'browser',
       webIndex: {
-        publicPath: '/',
+        publicPath: '/assets',
         template: 'src/client/index.html'
       }
     });
@@ -67,7 +67,7 @@ task('default', async ctx => {
   const server = ctx.getServer();
   const { onComplete } = await server.runDev(serverBundleOutput);
   onComplete(({ server }) => {
-    server.start([]);
+    server.start();
     // electron.start();
   });
 });

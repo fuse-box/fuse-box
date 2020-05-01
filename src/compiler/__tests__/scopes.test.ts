@@ -522,6 +522,19 @@ describe('scope test', () => {
 
       expect(result.code).toMatchSnapshot();
     });
+
+    it('for in', () => {
+      const result = testTranspile({
+        code: `
+        import i from 'mod';
+        for (var i in foo) {
+          console.log(i);
+        }
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
   });
 
   describe('Spread', () => {

@@ -63,6 +63,13 @@ exports[`scope test Iterator scope Export spread 1 1`] = `
 "
 `;
 
+exports[`scope test Iterator scope for in 1`] = `
+"for (var i in foo) {
+  console.log(i);
+}
+"
+`;
+
 exports[`scope test Object pattern 1`] = `
 "var oi_1 = require(\\"oi\\");
 function one(props) {
