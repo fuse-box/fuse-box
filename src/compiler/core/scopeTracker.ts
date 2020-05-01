@@ -88,6 +88,9 @@ export function scopeTracker(schema: ISchema): IBodyScope {
     if (node.type === ASTType.ForStatement && node.init && node.init.type === ASTType.VariableDeclaration) {
       extractDeclarations(schema, node.init, bodyScope);
     }
+    if (node.type === ASTType.ForInStatement && node.left && node.left.type === ASTType.VariableDeclaration) {
+      extractDeclarations(schema, node.left, bodyScope);
+    }
 
     while (index < bodyNodesLength) {
       const item = body[index];
