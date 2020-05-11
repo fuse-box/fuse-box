@@ -78,6 +78,9 @@ export function ImportTransformer(): ITransformer {
           }
 
           if (node.type === ASTType.ImportDeclaration) {
+            if (node.importKind && node.importKind === 'type') {
+              return schema.remove();
+            }
             const coreReplacements = context.coreReplacements;
 
             const variable = context.getModuleName(node.source.value);

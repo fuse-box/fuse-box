@@ -19,9 +19,15 @@ export interface ASTNode {
   definite?: boolean;
   elementTypes?: Array<ASTNode>;
   elements?: Array<ASTNode>;
+  exportKind?: string;
   expressions?: Array<ASTNode>;
+  importKind?: string;
+  imported?: ASTNode;
   initializer?: ASTNode;
   literal?: ASTNode;
+  loc?: { end: { column: number; line: number }; start: { column: number; line: number } };
+  members?: Array<ASTNode>;
+  method?: boolean;
   moduleReference?: ASTNode;
   optional?: boolean;
   prefix?: boolean;
@@ -33,11 +39,6 @@ export interface ASTNode {
   test?: ASTNode;
   typeAnnotation?: ASTNode;
   typeName?: ASTNode;
-  loc?: { end: { column: number; line: number }; start: { column: number; line: number } };
-
-  imported?: ASTNode;
-  members?: Array<ASTNode>;
-  method?: boolean;
 
   JSXElement?: ASTNode;
 

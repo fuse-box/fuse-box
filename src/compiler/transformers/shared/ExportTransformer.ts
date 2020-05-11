@@ -135,6 +135,9 @@ export function ExportTransformer(): ITransformer {
 
           if (!INTERESTED_NODES[type]) return;
 
+          if (node.exportKind && node.exportKind === 'type') {
+            return schema.remove();
+          }
           // remove export interface
           // export interface HelloWorld{}
           if (type === 'ExportNamedDeclaration') {

@@ -175,3 +175,8 @@ exports[`Es imports tests import = should handle ImportEqualStatement 1`] = `
 "var _ = require(\\"lodash\\");
 "
 `;
+
+exports[`Es imports tests import type should ignore export type" 1`] = `
+"console.log(foo);
+"
+`;
