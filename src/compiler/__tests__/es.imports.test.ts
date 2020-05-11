@@ -390,4 +390,16 @@ describe('Es imports tests', () => {
       expect(result.code).toMatchSnapshot();
     });
   });
+
+  describe('import type', () => {
+    it('should ignore export type"', () => {
+      const result = testTranspile({
+        code: `
+          import type { foo } from "bar"
+          console.log(foo)
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+  });
 });

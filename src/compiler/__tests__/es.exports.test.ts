@@ -526,4 +526,16 @@ describe('Es exports tests', () => {
       });
     });
   });
+
+  describe('export type', () => {
+    it('should ignore export type"', () => {
+      const result = testTranspile({
+        code: `
+          export type { foo } from "bar"
+          console.log(1)
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+  });
 });

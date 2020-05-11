@@ -1,3 +1,3 @@
-async function main(a) {
-  await a?.b;
-}
+export type {stuff} from "./stuff"
+
+

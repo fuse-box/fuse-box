@@ -296,6 +296,11 @@ exports.foo1 = foo;
 "
 `;
 
+exports[`Es exports tests export type should ignore export type" 1`] = `
+"console.log(1);
+"
+`;
+
 exports[`Es exports tests export typescript objects should remove export default interface 1`] = `
 "alert(1);
 "
