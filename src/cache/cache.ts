@@ -117,7 +117,9 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         if (mtime !== item.mtime) {
           // the referenced file was modified, so
           // force all modules that depend on this file to be detected as modified
-          for (const depId of item.deps) modules[depId].mtime = -1;
+          for (const depId of item.deps) {
+            if (modules[depId]) modules[depId].mtime = -1;
+          }
 
           // our work here is done until the next time it is modified
           item.mtime = mtime;
