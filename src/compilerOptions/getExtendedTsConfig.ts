@@ -1,7 +1,8 @@
 import { IRawTypescriptConfig } from './interfaces';
-import { parseTypescriptConfig } from './parseTypescriptConfig';
-import merge from 'lodash.merge';
-import path, { dirname } from 'path';
+import * as path from 'path';
+import { tryLoadExtendedTsConfig } from './tryLoadExtendedTsConfig';
+
+const merge = require('lodash.merge');
 
 /**
  * Recursively loads the tsconfigs extended, and returns the resulting settings
@@ -20,25 +21,15 @@ export const getExtendedTsConfig = (rawTsConfig: IRawTypescriptConfig, tsConfigD
 
     if (!tsConfig.extends) return [rawTsConfig, tsConfigDirectory];
 
-    let extendedPath = path.resolve(tsConfigDirectory, tsConfig.extends);
-    let extendedConfig = parseTypescriptConfig(extendedPath);
-
-    /**
-     * If 'extends' references a tsconfig file in a 'node_module', the above will fail.
-     * In this case, Trying using require.resolve to find the path to the tsconfig in
-     * a 'node_module'.
-     */
-    if (extendedConfig.error) {
-        extendedPath = require.resolve(tsConfig.extends);
-        extendedConfig = parseTypescriptConfig(extendedPath);
-    }
+    const [extendedConfig, extendedPath] = tryLoadExtendedTsConfig(tsConfigDirectory, tsConfig.extends);
 
     /**
      * If we still have an error, then probably the extends path is wrong. Return the error.
      */
     if (extendedConfig.error) return [extendedConfig, extendedPath];
 
-    const [resolvedBase, resolvedPath] = getExtendedTsConfig(extendedConfig, dirname(extendedPath));
+    const [resolvedBase, resolvedPath] = getExtendedTsConfig(extendedConfig, path.dirname(extendedPath));
 
     return [merge({}, resolvedBase, rawTsConfig), resolvedPath];
 };
+

@@ -17,8 +17,7 @@
     "removeComments": true,
     "skipLibCheck": true,
     "suppressImplicitAnyIndexErrors": true,
-    "target": "es2017",
-    "esModuleInterop": true
+    "target": "es2017"
   },
   "exclude": [
     "dist",
