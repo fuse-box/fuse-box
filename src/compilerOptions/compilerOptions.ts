@@ -6,6 +6,8 @@ import { ensureAbsolutePath } from '../utils/utils';
 import { findTsConfig } from './findTSConfig';
 import { ICompilerOptions, IRawCompilerOptions } from './interfaces';
 import { parseTypescriptConfig } from './parseTypescriptConfig';
+import { getExtendedTsConfig } from './getExtendedTsConfig';
+
 export function createCompilerOptions(ctx: Context): ICompilerOptions {
   let options = ctx.config.compilerOptions || {};
 
@@ -34,6 +36,7 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
 
   let baseURL = options.baseUrl;
   let tsConfigDirectory;
+
   if (tsConfigPath) {
     const data = parseTypescriptConfig(tsConfigPath);
 
@@ -47,6 +50,7 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
 
     if (tsConfig) {
       let tsConfigCompilerOptions: IRawCompilerOptions = {};
+
       if (tsConfig.compilerOptions) {
         tsConfigCompilerOptions = tsConfig.compilerOptions;
 
@@ -54,24 +58,30 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
           baseURL = tsConfigCompilerOptions.baseUrl;
         }
       }
-      if (tsConfig.extends) {
-        const targetExtendedFile = path.join(tsConfigDirectory, tsConfig.extends);
 
-        const extendedData = parseTypescriptConfig(targetExtendedFile);
+      if (tsConfig.extends) {
+
+        /**
+         * This 'getExtendedTsConfig' function can probably be used to simplify all this 'extends' code
+         * significantly, because it merges all the extended configs into the resulting one.       
+         */
+        const [extendedData, extendedPath] = getExtendedTsConfig(data, tsConfigDirectory);
 
         if (extendedData.error) {
           let message = 'Error while initializing tsconfig';
-          ctx.fatal('tsconfig extends error', [data.error.messageText || message]);
+          ctx.fatal('tsconfig extends error', [extendedData.error.messageText || message]);
         }
-        if (extendedData.config) {
-          if (extendedData.config.compilerOptions) {
-            if (extendedData.config.compilerOptions.baseUrl && !baseURL) {
-              tsConfigDirectory = path.dirname(targetExtendedFile);
-              baseURL = extendedData.config.compilerOptions.baseUrl;
-            }
-            for (const key in extendedData.config.compilerOptions) {
-              tsConfigCompilerOptions[key] = extendedData.config.compilerOptions[key];
-            }
+
+        const extendedOptions = extendedData.config?.compilerOptions;
+
+        if (extendedOptions) {
+          if (extendedOptions.baseUrl && !baseURL) {
+            tsConfigDirectory = extendedPath;
+            baseURL = extendedOptions.baseUrl;
+          }
+
+          for (const key in extendedOptions) {
+            tsConfigCompilerOptions[key] = extendedOptions[key];
           }
         }
       }
