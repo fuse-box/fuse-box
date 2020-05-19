@@ -19,6 +19,7 @@ export interface ASTNode {
   definite?: boolean;
   elementTypes?: Array<ASTNode>;
   elements?: Array<ASTNode>;
+  escapedText?: string;
   exportKind?: string;
   expressions?: Array<ASTNode>;
   importKind?: string;
@@ -88,6 +89,7 @@ export interface ASTNode {
 export const ASTType = {
   EnumDeclaration: 'TSEnumDeclaration',
   EnumMember: 'TSEnumMember',
+  PrivateIdentifier: 'TSPrivateIdentifier',
 
   ParameterProperty: 'TSParameterProperty',
   StringKeyword: 'TSStringKeyword',

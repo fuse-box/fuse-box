@@ -49,6 +49,9 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
                 ClassNode = node;
 
                 for (const bodyEl of classBody.body as Array<ASTNode>) {
+                  if (bodyEl.key.type === ASTType.PrivateIdentifier) {
+                    console.log(bodyEl.key.escapedText);
+                  }
                   if (bodyEl.type === 'ClassProperty' && bodyEl.value) {
                     if (bodyEl.static) {
                       if (!StaticProps) StaticProps = [];
