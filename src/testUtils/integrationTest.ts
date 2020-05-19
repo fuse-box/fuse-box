@@ -15,6 +15,8 @@ import { ensureDir, fastHash, fileExists, listDirectory, path2RegexPattern, read
 import { createTestBrowserEnv, ITestBrowserResponse } from './browserEnv/testBrowserEnv';
 import { createTestServerEnv, ITestServerResponse } from './serverEnv/testServerEnv';
 
+const MODULES_PATH = 'node_modules';
+
 export async function testServer(props: {
   config?: IPublicConfig;
   type?: EnvironmentType;
@@ -131,7 +133,7 @@ export function createTestWorkspace(props: {
   let cacheFolder = path.join(rootDir, '.cache');
 
   // creating modules if needed
-  const modulesRoot = path.join(rootDir, 'modules');
+  const modulesRoot = path.join(rootDir, MODULES_PATH);
   let modules = [];
   if (props.modules) {
     for (const name in props.modules) {
@@ -174,7 +176,7 @@ export function createTestWorkspace(props: {
       }
     },
     removeModuleFile: filename => {
-      const filePath = path.join(rootDir, 'modules', filename);
+      const filePath = path.join(rootDir, MODULES_PATH, filename);
       if (fileExists(filePath)) {
         fsExtra.removeSync(filePath);
       }
@@ -185,7 +187,7 @@ export function createTestWorkspace(props: {
       writeFileSync(filePath, contents);
     },
     setModuleFile: (filename: string, contents: string) => {
-      const filePath = path.join(rootDir, 'modules', filename);
+      const filePath = path.join(rootDir, MODULES_PATH, filename);
       ensureDir(path.dirname(filePath));
       writeFileSync(filePath, contents);
     },

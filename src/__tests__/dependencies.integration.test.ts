@@ -1,6 +1,6 @@
 import { EnvironmentType } from '../config/EnvironmentType';
 import { runBrowserTest, runServerTest } from '../testUtils/integrationHelper';
-import { EnvironmentTypesTestable, ITestWorkspace } from '../testUtils/integrationTest';
+import { EnvironmentTypesTestable } from '../testUtils/integrationTest';
 
 describe('User dependencies test', () => {
   describe('Electron cases', () => {
@@ -94,7 +94,7 @@ describe('User dependencies test', () => {
     });
 
     for (const env of EnvironmentTypesTestable) {
-      it.only(`should exlude and ignore all external deps env :[ ${EnvironmentType[env]} ] `, async () => {
+      it(`should exlude and ignore all external deps env :[ ${EnvironmentType[env]} ] `, async () => {
         const { response } = await runServerTest({
           config: {
             dependencies: { serverIgnoreExternals: true },
