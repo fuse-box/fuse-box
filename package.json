@@ -41,6 +41,7 @@
     "http-proxy-middleware": "^0.20.0",
     "ieee754": "^1.1.13",
     "lego-api": "^1.0.8",
+    "lodash.merge": "^4.6.2",
     "meriyah": "1.9.8",
     "offset-sourcemap-lines": "^1.0.1",
     "open": "^7.0.0",
@@ -57,6 +58,7 @@
   "description": "Fuse-Box a bundler that does it right",
   "devDependencies": {
     "@types/jest": "^24.0.25",
+    "@types/lodash.merge": "^4.6.6",
     "@types/node": "^13.1.2",
     "@types/styled-components": "^4.4.1",
     "codecov": "^3.6.1",
@@ -138,5 +140,5 @@
     "typecheck": "ts-node -T fuse typecheck"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-next.432"
+  "version": "4.0.0-next.433"
 }
