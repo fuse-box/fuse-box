@@ -94,7 +94,7 @@ describe('User dependencies test', () => {
     });
 
     for (const env of EnvironmentTypesTestable) {
-      it(`should exlude and ignore all external deps env :[ ${EnvironmentType[env]} ] `, async () => {
+      it.only(`should exlude and ignore all external deps env :[ ${EnvironmentType[env]} ] `, async () => {
         const { response } = await runServerTest({
           config: {
             dependencies: { serverIgnoreExternals: true },

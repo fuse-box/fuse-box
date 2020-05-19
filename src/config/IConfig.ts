@@ -18,6 +18,7 @@ import { IElectronOptions } from './IElectronOptions';
 import { IThreadingConfig } from './IThreadingConfig';
 import { IWatcherPublicConfig } from './IWatcher';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
+import { INodeModuleLookup } from '../resolver/nodeModuleLookup';
 
 
 interface ISourceMap {
@@ -92,6 +93,6 @@ export interface IConfig {
   getPublicRoot?: (target?: string) => string;
   getResourceConfig: (stylesheet?: IStyleSheetProps) => IResourceConfig;
   isEssentialDependency?: (name: string) => boolean;
-  shouldIgnoreDependency?: (name: string) => boolean;
+  shouldIgnoreDependency?: (pkg: INodeModuleLookup) => boolean;
   supportsStylesheet?: () => boolean;
 }

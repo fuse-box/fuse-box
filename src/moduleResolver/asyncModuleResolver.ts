@@ -61,7 +61,7 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
     if (resolved.package) {
       absPath = resolved.package.targetAbsPath;
 
-      if (config.shouldIgnoreDependency(resolved.package.meta.name)) {
+      if (config.shouldIgnoreDependency(resolved.package)) {
         return { ignore: true };
       }
       let pkg = bundleContext.getPackage(resolved.package.meta);
