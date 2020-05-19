@@ -1,0 +1,7 @@
+{
+    "watch": [
+        "./fuse/dist/**"
+    ],
+    "exec": "node ./fuse/dist/app.js",
+    "inspect": "0.0.0.0:9229"
+}
