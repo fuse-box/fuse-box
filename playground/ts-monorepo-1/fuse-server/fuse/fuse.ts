@@ -10,15 +10,13 @@ console.log('Workspace Root:', workspaceRoot);
 runUpdateSimulation(!!process.env.AUTOMOD);
 
 const fuse = fusebox({
+  cache: false,
   compilerOptions: {
     tsConfig: '../tsconfig.json',
   },
   devServer: true,
   entry: '../src/index.ts',
   target: 'server',
-  dependencies: {
-    serverIgnoreExternals: false
-  },
   watcher: {
     root: [workspaceRoot],
   },

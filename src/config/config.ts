@@ -7,6 +7,7 @@ import { IConfig, IPublicConfig } from './IConfig';
 import { IResourceConfig } from './IResourceConfig';
 import { IRunProps } from './IRunProps';
 import { IStyleSheetProps } from './IStylesheetProps';
+import { INodeModuleLookup } from '../resolver/nodeModuleLookup';
 
 const ESSENTIAL_DEPENDENCIES = ['fuse_helpers_decorate'];
 
@@ -37,10 +38,11 @@ export function Configuration(ctx: Context): IConfig {
       return resources;
     },
     isEssentialDependency: (name: string) => ESSENTIAL_DEPENDENCIES.includes(name),
-    shouldIgnoreDependency: (name: string) => {
+    shouldIgnoreDependency: (pkg: INodeModuleLookup) => {
+      const { isUserOwned, meta: { name } } = pkg;
       if (ESSENTIAL_DEPENDENCIES.includes(name)) return false;
       if (self.target === 'server') {
-        if (self.dependencies.serverIgnoreExternals) return true;
+        if (self.dependencies.serverIgnoreExternals && !isUserOwned) return true;
       }
       if (self.dependencies.ignore && self.dependencies.ignore.includes(name)) return true;
       return false;
