@@ -301,6 +301,8 @@ exports[`Es exports tests export type should ignore export type" 1`] = `
 "
 `;
 
+exports[`Es exports tests export type should remove empty export declaration" 1`] = `""`;
+
 exports[`Es exports tests export typescript objects should remove export default interface 1`] = `
 "alert(1);
 "

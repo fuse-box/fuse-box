@@ -386,7 +386,8 @@ export function ExportTransformer(): ITransformer {
               }
               schema.replace(newNodes);
               return schema.ensureESModuleStatement(compilerOptions);
-            }
+            } else if (!node.declaration) return schema.remove();
+
             /**
              * ************************************************************************
              * Export objects directly

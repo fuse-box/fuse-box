@@ -537,5 +537,14 @@ describe('Es exports tests', () => {
       });
       expect(result.code).toMatchSnapshot();
     });
+
+    it('should remove empty export declaration"', () => {
+      const result = testTranspile({
+        code: `
+          export {}
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
   });
 });
