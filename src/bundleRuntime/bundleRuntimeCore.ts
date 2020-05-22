@@ -42,7 +42,9 @@ function getCodeSplittingFunction(target: ITarget) {
         document.head.appendChild(script);
         script.onload = function() {
           if (modules[id]) {
-            conf.fns.map(x => x(f.r(id)));
+            conf.fns.map(function(x) {
+              return x(f.r(id));
+            });
           } else reject('Resolve error of module ' + id + ' at path ' + conf.p);
           conf.fns = void 0;
         };
