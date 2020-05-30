@@ -10,7 +10,7 @@ export const tryLoadExtendedTsConfig = (tsConfigDir: string, tsExtends: string) 
      * a 'node_module'.
      */
     if (extendedConfig.error) {
-        extendedPath = require.resolve(tsExtends, { paths: [process.cwd()] });
+        extendedPath = require.resolve(tsExtends, { paths: [tsConfigDir, process.cwd()] });
         extendedConfig = parseTypescriptConfig(extendedPath);
     }
     return [extendedConfig, extendedPath] as const;
