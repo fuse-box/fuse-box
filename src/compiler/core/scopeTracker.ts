@@ -70,6 +70,9 @@ export function scopeTracker(schema: ISchema): IBodyScope {
       // function arguments
       if (parent.params) {
         for (const param of parent.params) {
+          if (param.type === ASTType.AssignmentPattern && param.left && param.left.type === ASTType.Identifier) {
+            bodyScope[param.left.name] = { node: param, schema };
+          }
           if (param.type === ASTType.Identifier) bodyScope[param.name] = { node: param, schema };
           if (
             param.type === ASTType.ParameterProperty &&
