@@ -792,5 +792,15 @@ describe('scope test', () => {
       });
       expect(result.code).toMatchSnapshot();
     });
+
+    it('should respect another edge case with assignment', () => {
+      const result = testTranspile({
+        code: `
+        import bar from 'bar';
+        function foo(hello = bar) {}
+      `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
   });
 });

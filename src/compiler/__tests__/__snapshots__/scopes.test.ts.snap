@@ -56,6 +56,12 @@ function oi() {
 "
 `;
 
+exports[`scope test Import qualifiers should respect another edge case with assignment 1`] = `
+"var bar_1 = require(\\"bar\\");
+function foo(hello = bar_1.default) {}
+"
+`;
+
 exports[`scope test Import qualifiers should respect assignment pattern 1`] = `
 "function hello(foo = 1) {
   console.log(foo);
