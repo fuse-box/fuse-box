@@ -11,7 +11,7 @@ const _isLocalIdentifierRulesExceptionNodes = {
   ImportNamespaceSpecifier: 1,
   ImportSpecifier: 1,
   RestElement: 1,
-  [ASTType.AssignmentPattern]: 1,
+
   [ASTType.CatchClause]: 1,
   [ASTType.ImportEqualsDeclaration]: 1,
   [ASTType.QualifiedName]: 1,
@@ -22,6 +22,10 @@ export function isLocalIdentifier(node: ASTNode, parent: ASTNode, propertyName: 
   if (propertyName === 'params') return;
   if (node.type === 'Identifier') {
     if (propertyName === 'superClass') return true;
+
+    if (parent && parent.type === ASTType.AssignmentPattern && parent.left === node) {
+      return;
+    }
     if (_isLocalIdentifierRulesExceptionNodes[parent.type] || parent.$assign_pattern) return;
     if (parent) {
       if (parent.computed) return true;
