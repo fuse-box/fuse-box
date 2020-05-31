@@ -21,6 +21,10 @@ export function extractDefinedVariables(schema: ISchema, node: ASTNode, names: R
     return;
   }
 
+  if (node.type == ASTType.AssignmentPattern) {
+    if (node.left) extractDefinedVariables(schema, node.left, names);
+  }
+
   if (node.type === ASTType.ObjectPattern) {
     for (const property of node.properties) {
       let target = property;
