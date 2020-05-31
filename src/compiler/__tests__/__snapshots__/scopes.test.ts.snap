@@ -63,6 +63,12 @@ exports[`scope test Import qualifiers should respect assignment pattern 1`] = `
 "
 `;
 
+exports[`scope test Import qualifiers should respect assignment pattern inside const 1`] = `
+"const {foo = false} = options;
+console.log(foo);
+"
+`;
+
 exports[`scope test Iterator scope Export spread 1 1`] = `
 "for (var i = 0; i <= 0; i++) {
   console.log(i);

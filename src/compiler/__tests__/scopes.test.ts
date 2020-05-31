@@ -466,7 +466,7 @@ describe('scope test', () => {
 
       `,
     });
-    console.log(result.code);
+
     expect(result.code).toMatchSnapshot();
   });
 
@@ -777,6 +777,19 @@ describe('scope test', () => {
       `,
       });
 
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should respect assignment pattern inside const', () => {
+      const result = testTranspile({
+        code: `
+        import foo from 'foo';
+        const { foo = false } = options;
+        console.log(foo);
+
+
+      `,
+      });
       expect(result.code).toMatchSnapshot();
     });
   });
