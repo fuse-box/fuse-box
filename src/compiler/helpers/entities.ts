@@ -1,4 +1,4 @@
-import { findReplace, matchAll } from '../../utils/utils';
+import { findReplace } from '../../utils/utils';
 
 const mapping = {
   '&AElig;': '00C6',
