@@ -1,4 +1,5 @@
 import { ISchema } from '../../core/nodeSchema';
+import { htmlEntitiesToUnicode } from '../../helpers/entities';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 
@@ -224,7 +225,8 @@ export function JSXTransformer(): ITransformer {
               if (node.value.indexOf('\n') > -1 && !node.value.trim()) {
                 return schema.remove();
               }
-              return replace({ type: 'Literal', value: node.value });
+              const jsonString = JSON.stringify(node.value);
+              return replace({ raw: htmlEntitiesToUnicode(jsonString), type: 'Literal', value: node.value });
           }
         },
       };
