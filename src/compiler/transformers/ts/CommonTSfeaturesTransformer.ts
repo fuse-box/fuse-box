@@ -46,6 +46,7 @@ export function CommonTSfeaturesTransformer(): ITransformer {
             case ASTType.AbstractClassProperty:
             case ASTType.AbstractMethodDefinition:
             case ASTType.DeclareFunction:
+            case ASTType.IndexSignature:
             case ASTType.InterfaceDeclaration:
             case ASTType.TypeAliasDeclaration:
               return schema.remove();

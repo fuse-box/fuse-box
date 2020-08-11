@@ -211,7 +211,7 @@ export const ASTType = {
   ImportEqualsDeclaration: 'TSImportEqualsDeclaration',
   ImportExpression: 'ImportExpression',
   ImportType: 'ImportType',
-  IndexSignature: 'IndexSignature',
+  IndexSignature: 'TSIndexSignature',
   IndexedAccessType: 'IndexedAccessType',
   InferType: 'InferType',
 

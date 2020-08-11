@@ -1,3 +1,3 @@
-import foo from 'foo';
-const { foo = false } = options;
-console.log(foo);
+export class Rectangle extends FullRectangle {
+  [key: string]: number | boolean | any;
+}
