@@ -125,8 +125,8 @@ export function cssResolveURL(props: ICSSResolveURLProps): ICSSResolveURLResult 
     if (typeof value === 'undefined') {
       return match;
     }
-    // presering  svg filters, http links and data:image (base64) AND sass variables
-    if (/(^(#|data:|http)|\$)/.test(value)) {
+    // preserving svg filters, http links, data:image (base64), sass and less variables
+    if (/^#|data:|http|\$|@/.test(value)) {
       // return those as is
       return match;
     }
