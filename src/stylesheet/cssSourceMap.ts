@@ -1,41 +1,23 @@
 import * as path from 'path';
-import { Context } from '../core/Context';
-import { Module } from '../core/Module';
-import { extractFuseBoxPath, joinFuseBoxPath } from '../utils/utils';
+import { Context } from '../core/context';
+import { IModule } from '../moduleResolver/module';
+import { makePublicPath } from '../utils/utils';
 export interface IAlignCSSSourceMap {
-  module: Module;
-  sourceMap: any;
   ctx: Context;
+  module: IModule;
+  sourceMap: any;
 }
 
 export function alignCSSSourceMap(props: IAlignCSSSourceMap): string {
-  const { ctx, sourceMap, module } = props;
+  const { module, sourceMap } = props;
 
   const json = sourceMap.file ? sourceMap : JSON.parse(sourceMap.toString());
-  const rootPath = path.dirname(module.props.absPath);
-  const isDefault = module.pkg.isDefaultPackage;
-
+  const rootPath = path.dirname(module.absPath);
   if (json.sources) {
     for (let i = 0; i < json.sources.length; i++) {
       const name = json.sources[i];
-
       const resolvedPath = path.resolve(rootPath, name);
-      if (isDefault) {
-        json.sources[i] = joinFuseBoxPath(
-          ctx.config.sourceMap.sourceRoot,
-          extractFuseBoxPath(ctx.config.homeDir, resolvedPath),
-        );
-      } else {
-        const pkg = module.pkg;
-
-        const packageRoot = pkg.props.meta.packageRoot;
-        const packageName = pkg.getPublicName();
-        json.sources[i] = joinFuseBoxPath(
-          ctx.config.defaultSourceMapModulesRoot,
-          packageName,
-          extractFuseBoxPath(packageRoot, resolvedPath),
-        );
-      }
+      json.sources[i] = makePublicPath(resolvedPath);
     }
   }
   return JSON.stringify(json);

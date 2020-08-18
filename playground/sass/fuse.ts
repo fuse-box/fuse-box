@@ -1,18 +1,17 @@
 import * as path from 'path';
-import { fusebox, sparky, pluginLess } from '../../src';
+import { fusebox, pluginLess, pluginSass, sparky } from '../../src';
 
 class Context {
   isProduction;
   runServer;
   getConfig() {
     return fusebox({
-      target: 'browser',
       entry: 'src/index.tsx',
+      target: 'browser',
       webIndex: {
-        template: 'src/index.html',
         embedIndexedBundles: true,
+        template: 'src/index.html',
       },
-      tsConfig: 'src/tsconfig.json',
 
       stylesheet: {
         autoImport: [{ file: 'src/resources/resources.scss' }],
@@ -20,28 +19,29 @@ class Context {
       },
 
       cache: true,
+      plugins: [pluginSass('mod.scss', { asModule: {} })],
 
-      watch: true,
       hmr: true,
+      watcher: true,
 
       devServer: true,
     });
   }
 }
-const { task, exec, rm } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   rm('./dist');
   ctx.runServer = true;
   const fuse = ctx.getConfig();
-  await fuse.runDev();
+  await fuse.runDev({ uglify: true, bundles: { app: 'app.js' } });
 });
 
 task('preview', async ctx => {
   ctx.runServer = true;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: true });
+  await fuse.runProd({ uglify: false, bundles: { app: 'app.js' } });
 });
 task('dist', async ctx => {
   ctx.runServer = false;

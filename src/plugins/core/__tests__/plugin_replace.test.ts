@@ -10,12 +10,12 @@ describe('Plugin replace test', () => {
     const mock = mockModule({});
 
     fileMock.addFile(__filename, '$version');
-    mock.module.props.absPath = __filename;
+    mock.module.absPath = __filename;
 
     const data = pluginReplace('plugin_replace.test.ts', { $version: '1.0.0' });
 
     data(mock.ctx);
-    mock.ctx.ict.sync('assemble_before_analysis', { module: mock.module });
+    mock.ctx.ict.sync('module_init', { module: mock.module });
     expect(mock.module.contents).toEqual('1.0.0');
   });
 
@@ -23,12 +23,12 @@ describe('Plugin replace test', () => {
     const mock = mockModule({});
 
     fileMock.addFile(__filename, '$version');
-    mock.module.props.absPath = __filename;
+    mock.module.absPath = __filename;
 
     const data = pluginReplace({ $version: '1.0.0' });
 
     data(mock.ctx);
-    mock.ctx.ict.sync('assemble_before_analysis', { module: mock.module });
+    mock.ctx.ict.sync('module_init', { module: mock.module });
 
     expect(mock.module.contents).toEqual('1.0.0');
   });

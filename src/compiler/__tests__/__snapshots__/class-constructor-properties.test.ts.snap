@@ -1,0 +1,321 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Class constructor properties Class props should create a computed prop 1`] = `
+"const foo = \\"prop\\";
+class A {
+  constructor() {
+    this[foo] = \\"hey\\";
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should create a computed prop respecting export 1`] = `
+"exports.IsException = Symbol();
+class __DefaultExport__ {
+  constructor() {
+    this[exports.IsException] = true;
+  }
+}
+exports.default = __DefaultExport__;
+"
+`;
+
+exports[`Class constructor properties Class props should create a computed prop respecting imports 1`] = `
+"var mod_1 = require(\\"mod\\");
+class A {
+  constructor() {
+    this[mod_1.default] = \\"hey\\";
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should create constructor with extends 1`] = `
+"class A extends B {
+  constructor() {
+    super(...arguments);
+    this.name = \\"hey\\";
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should create constructor with extends being in export default 1`] = `
+"class __DefaultExport__ extends B {
+  constructor() {
+    super(...arguments);
+    this.name = \\"hey\\";
+  }
+}
+exports.default = __DefaultExport__;
+"
+`;
+
+exports[`Class constructor properties Class props should handle constructor overrides 1`] = `
+"class A {
+  constructor(hey = \\"key\\") {
+    this.hey = hey;
+    this.name = \\"hey\\";
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should remove add a property to the existing constructor 1`] = `
+"class A {
+  constructor() {
+    this.name = \\"hey\\";
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should remove add a property to the existing constructor respecting other public methods 1`] = `
+"class A {
+  constructor(hey = \\"key\\") {
+    this.hey = hey;
+    this.name = \\"hey\\";
+    console.log(this.name);
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should remove add a property without constructor 1`] = `
+"class A {
+  constructor() {
+    this.name = \\"hey\\";
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should remove property that's not inited 1`] = `
+"class A {}
+"
+`;
+
+exports[`Class constructor properties Class props should respect existing constructor with extends being in export default 1`] = `
+"class __DefaultExport__ extends B {
+  constructor(oi) {
+    super(oi);
+    this.oi = oi;
+    this.name = \\"hey\\";
+  }
+}
+exports.default = __DefaultExport__;
+"
+`;
+
+exports[`Class constructor properties Static properties should add a computed property 1`] = `
+"const hey = \\"oi\\";
+class A {}
+A[hey] = \\"some value\\";
+"
+`;
+
+exports[`Class constructor properties Static properties should add a computed property respecting existing export 1`] = `
+"exports.IsException = Symbol();
+class __DefaultExport__ {}
+__DefaultExport__[exports.IsException] = true;
+exports.default = __DefaultExport__;
+"
+`;
+
+exports[`Class constructor properties Static properties should add a computed property respecting imports 1`] = `
+"var mod_1 = require(\\"mod\\");
+class A {}
+A[mod_1.default] = \\"some value\\";
+"
+`;
+
+exports[`Class constructor properties Static properties should handle a static default property 1`] = `
+"class A {}
+A.hey = \\"some\\";
+"
+`;
+
+exports[`Class constructor properties Static properties should not add an empty static property 1`] = `
+"class A {}
+"
+`;
+
+exports[`Class constructor properties Static properties should static prop with class assigned to a const 1`] = `
+"var _1_;
+const foo = (_1_ = class A {}, _1_.oi = true, _1_);
+"
+`;
+
+exports[`Class constructor properties Static properties should static prop with class assigned to a const 2 (with return combo) 1`] = `
+"var _1_;
+exports.exception = constructor => {
+  return (_1_ = class _UnnamedClass_1 extends constructor {
+    constructor() {
+      super(...arguments);
+      this.oi = 1;
+    }
+  }, _1_.hey = 1, _1_);
+};
+"
+`;
+
+exports[`Class constructor properties Static properties should static prop with class assigned to a const 2 (with return) 1`] = `
+"var _1_;
+exports.exception = constructor => {
+  return (_1_ = class _UnnamedClass_1 extends constructor {}, _1_.hey = 1, _1_);
+};
+"
+`;
+
+exports[`Class constructor properties Static properties should static prop with class assigned to a const 2 1`] = `
+"var _1_;
+var _2_;
+const foo = (_1_ = class A {}, _1_.oi = true, _1_), b = (_2_ = class _UnnamedClass_1 {}, _2_.oops = 1, _2_);
+"
+`;
+
+exports[`Class constructor properties Static properties static props in export default class with decorators 1`] = `
+"var _1_;
+var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+let ApiService = (_1_ = class ApiService {}, _1_.foo = () => {}, _1_.bar = () => {}, _1_);
+ApiService = __fuse_decorate.d([Injectable()], ApiService);
+exports.default = ApiService;
+"
+`;
+
+exports[`Class constructor properties should deal with immediate function calls on initialized properties 1`] = `
+"class HelloWorld {
+  constructor(welcome) {
+    this.welcome = welcome;
+    console.log(this.welcome);
+  }
+}
+"
+`;
+
+exports[`Class constructor properties should deal with inner classes 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class Amazing {}
+class HelloWorld extends Amazing {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    super();
+    this.welcome = welcome;
+    this.to = to;
+    this.awesomeness = awesomeness;
+    class Hey extends Amazing {
+      constructor(welcome, to, fuse) {
+        super();
+        this.welcome = welcome;
+        this.to = to;
+      }
+    }
+    Hey.someM = () => {};
+    Hey = __fuse_decorate.d([__fuse_decorate.p(0, foo), __fuse_decorate.p(1, foo()), __fuse_decorate.m(\\"design:paramtypes\\", [String, String, Boolean])], Hey);
+    this.fuse = fuse;
+  }
+  welcomeToTheBlock() {}
+}
+HelloWorld = __fuse_decorate.d([__fuse_decorate.p(0, foo), __fuse_decorate.p(1, foo()), __fuse_decorate.p(2, foo(123, \\"ab\\")), __fuse_decorate.m(\\"design:paramtypes\\", [String, String, String, Number, Boolean])], HelloWorld);
+"
+`;
+
+exports[`Class constructor properties should deal with multiple class definitions following each other 1`] = `
+"class HelloWorld {
+  constructor(welcome) {
+    this.welcome = welcome;
+    console.log(this.welcome);
+  }
+}
+class HelloWorld2 {
+  constructor(welcome2) {
+    this.welcome2 = welcome2;
+    console.log(this.welcome2);
+  }
+}
+class HelloWorld3 {
+  constructor(welcome3) {
+    this.welcome3 = welcome3;
+    console.log(this.welcome3);
+  }
+}
+"
+`;
+
+exports[`Class constructor properties should handle class expression 1`] = `
+"exports.exception = constructor => {
+  return class extends constructor {
+    constructor() {
+      super(...arguments);
+      this.name = constructor.name;
+    }
+  };
+};
+"
+`;
+
+exports[`Class constructor properties should initialize constructor properties in the constructor 1`] = `
+"class HelloWorld {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    this.welcome = welcome;
+    this.to = to;
+    this.awesomeness = awesomeness;
+    this.fuse = fuse;
+  }
+}
+"
+`;
+
+exports[`Class constructor properties should leave classes without constructor props alone 1`] = `
+"class HelloWorld {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    this.fuse = fuse;
+  }
+}
+"
+`;
+
+exports[`Class constructor properties should not add initializer calls in standard block statements 1`] = `
+"class Amazing {}
+class HelloWorld extends Amazing {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    super();
+    this.welcome = welcome;
+    this.to = to;
+    this.awesomeness = awesomeness;
+    (() => {
+      console.log('Freaky block statement here.');
+    })();
+    this.fuse = fuse;
+  }
+  welcomeToTheBlock() {}
+}
+"
+`;
+
+exports[`Class constructor properties should work with class as a default value 1`] = `
+"class A {
+  constructor(name = class {
+    constructor(hey = 2) {
+      this.hey = hey;
+    }
+  }) {
+    this.name = name;
+  }
+}
+"
+`;
+
+exports[`Class constructor properties should work with super classes 1`] = `
+"class Amazing {}
+class HelloWorld extends Amazing {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    super();
+    this.welcome = welcome;
+    this.to = to;
+    this.awesomeness = awesomeness;
+    this.fuse = fuse;
+  }
+}
+"
+`;

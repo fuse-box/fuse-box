@@ -1,11 +1,13 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 import { sassHandler } from '../../stylesheet/sassHandler';
+import { isNodeModuleInstalled } from '../../utils/utils';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
+import { getPackageManagerData } from '../../env';
 
-export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommon) {
+export function pluginSass(a?: IPluginCommon | RegExp | string, b?: IPluginCommon) {
   let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
   return (ctx: Context) => {
     opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
@@ -13,20 +15,20 @@ export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommo
     ctx.ict.on('bundle_resolve_module', props => {
       const { module } = props;
 
-      if (props.module.captured || !matcher.test(module.props.absPath)) {
+      if (props.module.captured || !matcher.test(module.absPath)) {
         return;
       }
 
-      if (!ctx.isInstalled('node-sass')) {
-        ctx.fatal(`Fatal error when capturing ${module.props.absPath}`, [
+      if (!isNodeModuleInstalled('node-sass')) {
+        ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
           'Module "sass" is required, Please install it using the following command',
-          'npm install node-sass --save-dev',
+          `${getPackageManagerData().installDevCmd} node-sass`,
         ]);
 
         return;
       }
 
-      ctx.log.info('sass', module.props.absPath);
+      ctx.log.info('sass', module.absPath);
 
       props.module.read();
       props.module.captured = true;
@@ -41,6 +43,7 @@ export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommo
       // Accepts postCSS Processor as well
       cssContextHandler({
         ctx,
+        fuseCSSModule: ctx.meta['fuseCSSModule'],
         module: module,
         options: opts.stylesheet,
         processor: sass,

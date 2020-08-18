@@ -1,42 +1,37 @@
-import { sparky, fusebox } from '../../src';
 import * as path from 'path';
+import { fusebox, sparky } from '../../src';
 class Context {
   isProduction;
   runServer;
   getConfig() {
     return fusebox({
-      target: 'browser',
+      cache: { enabled: true, root: './.cache' },
+      devServer: { httpServer: { port: 3000 } },
       entry: 'src/index.tsx',
-      webIndex: {
-        template: 'src/index.html',
-      },
-      tsConfig: 'src/tsconfig.json',
-
-      stylesheet: { paths: [path.join(__dirname, 'src/config')] },
-      cache: true,
-
-      watch: true,
+      //entry: 'src/edges.ts',
       hmr: true,
       logging: {
         level: 'succinct',
       },
-      devServer: { httpServer: { port: 3000 } },
-      // devServer: this.runServer && {
-      //   open: false,
-      //   httpServer: {
-      //     express: app => {},
-      //   },
-      //   hmrServer: { useCurrentUrl: true },
-      // },
+      stylesheet: { paths: [path.join(__dirname, 'src/config')] },
+      target: 'browser',
+      webIndex: {
+        template: 'src/index.html',
+      },
     });
   }
 }
-const { task, rm, exec } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;
   const fuse = ctx.getConfig();
-  await fuse.runDev();
+  await fuse.runDev({
+    bundles: {
+      distRoot: path.join(__dirname, 'dist'),
+      app: { path: 'app.js' },
+    },
+  });
 });
 
 task('preview', async ctx => {
@@ -59,12 +54,12 @@ task('dist', async ctx => {
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
   await fuse.runProd({
-    uglify: false,
-    screwIE: false,
-    cleanCSS: {
-      compatibility: {
-        properties: { urlQuotes: true },
-      },
-    },
+    // uglify: false,
+    // screwIE: false,
+    // cleanCSS: {
+    //   compatibility: {
+    //     properties: { urlQuotes: true },
+    //   },
+    // },
   });
 });

@@ -3,11 +3,11 @@ import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { fileExists } from '../utils/utils';
 
 export interface IResolveCSSModuleProps {
+  extensions: Array<string>;
+  options: IStyleSheetProps;
   paths: Array<string>;
   target: string;
-  extensions: Array<string>;
   tryUnderscore: boolean;
-  options: IStyleSheetProps;
 }
 
 function tryCSSModule(target: string, props: IResolveCSSModuleProps) {
@@ -31,8 +31,8 @@ export function replaceCSSMacros(target: string, macros: { [key: string]: string
 }
 
 export interface IResolveCSSModuleResult {
-  success: boolean;
   path?: string;
+  success: boolean;
 }
 
 export function cssResolveModule(props: IResolveCSSModuleProps): IResolveCSSModuleResult {
@@ -47,13 +47,13 @@ export function cssResolveModule(props: IResolveCSSModuleProps): IResolveCSSModu
     if (!path.extname(target)) {
       for (const extension of props.extensions) {
         const res = tryCSSModule(target + extension, props);
-        if (res) return { success: true, path: res };
+        if (res) return { path: res, success: true };
       }
     } else {
       // direct try if an extension is specified
       const found = tryCSSModule(target, props);
       if (found) {
-        return { success: true, path: target };
+        return { path: target, success: true };
       }
     }
   } else {
@@ -63,7 +63,7 @@ export function cssResolveModule(props: IResolveCSSModuleProps): IResolveCSSModu
       for (let i = 0; i < props.paths.length; i++) {
         for (const extension of props.extensions) {
           const res = tryCSSModule(path.join(props.paths[i], target + extension), props);
-          if (res) return { success: true, path: res };
+          if (res) return { path: res, success: true };
         }
       }
     } else {
@@ -71,7 +71,7 @@ export function cssResolveModule(props: IResolveCSSModuleProps): IResolveCSSModu
       for (let i = 0; i < props.paths.length; i++) {
         const found = tryCSSModule(path.join(props.paths[i], target), props);
         if (found) {
-          return { success: true, path: found };
+          return { path: found, success: true };
         }
       }
     }

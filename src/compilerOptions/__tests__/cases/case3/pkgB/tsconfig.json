@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "incremental": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*"],
+  /* TS allows comments in tsconfig.json files */
+  "references": [
+    {
+      /* we reference this one through node_modules so we can test that symlinks are dereferenced */
+      "path": "../node_modules/pkg-c"
+    }
+  ]
+}

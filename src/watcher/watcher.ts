@@ -1,153 +1,166 @@
-import * as chokidar from 'chokidar';
+import { watch as chokidarWatch } from 'chokidar';
 import * as path from 'path';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import { env } from '../env';
-import { WatchOptions } from 'chokidar';
+import { ensureScriptRoot, path2RegexPattern, excludeRedundantFolders } from '../utils/utils';
+import { bindWatcherReactions } from './bindWatcherReactions';
+export type IWatcher = ReturnType<typeof createWatcher>;
 
-type IChokidarEventType = 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir' | 'error' | 'ready';
-
-export interface IWatcherExternalProps {
-  paths?: any;
-  skipRecommendedIgnoredPaths?: boolean;
-  ignored?: Array<string | RegExp>;
-  banned?: Array<string>;
-  chokidar?: WatchOptions;
+export enum WatcherReaction {
+  UNMATCHED,
+  TS_CONFIG_CHANGED,
+  FUSE_CONFIG_CHANGED,
+  PACKAGE_LOCK_CHANGED,
+  PROJECT_FILE_CHANGED,
 }
 
-export function attachChokidar(props: {
-  root?: string;
-  chokidarOptions?: WatchOptions;
-  ignored?: Array<string | RegExp>;
-  cb: (event: IChokidarEventType, path: string) => void;
-}) {
-  const defaultOpts = {
-    ignoreInitial: true,
-    ignored: props.ignored,
-    persistent: true,
-  };
-  const userOptions = props.chokidarOptions || {};
-  const finalOptions = { ...defaultOpts, ...userOptions };
+const Reactions = [
+  { clearCache: true, reaction: WatcherReaction.TS_CONFIG_CHANGED, test: /tsconfig\.json$/ },
+  { reaction: WatcherReaction.PACKAGE_LOCK_CHANGED, test: /(package|yarn)-lock\.json$/ },
+  { clearCache: true, reaction: WatcherReaction.FUSE_CONFIG_CHANGED, test: /fuse\.(js|ts)$/ },
+];
 
-  var watcher = chokidar.watch(props.root, finalOptions);
-  watcher.on('all', (event, path) => {
-    props.cb(event, path);
-  });
+export type ChokidarChangeEvent = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
+
+export interface Reaction {
+  absPath: string;
+  event?: ChokidarChangeEvent;
+  reaction: WatcherReaction;
 }
 
-export function ignoredPath2Regex(input: string): RegExp {
-  const str = input.replace(/(\/|\\)/g, '(\\/|\\\\)');
-  return new RegExp(str);
-}
+export type ReactionStack = Array<Reaction>;
 
-export interface IWatcherProps {
-  ctx: Context;
-  onEvent: (action: WatcherAction, file?: string) => void;
-}
+export function createWatcher(ctx: Context) {
+  const config = ctx.config;
+  if (!config.watcher.enabled) return;
 
-export enum WatcherAction {
-  FATAL_ERROR = 'FATAL_ERROR',
-  RELOAD_TS_CONFIG = 'RELOAD_TS_CONFIG',
-  RELOAD_ONE_FILE = 'RELOAD_ONE_FILE',
-  HARD_RELOAD_MODULES = 'HARD_RELOAD_MODULES',
-  SOFT_RELOAD_FILES = 'SOFT_RELOAD_FILES',
-  HARD_RELOAD_ALL = 'HARD_RELOAD_ALL',
-  RESTART_PROCESS = 'RESTART_PROCESS',
-}
+  const props = config.watcher;
 
-export function detectAction(file: string, homeDir: string): WatcherAction {
-  if (file === env.SCRIPT_FILE) {
-    return WatcherAction.RESTART_PROCESS;
-  }
-
-  if (path.basename(file) === 'tsconfig.json') {
-    return WatcherAction.RELOAD_TS_CONFIG;
-  }
-
-  if (/(package-lock\.json|yarn\.lock)$/.test(file)) {
-    return WatcherAction.HARD_RELOAD_MODULES;
-  }
-
-  const isNotInsideHomeDir = /\.\./.test(path.relative(homeDir, file));
-  if (isNotInsideHomeDir) {
-    return;
-  }
-
-  return WatcherAction.RELOAD_ONE_FILE;
-}
-
-export function getEventData(props: {
-  input: { event: IChokidarEventType; path: string };
-  ctx: Context;
-}): WatcherAction {
-  const evt = props.input.event;
-  const file = path.normalize(props.input.path);
-  const homeDir = props.ctx.config.homeDir;
-  const events = {
-    add: () => detectAction(file, homeDir),
-    change: () => detectAction(file, homeDir),
-    unlink: () => detectAction(file, homeDir),
-    addDir: () => detectAction(file, homeDir),
-    unlinkDir: () => detectAction(file, homeDir),
-    error: () => {},
-  };
-  if (events[evt]) {
-    return events[evt]();
-  }
-}
-
-export function getRelevantEvent(actions: Array<WatcherAction>) {
-  if (actions.includes(WatcherAction.RESTART_PROCESS)) {
-    return WatcherAction.RESTART_PROCESS;
-  }
-  if (actions.includes(WatcherAction.HARD_RELOAD_MODULES)) {
-    return WatcherAction.HARD_RELOAD_MODULES;
-  }
-  if (actions.includes(WatcherAction.RELOAD_TS_CONFIG)) {
-    return WatcherAction.RELOAD_TS_CONFIG;
-  }
-  if (actions.includes(WatcherAction.SOFT_RELOAD_FILES)) {
-    return WatcherAction.SOFT_RELOAD_FILES;
-  }
-  if (actions.includes(WatcherAction.RELOAD_ONE_FILE)) {
-    return WatcherAction.RELOAD_ONE_FILE;
-  }
-}
-export interface Watcher {}
-export function createWatcher(props: IWatcherProps, externalProps?: IWatcherExternalProps) {
-  const ctx = props.ctx;
   const ict = ctx.ict;
-  externalProps = externalProps || {};
-  const ignored = externalProps.ignored ? externalProps.ignored : [];
-  const paths = externalProps.paths ? externalProps.paths : props.ctx.config.homeDir;
 
-  if (!externalProps.skipRecommendedIgnoredPaths) {
-    ignored.push('/node_modules/', /(\/|\\)\./, 'dist/', 'build/', /flycheck_/, /~$/, /\#.*\#$/, props.ctx.writer.outputDirectory);
+  bindWatcherReactions(ctx);
+
+  let includePaths: Array<RegExp> = [];
+  let ignorePaths: Array<RegExp> = [];
+
+  const { root } = props;
+  // ensure root is string[]
+  const roots = typeof root === "string" ? [root] : root;
+  // ensure roots are absolute paths
+  const absRoots = roots && roots.map(r => ensureScriptRoot(r));
+
+  if (!props.include) {
+    if (absRoots) {
+      includePaths = absRoots.map(path2RegexPattern)
+    }
+    else {
+      // taking an assumption that the watch directory should be next to the entry point
+      const entryPath = path.dirname(ctx.config.entries[0]);
+      includePaths.push(path2RegexPattern(entryPath));
+    }
+  } else {
+    for (const prop of props.include) {
+      if (typeof prop === 'string') {
+        includePaths.push(path2RegexPattern(ensureScriptRoot(prop)));
+      } else includePaths.push(prop);
+    }
   }
 
-  const ignoredRegEx: Array<RegExp> = ignored.map(str => (typeof str === 'string' ? ignoredPath2Regex(str) : str));
+  if (props.ignore) {
+    for (const ignore of props.ignore) {
+      ignorePaths.push(path2RegexPattern(ignore));
+    }
+  } else {
+    // default ignored paths
+    ignorePaths.push(
+      /node_modules/,
+      /(\/|\\)\./,
+      path2RegexPattern('/dist/'),
+      path2RegexPattern('/build/'),
+      /flycheck_/,
+      /~$/,
+      /\#.*\#$/,
+      path2RegexPattern(ctx.writer.outputDirectory),
+    );
+  }
 
-  //console.log(props.ctx.config.cache.root);
-  let events: Array<WatcherAction> = [];
+  let reactionStack: ReactionStack = [];
+
+  async function waitForContextReady(props: { cancelled?: boolean }, cb: () => void) {
+    function awaitContext(resolve) {
+      if (ctx.isWorking) {
+        setTimeout(() => {
+          awaitContext(resolve);
+        }, 10);
+      } else !props.cancelled && cb();
+    }
+    awaitContext(cb);
+  }
+
+  const awaitProps = { cancelled: false };
+
+  function acceptEvents() {
+    ict.sync('watcher_reaction', { reactionStack });
+    reactionStack = [];
+  }
+
   let tm;
+  function dispatchEvent(event: ChokidarChangeEvent, absPath: string) {
+    clearTimeout(tm);
 
-  ict.on('complete', data => {
-    attachChokidar({
-      root: paths,
-      chokidarOptions: externalProps.chokidar,
-      ignored: ignoredRegEx,
-      cb: (event, path) => {
-        clearTimeout(tm);
-        const action = getEventData({ input: { event, path }, ctx });
-        if (action) {
-          events.push(action);
-        }
-        tm = setTimeout(() => {
-          const action = getRelevantEvent(events);
-          events = [];
-          props.onEvent(action, path);
-        }, 50);
-      },
-    });
-    return data;
-  });
+    let projectFilesChanged = false;
+    for (const userPath of includePaths) {
+      if (userPath.test(absPath)) {
+        projectFilesChanged = true;
+        break;
+      }
+    }
+    if (projectFilesChanged) {
+      //ctx.log.clearConsole();
+      ctx.log.line();
+    }
+
+    if (projectFilesChanged) reactionStack.push({ absPath, event, reaction: WatcherReaction.PROJECT_FILE_CHANGED });
+    for (const x of Reactions) {
+      if (x.test.test(absPath)) reactionStack.push({ absPath, reaction: x.reaction });
+    }
+
+    awaitProps.cancelled = true;
+
+    // throttle events
+    tm = setTimeout(() => {
+      awaitProps.cancelled = false;
+      waitForContextReady(awaitProps, () => {
+        acceptEvents();
+      });
+    }, 10);
+  }
+
+  const self = {
+    // initialize the watcher
+    init: () => {
+      const defaultOpts = {
+        awaitWriteFinish: {
+          pollInterval: 100,
+          stabilityThreshold: 100,
+        },
+        ignoreInitial: true,
+        ignored: ignorePaths,
+        interval: 100,
+        persistent: true,
+      };
+      const userOptions = props.chokidarOptions || {};
+      const finalOptions = { ...defaultOpts, ...userOptions };
+
+      // if no user-roots are specified, use APP_ROOT
+      // ensure that SCRIPT_PATH gets watched
+      // and remove any redundant paths
+      const watchRoots = excludeRedundantFolders([...(absRoots || [env.APP_ROOT]), env.SCRIPT_PATH]);
+      const watcher = chokidarWatch(watchRoots, finalOptions);
+      watcher.on('all', dispatchEvent);
+    },
+  };
+
+  ict.on('init', self.init);
+  return self;
 }

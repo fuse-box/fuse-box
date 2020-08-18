@@ -1,11 +1,13 @@
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
+import { isNodeModuleInstalled } from '../../utils/utils';
+import { getPackageManagerData } from '../../env';
 
 export function pluginConsolidate(engine: string, options: any) {
   return async (ctx: Context) => {
-    if (!ctx.isInstalled('consolidate')) {
+    if (!isNodeModuleInstalled('consolidate')) {
       ctx.fatal(`Fatal error when trying to use  pluginConsolidate`, [
         'Module "consolidate" is required, Please install it using the following command',
-        'npm install consolidate --save-dev',
+        `${getPackageManagerData().installDevCmd} consolidate`,
       ]);
     }
     const consolidate = require('consolidate');

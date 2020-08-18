@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "jsx": "react",
+    "outDir": "dist/"
+  }
+}

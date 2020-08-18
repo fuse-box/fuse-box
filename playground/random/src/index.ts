@@ -1,3 +1,3 @@
-import * as v8 from 'v8';
-import * as vm from 'vm';
-console.log(v8, vm);
+import * as saga from 'redux-saga';
+
+console.log(saga.takeEvery([], function() {}));

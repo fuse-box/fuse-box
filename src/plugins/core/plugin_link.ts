@@ -1,22 +1,22 @@
 import * as path from 'path';
-import { Context } from '../../core/Context';
-import { joinFuseBoxPath, fileExists, fastHash, path2RegexPattern } from '../../utils/utils';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
 import { defineResourceGroup } from '../../stylesheet/cssResolveURL';
-import { Module } from '../../core/Module';
+import { fastHash, fileExists, joinFuseBoxPath, path2RegexPattern } from '../../utils/utils';
 import { wrapContents } from '../pluginStrings';
 
 export interface IPluginLinkOptions {
-  useDefault?: boolean;
   resourcePublicRoot?: string;
+  useDefault?: boolean;
 }
 
-export function pluginLinkHandler(module: Module, options?: IPluginLinkOptions) {
-  const ctx = module.props.ctx;
+export function pluginLinkHandler(module: IModule, options?: IPluginLinkOptions) {
+  const ctx = module.ctx;
   const resourceConfig = ctx.config.getResourceConfig();
   const resourcePublicRoot = ctx.config.getPublicRoot(
     options.resourcePublicRoot ? options.resourcePublicRoot : ctx.config.link.resourcePublicRoot,
   );
-  const target = module.props.absPath;
+  const target = module.absPath;
   let fileGroup;
   if (ctx.config.stylesheet.groupResourcesFilesByType) {
     fileGroup = defineResourceGroup(path.extname(target).toLowerCase());
@@ -32,11 +32,11 @@ export function pluginLinkHandler(module: Module, options?: IPluginLinkOptions) 
 
   module.captured = true;
   ctx.log.info('link', 'Captured $file with <bold>pluginLink</bold>', {
-    file: module.props.absPath,
+    file: module.absPath,
   });
 
   if (!fileExists(destination)) {
-    ctx.taskManager.copyFile(module.props.absPath, destination);
+    ctx.taskManager.copyFile(module.absPath, destination);
   }
 
   module.contents = wrapContents(
@@ -45,7 +45,7 @@ export function pluginLinkHandler(module: Module, options?: IPluginLinkOptions) 
   );
 }
 
-export function pluginLink(target: string | RegExp, options?: IPluginLinkOptions) {
+export function pluginLink(target: RegExp | string, options?: IPluginLinkOptions) {
   let matcher: RegExp;
   if (typeof target === 'string') {
     matcher = path2RegexPattern(target);
@@ -57,7 +57,7 @@ export function pluginLink(target: string | RegExp, options?: IPluginLinkOptions
       if (!props.module.captured) {
         // filter out options
 
-        if (!matcher.test(props.module.props.absPath)) {
+        if (!matcher.test(props.module.absPath)) {
           return;
         }
 

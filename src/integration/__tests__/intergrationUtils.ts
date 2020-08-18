@@ -1,10 +1,5 @@
-import { IPublicConfig } from '../../config/IPublicConfig';
-
-import { testUtils, mockWriteFile } from '../../utils/test_utils';
 import * as path from 'path';
-import { env } from '../../env';
-import * as fs from 'fs';
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 import { matchAll } from '../../utils/utils';
 
 export function createFileSet(directory, files: { [key: string]: string }) {
@@ -37,11 +32,11 @@ export class IntegrationHelper {
   }
 
   public extractScripts(contents: string) {
-    const data: { jsPaths: Array<string>; cssPaths: Array<string>; jsRaw: Array<string>; cssRaw: Array<string> } = {
-      jsPaths: [],
+    const data: { cssPaths: Array<string>; cssRaw: Array<string>; jsPaths: Array<string>; jsRaw: Array<string> } = {
       cssPaths: [],
-      jsRaw: [],
       cssRaw: [],
+      jsPaths: [],
+      jsRaw: [],
     };
     matchAll(/<script.*src=\"(.*?)\"/gim, contents, matches => {
       data.jsPaths.push(matches[1]);
@@ -60,32 +55,4 @@ export class IntegrationHelper {
     });
     return data;
   }
-}
-export function createTestBundle(config: IPublicConfig, files: { [key: string]: string }) {
-  testUtils();
-
-  const mock = mockWriteFile();
-
-  // adding development api to the mock
-  const devApiPath = path.join(env.FUSE_MODULES, 'fuse-loader/index.js');
-  const devApiContents = fs.readFileSync(devApiPath).toString();
-  mock.addFile(devApiPath, devApiContents);
-
-  for (const key in files) mock.addFile(key, files[key]);
-
-  config.logging = { level: 'disabled' };
-  config.watch = false;
-  config.cache = false;
-  config.devServer = false;
-  if (!config.plugins) {
-    config.plugins = [];
-  }
-  let helper = new IntegrationHelper(mock);
-  config.plugins.push(ctx => {
-    helper.ctx = ctx;
-  });
-
-  const { fusebox } = require('../../core/fusebox');
-  const fuse = fusebox(config);
-  return { fuse, mock, helper: helper };
 }

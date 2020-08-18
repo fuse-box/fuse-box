@@ -1,4 +1,4 @@
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 import { wrapContents } from '../pluginStrings';
 import { parsePluginOptions } from '../pluginUtils';
 
@@ -6,7 +6,7 @@ export interface IPluginProps {
   useDefault?: boolean;
 }
 
-export function pluginFoo(a: string | RegExp, b?: IPluginProps) {
+export function pluginFoo(a: RegExp | string, b?: IPluginProps) {
   let [opts, matcher] = parsePluginOptions<IPluginProps>(a, b, {
     useDefault: true,
   });
@@ -15,7 +15,7 @@ export function pluginFoo(a: string | RegExp, b?: IPluginProps) {
       if (!props.module.captured) {
         const module = props.module;
 
-        if (!matcher.test(module.props.absPath)) {
+        if (!matcher.test(module.absPath)) {
           return;
         }
         // read the contents

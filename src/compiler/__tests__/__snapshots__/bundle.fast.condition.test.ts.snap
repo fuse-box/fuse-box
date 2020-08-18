@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Browser fast condition Fast condition should unwrap isBrowser 1`] = `
+"console.log(\\"isBrowser\\");
+"
+`;
+
+exports[`Browser fast condition Fast condition should unwrap isServer 1`] = `
+"console.log(\\"isServer\\");
+"
+`;

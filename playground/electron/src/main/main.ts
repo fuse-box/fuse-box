@@ -24,10 +24,10 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     ...windowBounds.get(),
+    icon: path.join(__dirname, 'resources', 'icon.png'),
     webPreferences: {
       nodeIntegration: true,
     },
-    icon: path.join(__dirname, 'resources', 'icon.png'),
   });
 
   logger.init(mainWindow);

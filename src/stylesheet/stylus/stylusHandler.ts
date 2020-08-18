@@ -1,6 +1,6 @@
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
-import { Context } from '../../core/Context';
-import { Module } from '../../core/Module';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
 import { replaceCSSMacros } from '../cssResolveModule';
 import { resolveCSSResource } from '../cssResolveURL';
 import { alignCSSSourceMap } from '../cssSourceMap';
@@ -8,16 +8,16 @@ import { IStyleSheetProcessor } from '../interfaces';
 import { stylusRender } from './stylusRenderer';
 export interface IPostCSSHandlerProps {
   ctx: Context;
-  module: Module;
+  module: IModule;
   options: IStyleSheetProps;
 }
 
 async function renderModule(props: IPostCSSHandlerProps) {
   const data = await stylusRender({
     contents: props.module.contents,
-    withSourceMaps: props.module.isCSSSourceMapRequired(),
+    withSourceMaps: props.module.isCSSSourceMapRequired,
     paths: props.options.paths,
-    filePath: props.module.props.absPath,
+    filePath: props.module.absPath,
 
     onImportString: str => {
       if (props.options.macros) {
@@ -42,14 +42,14 @@ async function renderModule(props: IPostCSSHandlerProps) {
         if (props.options.breakDependantsCache) {
           props.module.breakDependantsCache = true;
         }
-        props.module.addWeakReference(item.value);
+        props.module.ctx.setLinkedReference(item.value, props.module);
       }
     },
   });
 
   let sourceMap: string;
   if (data.map) {
-    sourceMap = alignCSSSourceMap({ module: props.module, sourceMap: data.map, ctx: props.ctx });
+    sourceMap = alignCSSSourceMap({ ctx: props.ctx, module: props.module, sourceMap: data.map });
   }
   return { css: data.css, map: sourceMap };
 }

@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "echo \"\\e[33m- This is the workspace, to run the main app, cd fuse-app or fuse-server, and then start -\\e[0m\""
+  },
+  "workspaces": [
+    "@myorg/*",
+    "fuse-app",
+    "fuse-server"
+  ]
+}

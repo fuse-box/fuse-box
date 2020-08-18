@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Require statement intercepto it should replace require ref 1`] = `
+"if (\\"function\\" === 'function' && __fusereq) {
+  console.log(1);
+}
+"
+`;
+
+exports[`Require statement intercepto it should replace require ref 2 1`] = `
+"if (\\"function\\" === 'function' && typeof __fusereq.ensure) {
+  console.log(1);
+}
+"
+`;
+
+exports[`Require statement intercepto it should replace typeof require 1`] = `
+"console.log(\\"function\\");
+"
+`;
+
+exports[`Require statement intercepto it should replace typeof require is defined in the scope 1`] = `
+"function some(require) {
+  console.log(typeof require);
+}
+"
+`;

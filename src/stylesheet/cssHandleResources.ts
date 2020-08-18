@@ -1,26 +1,26 @@
 import { IStyleSheetProps } from '../config/IStylesheetProps';
-import { Context } from '../core/Context';
-import { Module } from '../core/Module';
+import { Context } from '../core/context';
+import { IModule } from '../moduleResolver/module';
 import { cssResolveURL } from './cssResolveURL';
 
 export interface ICSSHandleResourcesProps {
-  options: IStyleSheetProps;
   ctx: Context;
-  module: Module;
-  url?: string;
   fileRoot?: string;
+  module: IModule;
+  options: IStyleSheetProps;
+  url?: string;
 }
 
 export function cssHandleResources(
-  opts: { path: string; contents: string },
+  opts: { contents: string; path: string },
   props: ICSSHandleResourcesProps,
-): { file: string; contents: string } {
+): { contents: string; file: string } {
   const urlResolver = cssResolveURL({
-    filePath: opts.path,
-    ctx: props.ctx,
     contents: opts.contents,
+    ctx: props.ctx,
+    filePath: opts.path,
     options: props.options,
   });
 
-  return { file: opts.path, contents: urlResolver.contents };
+  return { contents: urlResolver.contents, file: opts.path };
 }

@@ -1,15 +1,18 @@
 {
-  "name": "random",
-  "version": "1.0.0",
+  "author": "",
+  "dependencies": {
+    "array-includes": "3.1.1",
+    "lit-element": "^2.2.1",
+    "pdfjs-dist": "2.2.228",
+    "redux-saga": "^0.16.2",
+    "socket.io-client": "^2.3.0"
+  },
   "description": "",
+  "license": "ISC",
   "main": "fuse.js",
+  "name": "random",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "v8": "^0.1.0",
-    "vm": "^0.1.0"
-  }
+  "version": "1.0.0"
 }

@@ -2,14 +2,15 @@
 
 The main goal of caching is to reduce time spent on compiling of modules. It's enabled by default.
 
-Your cache is located by default in `node_modules/.fusebox`
+Your cache is located by default in `${APP_ROOT}/.cache`
 
 When running production mode - `runProd()` cache will be ALWAYS disabled and all of its settings will be ignored.
 
 ### Setting custom cache folder
 
-Sometimes it's required to set different cache folders in order to avoid cache collision. If you are using multiple
-instances of FuseBox (they are both watched) it's always a good idea to split them.
+Sometimes it's required to set different cache folders in order to avoid cache collision. FuseBox makes a unique
+combination of the target folder for caching (based on your entries). However, if you have 2 instances of FuseBox
+pointed to the same entry point it's always a good idea to set different folders
 
 ```ts
 fusebox({
@@ -17,32 +18,15 @@ fusebox({
 });
 ```
 
-### FTL mode
+### Setting cache strategy
 
-`FTL` stands for `Fast Than Light` mode where FuseBox doesn't write the changes to the filesystem on an HMR event but
-uses memory instead.
+FuseBox will write cache to the file system by default and restore next time your launch `fuse.ts`. It's extremeley
+useful if you're working with large code base application which require some time to get bundled.
+
+You can set the `strategy` to `memory` to avoid writing to the file system
 
 ```ts
 fusebox({
-  cache: { FTL: true },
+  cache: { enabled: true, strategy: 'memory' /* or 'fs' */ },
 });
 ```
-
-`FTL` won't work with target `server`. The requirements for `FTL` to work follow:
-
-- webIndex should be enabled
-- Target must be `browser` or `electron`
-- cache should be enabled
-- devServer must be enabled
-
-**How does it work?**
-
-If you have a lot of files in your project (+500) it naturally takes some time to generate a bundle. Even if you have
-cache on, it might still take a few seconds to generate it on the fly. With `FTL` on, FuseBox will inject a script
-`__ftl` into `webIndex` `(index.html)` which will contain 5 latest modules you are working on.
-
-You will be "dropped" out of FTL if you change file's dependency tree (For example add or remove an import) or exceed a
-maximum in-memory amount of stored modules (which is 5)
-
-`FTL` is extremely useful when working on multiple components in a large project. HMR reload time will be reduced from
-`2-3 seconds` to `5-10 milliseconds`

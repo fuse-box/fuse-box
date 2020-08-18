@@ -1,22 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "isolatedModules": false,
+    "baseUrl": ".",
+    "declaration": false,
+    "downlevelIteration": true,
     "jsx": "react",
-    "importHelpers": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "noUnusedLocals": true,
-    "declaration": true,
-    "noImplicitAny": false,
-    "noImplicitUseStrict": false,
-    "removeComments": true,
-    "noEmitHelpers": true,
-    "noLib": false,
-    "outDir": "build/",
-    "preserveConstEnums": true,
-    "suppressImplicitAnyIndexErrors": true
+    "lib": ["es2018", "dom"],
+    "moduleResolution": "node",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "target": "esnext"
   }
 }

@@ -113,4 +113,26 @@ describe('lookup test', () => {
     const response = fileLookup({ isDev: true, fileDir: cases, target: 'local_main/some' });
     expect(response.absPath).toMatchFilePath('some/index3.ts$');
   });
+
+  it('Should do index search on value of package main', () => {
+    // if package.json has {"main": "main"}
+    // then should include main/index.js in search
+    const response = fileLookup({ fileDir: cases, target: 'w' });
+    expect(response.absPath).toMatchFilePath('main/index.js$');
+  })
+
+  it('Should do extensions search on value of package main', () => {
+    // if package.json has {"main": "main"}
+    // then should include main.js in search
+    const response = fileLookup({ fileDir: cases, target: 'x' });
+    expect(response.absPath).toMatchFilePath('main.js$');
+  })
+
+  it('Should fallback if package main is not a module', () => {
+    // if package.json has {"main": "main"}
+    // but there is no "main.js", "main/index.js", etc.
+    // then it should fallback to "index.js"
+    const response = fileLookup({ fileDir: cases, target: 'y' });
+    expect(response.absPath).toMatchFilePath('y/index.js$');
+  })
 });

@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Common features test Abstract methods should remove abstract methods 1`] = `
+"class A {
+  constructor(name) {
+    this.name = name;
+  }
+}
+"
+`;
+
+exports[`Common features test Interface removal should ignore export declare 1`] = `
+"alert(1);
+alert(2);
+"
+`;
+
+exports[`Common features test Interface removal should ignore export declare 2`] = `
+"alert(1);
+"
+`;
+
+exports[`Common features test Interface removal should remove export interface 1`] = `
+"console.log(1);
+console.log(2);
+"
+`;
+
+exports[`Common features test Interface removal should remove interface 1`] = `
+"alert(1);
+alert(2);
+"
+`;
+
+exports[`Common features test Should remove declare should remove consts 1`] = `
+"alert(1);
+alert(2);
+"
+`;
+
+exports[`Common features test This typing should and preserve other args 1`] = `
+"class A {
+  foo(some) {}
+}
+"
+`;
+
+exports[`Common features test This typing should remove 1 1`] = `
+"function hey(a) {}
+"
+`;
+
+exports[`Common features test This typing should remove 2 1`] = `
+"const hey = function (a) {
+  console.log(this);
+};
+"
+`;
+
+exports[`Common features test This typing should remove 3 1`] = `
+"class A {
+  foo() {}
+}
+"
+`;
+
+exports[`Common features test Various should handle NotNullExpression 1`] = `
+"function hey(res) {
+  return res;
+}
+"
+`;
+
+exports[`Common features test Various should remove type assertion 1`] = `
+"if (_e.target === 1) {}
+"
+`;

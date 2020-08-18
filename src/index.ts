@@ -1,7 +1,10 @@
+export { initCommonTransform as testTransform } from './compiler/testUtils';
+export { BASE_TRANSFORMERS as coreTransformerList } from './compiler/transformer';
 export { fusebox } from './core/fusebox';
 export { pluginAngular } from './plugins/core/plugin_angular';
 export { pluginConsolidate } from './plugins/core/plugin_consolidate';
 export { pluginCSS } from './plugins/core/plugin_css';
+export { pluginCSSInJSX } from './plugins/core/plugin_css_in_jsx';
 export { pluginCustomTransform } from './plugins/core/plugin_customtransform';
 export { pluginJSON } from './plugins/core/plugin_json';
 export { pluginLess } from './plugins/core/plugin_less';
@@ -12,4 +15,5 @@ export { pluginRaw } from './plugins/core/plugin_raw';
 export { pluginReplace } from './plugins/core/plugin_replace';
 export { pluginSass } from './plugins/core/plugin_sass';
 export { pluginStylus } from './plugins/core/plugin_stylus';
+export { pluginWebWorker } from './plugins/webworker/plugin_web_worker';
 export { sparky } from './sparky/sparky';

@@ -1,22 +1,24 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
-import { Context } from '../../core/Context';
-import { Module } from '../../core/Module';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
 import { lessHandler } from '../../stylesheet/less/lessHandler';
+import { isNodeModuleInstalled } from '../../utils/utils';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
+import { getPackageManagerData } from '../../env';
 
-export function pluginLessCapture(props: { ctx: Context; module: Module; opts: IPluginCommon }) {
+export function pluginLessCapture(props: { ctx: Context; module: IModule; opts: IPluginCommon }) {
   const { ctx, module, opts } = props;
-  if (!ctx.isInstalled('less')) {
-    ctx.fatal(`Fatal error when capturing ${module.props.absPath}`, [
+  if (!isNodeModuleInstalled('less')) {
+    ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
       'Module "less" is required, Please install it using the following command',
-      'npm install less --save-dev',
+      `${getPackageManagerData().installDevCmd} less`,
     ]);
     return;
   }
 
-  ctx.log.info('less', module.props.absPath);
+  ctx.log.info('less', module.absPath);
 
   props.module.read();
   props.module.captured = true;
@@ -29,6 +31,7 @@ export function pluginLessCapture(props: { ctx: Context; module: Module; opts: I
   // It also accepts extra properties (like asText) to handle text rendering
   cssContextHandler({
     ctx,
+    fuseCSSModule: ctx.meta['fuseCSSModule'],
     module: module,
     options: opts.stylesheet,
     processor: postCSS,
@@ -36,7 +39,7 @@ export function pluginLessCapture(props: { ctx: Context; module: Module; opts: I
   });
 }
 
-export function pluginLess(a?: IPluginCommon | string | RegExp, b?: IPluginCommon) {
+export function pluginLess(a?: IPluginCommon | RegExp | string, b?: IPluginCommon) {
   return (ctx: Context) => {
     let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
     if (!matcher) matcher = /\.(less)$/;
@@ -48,7 +51,7 @@ export function pluginLess(a?: IPluginCommon | string | RegExp, b?: IPluginCommo
         return;
       }
 
-      if (matcher.test(module.props.absPath)) {
+      if (matcher.test(module.absPath)) {
         pluginLessCapture({ ctx, module, opts: opts });
       }
       return props;

@@ -1,8 +1,7 @@
+import { Component } from 'react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Component } from 'react';
-import lessString from './index.less';
-console.log(lessString);
+//import './index.less';
 
 //import * as md from './hello.md';
 

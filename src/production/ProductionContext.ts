@@ -1,61 +1,41 @@
-import { Bundle } from '../bundle/Bundle';
-import { Context } from '../core/Context';
-import { Module } from '../core/Module';
-import { Package } from '../core/Package';
-import { ProductionModule } from './ProductionModule';
-import { ProductionPackage } from './ProductionPackage';
-import { ESLink } from './structure/ESLink';
+import { IRunResponse } from '../core/IRunResponse';
+import { Context } from '../core/context';
+import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
+import { asyncModuleResolver } from '../moduleResolver/asyncModuleResolver';
+import { IBundleContext } from '../moduleResolver/bundleContext';
+import { IModule } from '../moduleResolver/module';
+import { ModuleTree } from './module/ModuleTree';
+import { createSplitEntries, ISplitEntries } from './module/SplitEntries';
 
 export interface IProductionContext {
-  packages: Array<Package>;
+  bundleContext?: IBundleContext;
   ctx: Context;
+  entries?: Array<IModule>;
+  log?: FuseBoxLogAdapter;
+  modules?: Array<IModule>;
+  runResponse?: IRunResponse;
+  splitEntries?: ISplitEntries;
 }
 
-export class ProductionContext {
-  private moduleIDCounter: number;
-  public productionPackages: Array<ProductionPackage>;
+export async function createProductionContext(ctx): Promise<IProductionContext> {
+  const { bundleContext, entries, modules } = await asyncModuleResolver(ctx, ctx.config.entries);
+  const productionContext: IProductionContext = {
+    bundleContext,
+    ctx,
+    entries,
+    log: ctx.log,
+    modules,
+    splitEntries: createSplitEntries(),
+  };
 
-  public dynamicLinks: Array<ESLink>;
-
-  // schema contains all the modules and packages that the application requires
-  // it will be missing all the treeshaken module
-  public schema: Array<ProductionModule>;
-
-  public bundles: Array<Bundle>;
-
-  constructor(props: IProductionContext) {
-    this.moduleIDCounter = 0;
-    this.dynamicLinks = [];
-    this.schema = [];
-    this.bundles = [];
-  }
-
-  public generateUniqueId(): number {
-    this.moduleIDCounter++;
-    return this.moduleIDCounter;
-  }
-
-  public findPackageByName(name: string) {
-    return this.productionPackages.find(p => p.pkg.props.meta.name === name);
-  }
-
-  public getTsLibModule() {
-    const tslib = this.productionPackages.find(p => p.pkg.props.meta.name === 'tslib');
-    if (tslib) {
-      return tslib.pkg.modules.find(mod => mod.isEntry());
+  for (const module of modules) {
+    if (module.isExecutable) {
+      // reset the contents
+      if (module.contents === undefined) module.read();
+      module.parse();
     }
+    module.moduleTree = ModuleTree({ module, productionContext });
   }
 
-  public getProjectEntries(): Array<Module> {
-    for (const pkg of this.productionPackages) {
-      if (pkg.pkg.isDefaultPackage) {
-        const entries = pkg.pkg.getAllEntries();
-        return entries;
-      }
-    }
-    return [];
-  }
-}
-export function createProductionContext(props: IProductionContext): ProductionContext {
-  return new ProductionContext(props);
+  return productionContext;
 }

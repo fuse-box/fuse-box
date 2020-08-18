@@ -1,7 +1,6 @@
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import { env } from '../env';
-import { ensureAbsolutePath } from '../utils/utils';
-import { ignoredPath2Regex } from '../watcher/watcher';
+import { ensureAbsolutePath, path2RegexPattern } from '../utils/utils';
 import { IStyleSheetAutoImportCapture, IStyleSheetProps } from './IStylesheetProps';
 
 export interface ICreateStylesheetProps {
@@ -13,13 +12,14 @@ function filterAutoImportProps(list: Array<IStyleSheetAutoImportCapture>) {
   return list.map(item => {
     if (item.capture) {
       if (typeof item.capture === 'string') {
-        item.capture = ignoredPath2Regex(item.capture);
+        item.capture = path2RegexPattern(item.capture);
       }
     }
     item.file = ensureAbsolutePath(item.file, env.SCRIPT_PATH);
     return item;
   });
 }
+
 export function createStylesheetProps(props: ICreateStylesheetProps): IStyleSheetProps {
   const ctx = props.ctx;
   const options: IStyleSheetProps = {};
