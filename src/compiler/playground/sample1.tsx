@@ -1,3 +1,4 @@
-export class Rectangle extends FullRectangle {
-  [key: string]: number | boolean | any;
-}
+import { getSome } from 'store/actions';
+export const foo = oi(foo => some(foo));
+
+const hey = ({ getSome }) => getSome();

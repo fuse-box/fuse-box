@@ -780,6 +780,25 @@ describe('scope test', () => {
       expect(result.code).toMatchSnapshot();
     });
 
+    it('should respect ArrowFunction expression', () => {
+      const result = testTranspile({
+        code: `
+        export const foo = oi(foo => some(foo));
+      `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should respect assignment pattern 2', () => {
+      const result = testTranspile({
+        code: `
+        import { getSome } from 'store/actions';
+        const hey = ({ getSome }) => getSome();`,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
     it('should respect assignment pattern inside const', () => {
       const result = testTranspile({
         code: `

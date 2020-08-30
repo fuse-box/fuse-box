@@ -65,25 +65,32 @@ export function scopeTracker(schema: ISchema): IBodyScope {
 
     let index = 0;
 
-    if (parent) {
-      if (parent.param && parent.param.type === ASTType.Identifier) {
+    let target = parent;
+
+    if (node.type === 'ArrowFunctionExpression' && node.params) {
+      target = node;
+    }
+
+    if (target) {
+      if (target.param && target.param.type === ASTType.Identifier) {
         // catch clause
-        bodyScope[parent.param.name] = { node: parent.param, schema };
+        bodyScope[target.param.name] = { node: target.param, schema };
       }
 
       // function arguments
-      if (parent.params) {
-        for (const param of parent.params) {
+      if (target.params) {
+        for (const param of target.params) {
           if (param.type === ASTType.AssignmentPattern && param.left && param.left.type === ASTType.Identifier) {
             bodyScope[param.left.name] = { node: param, schema };
-          }
-          if (param.type === ASTType.Identifier) bodyScope[param.name] = { node: param, schema };
-          if (
+          } else if (param.type === ASTType.Identifier) bodyScope[param.name] = { node: param, schema };
+          else if (
             param.type === ASTType.ParameterProperty &&
             param.parameter &&
             param.parameter.type === ASTType.Identifier
           ) {
             bodyScope[param.parameter.name] = { node: param, schema };
+          } else {
+            extractDefinedVariables(schema, param, bodyScope);
           }
         }
       }
@@ -101,6 +108,7 @@ export function scopeTracker(schema: ISchema): IBodyScope {
 
     while (index < bodyNodesLength) {
       const item = body[index];
+
       const type = item.type;
 
       if (type === ASTType.ImportDeclaration && item.specifiers) {
@@ -121,7 +129,14 @@ export function scopeTracker(schema: ISchema): IBodyScope {
         // Catch the following
         // function foo(){}
         // class Foo {}
+
         if (item.id && item.id.name) bodyScope[item.id.name] = { node: item, schema };
+        if (node.params) {
+          for (const param of node.params) {
+            console.log('extract', param);
+            extractDefinedVariables(schema, param, bodyScope);
+          }
+        }
       }
 
       index++;
