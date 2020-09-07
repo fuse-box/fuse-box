@@ -11,12 +11,6 @@ const VALID_NODES = {
   [ASTType.OptionalMemberExpression]: 1,
 };
 
-const NON_DRILLABLE_NODES = {
-  [ASTType.CallExpression]: 1,
-  [ASTType.Identifier]: 1,
-  [ASTType.MemberExpression]: 1,
-};
-
 interface IChainingStep {
   callArguments?: Array<ASTNode>;
   computed?: boolean;
