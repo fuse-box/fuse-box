@@ -38,6 +38,7 @@ export async function moduleCompiler(props: IModuleCompilerProps) {
     } = props;
 
     const ast = props.ast || getAST(props);
+    //console.log(JSON.stringify(ast, null, 2));
 
     const result = transformCommonVisitors(props.context, ast);
     const tasks: Array<{

@@ -6,6 +6,7 @@ import { OptionalChainHelper, createOptionalChaningExpression } from './optional
 
 const VALID_NODES = {
   [ASTType.AwaitExpression]: 1,
+  [ASTType.ChainExpression]: 1,
   [ASTType.OptionalCallExpression]: 1,
   [ASTType.OptionalMemberExpression]: 1,
 };
@@ -267,6 +268,7 @@ function createStatement(context: OptionalChainContext) {
   index = flatCollection.length - 1;
   while (index >= 0) {
     const item = flatCollection[index];
+
     if (index > 0) {
       let flatExpression: IFlatExpression = createFlatExpression(context);
       flatExpression.alternate = item.items;
@@ -278,6 +280,7 @@ function createStatement(context: OptionalChainContext) {
     } else {
       current.conditionSteps = item.items;
     }
+
     index--;
   }
 
@@ -292,35 +295,35 @@ function createStatement(context: OptionalChainContext) {
  * @param context
  */
 export function chainDrill(node: ASTNode, context: OptionalChainContext) {
-  const optional = node.optional === true;
+  let optional = node.optional === true;
 
-  if (NON_DRILLABLE_NODES[node.type]) {
-    return context.steps.push({ computed: node.computed, expression: node });
-  }
-
-  if (node.type === ASTType.AsExpression && node.expression) {
+  if (node.type === ASTType.ChainExpression) {
     return chainDrill(node.expression, context);
   }
 
-  if (node.type === ASTType.OptionalMemberExpression) {
-    if (node.property) context.steps.push({ computed: node.computed, expression: node.property, optional });
-    if (node.object) {
-      if (node.object.type === ASTType.CallExpression) {
-        context.steps.push({ expression: node.object, optional });
-      } else chainDrill(node.object, context);
+  if (node.type === ASTType.MemberExpression) {
+    if (node.property) {
+      context.steps.push({ computed: node.computed, expression: node.property, optional });
     }
+    if (node.object) chainDrill(node.object, context);
+
     return;
   }
-
-  // Regardless of the "optional" status calls should be separated since the call to those
-  if (node.type === ASTType.OptionalCallExpression) {
+  if (node.type === ASTType.CallExpression) {
     if (node.callee) {
       context.steps.push({
         callArguments: node.arguments,
         optional,
       });
-      chainDrill(node.callee, context);
+      return chainDrill(node.callee, context);
     }
+  }
+  if (node.type == ASTType.Identifier) {
+    context.steps.push({ computed: node.computed, expression: node });
+    return;
+  }
+  if (node.type === ASTType.AsExpression && node.expression) {
+    return chainDrill(node.expression, context);
   }
 }
 
