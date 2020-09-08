@@ -291,6 +291,9 @@ function createStatement(context: OptionalChainContext) {
 export function chainDrill(node: ASTNode, context: OptionalChainContext) {
   let optional = node.optional === true;
 
+  if (node.type === ASTType.ThisExpression) {
+    context.steps.push({ computed: false, expression: { name: 'this', type: 'Identifier' }, optional });
+  }
   if (node.type === ASTType.ChainExpression) {
     return chainDrill(node.expression, context);
   }

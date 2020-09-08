@@ -35,3 +35,9 @@ var _3_, _4_;
   "requireStatementCollection": Array [],
 }
 `;
+
+exports[`Optional chaining Corner cases should handle this expression 1`] = `
+"var _1_;
+(_1_ = this.a) === null || _1_ === void 0 ? void 0 : _1_.b;
+"
+`;
