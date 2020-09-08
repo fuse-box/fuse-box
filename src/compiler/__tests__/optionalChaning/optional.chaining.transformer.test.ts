@@ -148,6 +148,14 @@ describe('Optional chaining', () => {
       expect(res.code).toMatchSnapshot();
     });
 
+    it('should handle this expression', () => {
+      const res = testTranspile({
+        code: `this.a?.b`,
+      });
+
+      expect(res.code).toMatchSnapshot();
+    });
+
     it('should await expression with ?? ', () => {
       const res = testTranspile({
         code: `
