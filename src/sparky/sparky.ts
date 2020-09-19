@@ -7,10 +7,20 @@ let prettyTime = require('pretty-time');
 
 export function sparky<T>(Ctx: new () => T) {
   const ctx = new Ctx();
-  const tasks: any = {};
+  const tasks: Map<string | RegExp, Function> = new Map();
 
   const log = createFuseLogger({ level: 'verbose' });
   log.flush();
+
+  const findTask = (name: string): Function => {
+    for (const [key, value] of tasks.entries()) {
+      if (typeof key === 'string' && key === name) return value;
+      if (key instanceof RegExp && (key as RegExp).test(name)) return value;
+    }
+
+    return null;
+  };
+
   let execScheduled = false;
   const execNext = () => {
     if (!execScheduled) {
@@ -31,15 +41,19 @@ export function sparky<T>(Ctx: new () => T) {
   const scope = {
     activities: [],
     exec: async (name: string) => {
-      if (!tasks[name]) {
+      const task = findTask(name);
+
+      if (!task) {
         log.error("Can't find task name: $name", { name });
         log.printBottomMessages();
         return;
       }
+
       times[name] = process.hrtime();
 
       log.info('<magenta>[ ' + name + ' ]</magenta>', 'Starting', { name });
-      await tasks[name](ctx);
+      await task(ctx);
+
       log.info('<dim><magenta>[ ' + name + ' ]</magenta></dim>', '<dim>Completed in $time</dim>', {
         time: prettyTime(process.hrtime(times[name]), 'ms'),
       });
@@ -50,10 +64,11 @@ export function sparky<T>(Ctx: new () => T) {
       removeFolder(ensureAbsolutePath(folder, env.SCRIPT_PATH));
     },
     src: (glob: string) => sparkyChain(log).src(glob),
-    task: (name: string, fn: (ctx: T) => void) => {
-      tasks[name] = fn;
+    task: (name: string | RegExp, fn: (ctx: T) => void) => {
+      tasks.set(name, fn);
       execNext();
     },
   };
+
   return scope;
 }
