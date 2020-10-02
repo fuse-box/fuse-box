@@ -125,6 +125,10 @@ export function cssResolveURL(props: ICSSResolveURLProps): ICSSResolveURLResult 
     if (typeof value === 'undefined') {
       return match;
     }
+    // apply macros before checking for special words
+    if (props.options.macros) {
+        value = replaceCSSMacros(value, props.options.macros);
+    }
     // preserving svg filters, http links, data:image (base64), sass and less variables
     if (/^#|data:|http|\$|@/.test(value)) {
       // return those as is
