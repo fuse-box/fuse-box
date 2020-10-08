@@ -32,7 +32,7 @@ export interface IBundleRuntimeCore {
 const INTEROP_DEFAULT = BUNDLE_RUNTIME_NAMES.INTEROP_REQUIRE_DEFAULT_FUNCTION;
 
 function getCodeSplittingFunction(target: ITarget) {
-  if (target === 'browser') {
+  if (target === 'browser' || target==='electron') {
     return `function lb(id, conf) {
   return new Promise(function(resolve, reject) {
     if (!conf.fns) {
