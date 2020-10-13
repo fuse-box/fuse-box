@@ -37,13 +37,12 @@ export function buildMappings(references: ITsConfigReference[], tsConfigDir: str
   // build the mappings
   const tsHost = createTsParseConfigHost();
   const inputsByOutput = new Map<string, string>();
-  const anticycle = new Set<string>();
   const rawReferences = references || [];
   for (const rawRef of rawReferences) {
     const { path: rawPath } = rawRef;
     if (!rawPath) continue;
     const absPath = ensureAbsolutePath(rawPath, tsConfigDir);
-    recurseTsReference(tsHost, absPath, inputsByOutput, anticycle);
+    recurseTsReference(tsHost, absPath, inputsByOutput, [realpathSync(absPath)]);
   }
   return inputsByOutput;
 }
@@ -142,7 +141,7 @@ function packageAncestorsOf(path: string): { base: string; rel: string }[] {
 
 // Follow a single TypeScript reference recursively through its references
 // adding output->input mappings along the way
-function recurseTsReference(tsHost: ParseConfigHost, reference: string, map: ByOutputMap, anticycle: Set<string>) {
+function recurseTsReference(tsHost: ParseConfigHost, reference: string, map: ByOutputMap, anticycle: string[]) {
   if (!fileExists(reference)) {
     throw new Error(`Unable to find tsconfig reference ${reference}`);
   }
@@ -150,11 +149,10 @@ function recurseTsReference(tsHost: ParseConfigHost, reference: string, map: ByO
   const result = loadTsConfig(realPath, tsHost);
   if (!result) return;
   const { files, path, references } = result;
-  if (anticycle.has(path)) throw new Error(`Project references may not form a circular graph. Cycle detected: ${path}`);
-  anticycle.add(path); // guard against cyclical references
   for (const file of files) {
-    if (map.has(file.output)) {
-      const existing = map.get(file.output);
+    const existing = map.get(file.output);
+    // Ensure either there is no entry for that output, or if there is, it is the same input producing it
+    if (existing && existing !== file.input) {
       throw new Error(
         `Multiple input files map to same output file (1. "${existing}", 2. "${file.input}") => ("${file.output}")`,
       );
@@ -162,7 +160,11 @@ function recurseTsReference(tsHost: ParseConfigHost, reference: string, map: ByO
     map.set(file.output, file.input);
   }
   for (const subref of references || []) {
-    recurseTsReference(tsHost, subref.path, map, anticycle);
+    const path = realpathSync(subref.path);
+    if (anticycle.includes(path)) {
+      throw new Error(`Project references may not form a circular path. Cycle detected: ${subref.path}`);
+    }
+    recurseTsReference(tsHost, subref.path, map, [...anticycle, path]);
   }
 }
 
