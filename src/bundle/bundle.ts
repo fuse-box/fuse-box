@@ -28,6 +28,7 @@ export interface Bundle {
   generateHMRUpdate?: () => string;
   prepare: () => IWriterConfig;
   write: () => Promise<IBundleWriteResponse>;
+  path?: string;
 }
 
 export enum BundleType {
@@ -131,9 +132,9 @@ export function createBundle(props: IBundleProps): Bundle {
         const terserOpts: any = {
           sourceMap: source.containsMaps
             ? {
-                content: self.data.sourceMap,
-                includeSources: true,
-              }
+              content: self.data.sourceMap,
+              includeSources: true,
+            }
             : undefined,
         };
         ctx.log.info('minify', self.config.absPath);
