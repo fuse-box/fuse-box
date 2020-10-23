@@ -27,6 +27,8 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
   const ict = ctx.ict;
   const outputConfig = ctx.outputConfig;
   const hasVendorConfig = !!outputConfig.vendor;
+  const hasMappings = !!outputConfig.mapping;
+  const mappings = outputConfig.mapping.map(m => ({ ...m, regexp: RegExp(m.matching) }))
   const bundles: Array<Bundle> = [];
   const splitFileNames: Array<string> = [];
   const codeSplittingMap: ICodeSplittingMap = {
@@ -75,6 +77,22 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
     bundles.push(vendorBundle);
   }
 
+  function createSubVendorBundle(module, mapping) {
+    const bundle = bundles.find(b => b.path === mapping.target.path);
+    if (bundle)
+      bundle.source.modules.push(module);
+    else {
+      const bundle = createBundle({
+        bundleConfig: mapping.target,
+        ctx: ctx,
+        priority: 1,
+        type: BundleType.JS_VENDOR,
+      });
+      bundle.source.modules.push(module);
+      bundles.push({ ...bundle, path: mapping.target.path });
+    }
+  }
+
   let codeSplittingIncluded = false;
 
   function createRuntimeCore(): string {
@@ -109,8 +127,20 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
           if (!cssBundle) createCSSBundle();
           cssBundle.source.modules.push(module);
         } else if (module.pkg.type === PackageType.EXTERNAL_PACKAGE && hasVendorConfig) {
-          if (!vendorBundle) createVendorBundle();
-          vendorBundle.source.modules.push(module);
+          let isMappedBundle = false;
+          if (hasMappings) {
+            for (const mapping of mappings) {
+              if (mapping.regexp.test(module.pkg.publicName)) {
+                createSubVendorBundle(module, mapping);
+                isMappedBundle = true;
+                break;
+              }
+            }
+          }
+          if (!isMappedBundle) {
+            if (!vendorBundle) createVendorBundle();
+            vendorBundle.source.modules.push(module);
+          }
         } else {
           if (!mainBundle) createMainBundle();
           mainBundle.source.modules.push(module);
