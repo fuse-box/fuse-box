@@ -28,7 +28,7 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
   const outputConfig = ctx.outputConfig;
   const hasVendorConfig = !!outputConfig.vendor;
   const hasMappings = !!outputConfig.mapping;
-  const mappings = outputConfig.mapping.map(m => ({ ...m, regexp: RegExp(m.matching) }));
+  const mappings = hasMappings && outputConfig.mapping.map(m => ({ ...m, regexp: RegExp(m.matching) }));
   const bundles: Array<Bundle> = [];
   const splitFileNames: Array<string> = [];
   const codeSplittingMap: ICodeSplittingMap = {
