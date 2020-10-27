@@ -3,7 +3,6 @@ import { bundleRuntimeCore, ICodeSplittingMap } from '../bundleRuntime/bundleRun
 import { Context } from '../core/context';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { IModule } from '../moduleResolver/module';
-import { PackageType } from '../moduleResolver/package';
 import { ISplitEntry } from '../production/module/SplitEntries';
 import { beautifyBundleName, writeFile } from '../utils/utils';
 import { Bundle, BundleType, createBundle, IBundleWriteResponse } from './bundle';
