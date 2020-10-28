@@ -14,6 +14,7 @@ import { bundleProd } from '../production/bundleProd';
 import { ensureDir, fastHash, fileExists, listDirectory, path2RegexPattern, readFile } from '../utils/utils';
 import { createTestBrowserEnv, ITestBrowserResponse } from './browserEnv/testBrowserEnv';
 import { createTestServerEnv, ITestServerResponse } from './serverEnv/testServerEnv';
+import { IRunProps } from '../config/IRunProps';
 
 const MODULES_PATH = 'node_modules';
 
@@ -198,8 +199,10 @@ export function createIntegrationTest(props: {
   config?: IPublicConfig;
   envType: EnvironmentType;
   workspace: ITestWorkspace;
+  runProps?: IRunProps;
 }) {
   const customConfig: IPublicConfig = props.config || {};
+  const runProps: IRunProps = props.runProps || {};
   const { workspace } = props;
 
   const config: IPublicConfig = {
@@ -222,7 +225,7 @@ export function createIntegrationTest(props: {
   const ctx = createContext({
     envType: props.envType,
     publicConfig: config,
-    runProps: { bundles: { app: 'app.js', distRoot: workspace.distRoot }, uglify: false },
+    runProps: { bundles: { app: 'app.js', distRoot: workspace.distRoot }, uglify: false, ...runProps },
     scriptRoot: workspace.rootDir,
   });
 
