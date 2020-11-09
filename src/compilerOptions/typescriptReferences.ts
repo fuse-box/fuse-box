@@ -148,7 +148,7 @@ function recurseTsReference(tsHost: ParseConfigHost, reference: string, map: ByO
   const realPath = realpathSync(reference);
   const result = loadTsConfig(realPath, tsHost);
   if (!result) return;
-  const { files, path, references } = result;
+  const { files, references } = result;
   for (const file of files) {
     const existing = map.get(file.output);
     // Ensure either there is no entry for that output, or if there is, it is the same input producing it
