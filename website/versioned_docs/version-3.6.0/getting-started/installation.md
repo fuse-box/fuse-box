@@ -13,7 +13,7 @@ npm install fuse-box typescript uglify-es uglify-js --save-dev
 ```
 
 You should install `uglify-es` and `uglify-js` too. FuseBox will decide which
-one to use, dependending on a selected target.
+one to use, depending on a selected target.
 
 ## Why TypeScript
 
