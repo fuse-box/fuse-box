@@ -41,7 +41,7 @@ export function createBundleRouter(props: IBundleRouteProps): IBundleRouter {
   function generateSplitFileName(relativePath: string): string {
     const paths = relativePath.split(path.sep).reverse();
     let fileName = beautifyBundleName(paths.shift());
-    while (splitFileNames[fileName]) {
+    while (splitFileNames.indexOf(fileName) !== -1) {
       fileName = beautifyBundleName(paths.shift() + path.sep + fileName);
     }
     splitFileNames.push(fileName);
