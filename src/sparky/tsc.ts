@@ -103,7 +103,7 @@ export interface TscOptions {
   watch?: boolean;
 }
 
-export async function tsc(opts?: TscOptions, target?: Array<string> | string) {
+export async function tsc(opts?: TscOptions, target?: Array<string> | string): Promise<void> {
   let tscOptions: any = [];
 
   for (const key in opts) {

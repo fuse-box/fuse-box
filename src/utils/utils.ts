@@ -305,11 +305,10 @@ export function ensureScriptRoot(userPath: string) {
 export function excludeRedundantFolders(folders: string[]): string[] {
   // normalize and sort, so that all ancestors come before descendants
   const sorted = folders.map(r => path.normalize(r)).sort();
-  let keep: string[] = []
+  let keep: string[] = [];
   for (const folder of sorted) {
     // ignore anything if we have already seen it or its ancestor
-    if (keep.some(k => k === folder || folder.startsWith(`${k}${path.sep}`)))
-      continue;
+    if (keep.some(k => k === folder || folder.startsWith(`${k}${path.sep}`))) continue;
     keep.push(folder);
   }
   return keep;
@@ -348,7 +347,7 @@ export function joinFuseBoxPath(...any): string {
   return ensureFuseBoxPath(joinedPath);
 }
 
-export async function writeFile(name: string, contents) {
+export async function writeFile(name: string, contents): Promise<void> {
   return new Promise((resolve, reject) => {
     ensureDir(path.dirname(name));
     fs.writeFile(name, contents, err => {
