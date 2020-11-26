@@ -1,4 +1,4 @@
-import * as postcss from 'postcss';
+import postcss from 'postcss';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/context';
 import { IModule } from '../../moduleResolver/module';

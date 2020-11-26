@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as postcss from 'postcss';
+import postcss from 'postcss';
 import * as atImport from 'postcss-import';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/context';
