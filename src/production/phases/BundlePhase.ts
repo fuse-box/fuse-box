@@ -6,7 +6,7 @@ import { IProductionContext } from '../ProductionContext';
 export async function BundlePhase(productionContext: IProductionContext) {
   const { ctx, entries, modules } = productionContext;
 
-  function compile(module: IModule) {
+  function compile(module: IModule): Promise<void> {
     return new Promise((resolve, reject) => {
       moduleCompiler({
         ast: module.ast,

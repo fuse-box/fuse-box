@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import { env } from '../env';
 import { ensureAbsolutePath } from '../utils/utils';
 
-export async function npmPublish(opts: { path: string; tag?: string }) {
+export async function npmPublish(opts: { path: string; tag?: string }): Promise<void> {
   opts.tag = opts.tag || 'latest';
 
   return new Promise((resolve, reject) => {
