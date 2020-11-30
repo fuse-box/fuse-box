@@ -319,7 +319,7 @@ export function chainDrill(node: ASTNode, context: OptionalChainContext) {
     context.steps.push({ computed: node.computed, expression: node });
     return;
   }
-  if (node.type === ASTType.AsExpression && node.expression) {
+  if ((node.type === ASTType.AsExpression || node.type == ASTType.NonNullExpression) && node.expression) {
     return chainDrill(node.expression, context);
   }
 }

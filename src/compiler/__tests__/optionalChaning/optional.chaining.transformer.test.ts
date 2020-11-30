@@ -156,6 +156,13 @@ describe('Optional chaining', () => {
       expect(res.code).toMatchSnapshot();
     });
 
+    it('should handle not null expression', () => {
+      const res = testTranspile({
+        code: `a?.b!;`,
+      });
+      expect(res.code).toMatchSnapshot();
+    });
+
     it('should await expression with ?? ', () => {
       const res = testTranspile({
         code: `
