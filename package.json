@@ -72,7 +72,7 @@
     "fuse-box-typechecker": "^3.0.1",
     "hammerjs": "^2.0.8",
     "homedir": "^0.6.0",
-    "husky": "4.3.3",
+    "husky": "4.3.4",
     "jest": "^26.6.3",
     "jsdom": "^16.4.0",
     "less": "^3.12.2",
