@@ -24,6 +24,7 @@ some.sh
 .cache
 docs/api
 .sortierignore
+package-lock.json
 
 # FuseBox Loader API built type definition
 # Which is then exported as a module from `src`
