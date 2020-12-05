@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as proxyMiddleware from 'http-proxy-middleware';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import * as open from 'open';
 import { createGlobalModuleCall } from '../bundleRuntime/bundleRuntimeCore';
 import { Context } from '../core/context';
@@ -34,24 +34,24 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
   if (props.express) props.express(app, express);
   function logProvider(p) {
     return {
-      debug: msg => {
+      debug: (msg) => {
         ctx.log.info('proxy', msg);
       },
-      error: msg => ctx.log.error(msg),
-      info: msg => {
+      error: (msg) => ctx.log.error(msg),
+      info: (msg) => {
         ctx.log.info('proxy', msg);
       },
-      log: msg => {
+      log: (msg) => {
         ctx.log.info('proxy', msg);
       },
-      warn: msg => ctx.log.warn(msg),
+      warn: (msg) => ctx.log.warn(msg),
     };
   }
 
   if (extra && extra.proxyProps) {
     for (const item of extra.proxyProps) {
       item.options.logProvider = logProvider;
-      app.use(item.path, proxyMiddleware(item.options));
+      app.use(item.path, createProxyMiddleware(item.options));
     }
   }
 
@@ -73,7 +73,7 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
   });
 
   if (server) {
-    server.on('error', err => {
+    server.on('error', (err) => {
       ctx.fatal('An error occurred while trying to start the devServer.', [err.message]);
     });
   }
@@ -124,7 +124,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
           clientProps.port = hmrServerProps.port;
         }
       }
-      ict.on('before_bundle_write', props => {
+      ict.on('before_bundle_write', (props) => {
         const { bundle } = props;
         const bundleContext = ctx.bundleContext;
 
@@ -149,7 +149,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
   let hmrServerMethods: HMRServerMethods;
   let onMessageCallbacks: Array<(name: string, payload) => void> = [];
 
-  ict.on('complete', props => {
+  ict.on('complete', (props) => {
     if (httpServerProps.enabled) {
       const internalServer = createExpressApp(ctx, httpServerProps, { openProps, proxyProps });
 
@@ -163,7 +163,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
       hmrServerMethods = createHMRServer({ ctx, opts: hmrServerProps });
     }
     if (onMessageCallbacks.length && hmrServerMethods) {
-      onMessageCallbacks.map(cb => hmrServerMethods.onMessage(cb));
+      onMessageCallbacks.map((cb) => hmrServerMethods.onMessage(cb));
       onMessageCallbacks = [];
     }
 
