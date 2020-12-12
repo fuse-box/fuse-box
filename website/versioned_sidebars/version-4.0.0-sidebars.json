@@ -1,5 +1,5 @@
 {
-  "docs": {
+  "version-4.0.0-docs": {
     "Getting Started": ["version-4.0.0-getting-started/installation", "version-4.0.0-getting-started/setup"],
     "Developement": [
       "version-4.0.0-development/full-config",
@@ -26,6 +26,7 @@
     ],
     "Plugins": [
       "version-4.0.0-plugins/about",
+      "version-4.0.0-plugins/createNewPlugin",
       "version-4.0.0-plugins/pluginConsolidate",
       "version-4.0.0-plugins/pluginCustomtransform",
       "version-4.0.0-plugins/pluginJSON",

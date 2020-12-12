@@ -10,6 +10,7 @@ _playground
 .release
 .settings
 .tmp
+debug.log
 
 build
 dist
