@@ -74,7 +74,7 @@ fusebox({
 Simply put, your `tsconfig` must have a `baseUrl` field which points to your local src and a `paths` field which routes
 to your packages.
 
-All full page on [how to set paths here can be found here](./paths.md). _(note: aliasing will not work)_
+All full page on [how to set paths here can be found here](./paths). _(note: aliasing will not work)_
 
 ```json
 {

@@ -14,7 +14,7 @@ You don't need to be using typescript in order to customize your projects path r
 `tsconfig.json` regardless of the language.
 
 Also, if you'd really rather not have a `tsconfig.json` file, there is a
-[`tsconfig` field](./getting-started/full-config.md) in which you can set these properties
+[`tsconfig` field](./getting-started/full-config) in which you can set these properties
 
 ---
 
@@ -56,7 +56,7 @@ The reason it works is because `baseUrl` is pointed to `src/` _(it's set to `.` 
 ## paths
 
 `Paths` are a very powerful mechanism to make your URL beautiful. They're especially helpful when dealing with
-[monorepos](/docs/monorepo.md).
+[monorepos](/docs/monorepo).
 
 ```json
 {
