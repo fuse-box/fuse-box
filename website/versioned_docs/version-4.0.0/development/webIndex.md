@@ -44,7 +44,7 @@ fusebox({
 ```
 
 _If you'd like to define your own custom template strings (ie: `$bundles` and `$css`) you can do so with the
-[Consolidate Plugin](./plugins/pluniConsolidate.md)_
+[Consolidate Plugin](./plugins/pluniConsolidate)_
 
 ---
 
@@ -67,7 +67,7 @@ The WebIndex feature can be customized by the following optional parameters:
 
 ## Super Custom Transformations
 
-If the [Consolidate Plugin](./plugins/pluniConsolidate.md)\* is not enough for your purposes, fou might be interested in
+If the [Consolidate Plugin](./plugins/pluniConsolidate)\* is not enough for your purposes, fou might be interested in
 transforming the `index.html` template page dynamically. You can develop a plugin to do this by listening to the
 `"before_webindex_write"` event:
 

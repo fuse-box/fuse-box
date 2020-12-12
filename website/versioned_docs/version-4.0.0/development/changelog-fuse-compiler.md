@@ -9,7 +9,7 @@ First things to do:
 - Get rid of `homeDir` (and forget about it forever)
 - Remove the `output` paramater (and forget about it forever). Read below on the new configuration
 - Remove `useSingleBundle` and forget about it forever
-- Rename `watch` to `watcher` (read watcher docs [here](./watcher.md)))
+- Rename `watch` to `watcher` (read watcher docs [here](./watcher)))
 - If you had `modules` field set with `node_modules` in it remove it. We have fixed the module resolution.
 - If you're targeting IE11 set buildTarget in `runProd`. Ignore this line if you're targeting modern browsers
 
