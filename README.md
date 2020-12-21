@@ -59,13 +59,7 @@
 
 <p align="center"><a href="https://slack.fuse-box.org">FuseBox on slack</a><p>
 
-# FUSEBOX v4 is here
-
-A re-write of FuseBox with Major Improvements is available in the `@next` release.
-
-Please help test it and contrubite!
-
-[New documentation](https://github.com/fuse-box/fuse-box/blob/master/docs/getting-started/get-started.md)
+# FUSEBOX v4 is out!
 
 Install:
 
