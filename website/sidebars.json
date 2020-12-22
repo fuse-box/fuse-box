@@ -1,6 +1,6 @@
 {
   "docs": {
-    "Getting Started": ["version-4.0.0-getting-started/installation", "version-4.0.0-getting-started/setup"],
+    "Getting Started": ["version-4.0.0-getting-started/setup"],
     "Developement": [
       "version-4.0.0-development/full-config",
       "version-4.0.0-development/bundling",

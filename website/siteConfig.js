@@ -18,7 +18,7 @@ const siteConfig = {
   headerIcon: 'img/logo.svg',
   headerLinks: [
     {
-      doc: 'getting-started/installation',
+      doc: 'getting-started/setup',
       label: 'Documentation',
     },
     {
