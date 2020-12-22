@@ -64,7 +64,7 @@
 Install:
 
 ```
-npm install fuse-box@next
+npm install fuse-box --save-dev
 ```
 
 ```ts
