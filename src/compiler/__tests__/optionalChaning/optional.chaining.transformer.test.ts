@@ -67,6 +67,9 @@ const cases: Array<string> = [
   'a["foo"]?.()?.()()',
   'a.b()?.()?.()',
   'a["foo"]()?.o()?.().k()?.c',
+  'a().b()?.c',
+  'a()?.b',
+  '(a || b)?.c',
 ];
 
 const TYPESCRIPT_SNAPSHOT_FILE = path.join(__dirname, 'typescript.snapshot.json');
@@ -86,7 +89,7 @@ function createTypeScriptSnapshots(cases: Array<string>) {
     // replace typescript _a with fusebox numbers
     let alphabet = ['-', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'];
 
-    transpiled = transpiled.replace(/_([a-z])/gm, input => {
+    transpiled = transpiled.replace(/_([a-z])/gm, (input) => {
       const varName = input.split('_')[1];
       return `_${alphabet.indexOf(varName)}_`;
     });
@@ -106,7 +109,7 @@ if (!fileExists(TYPESCRIPT_SNAPSHOT_FILE)) {
 describe('Optional chaining', () => {
   describe('Snapshot test', () => {
     for (const str of cases) {
-      it(`Should  handle ${str}`, () => {
+      it(`Should handle ${str}`, () => {
         const res = testTranspile({ code: str });
         expect(res.code).toEqual(TYPESCRIPT_SHAPSHOTS[str]);
       });
