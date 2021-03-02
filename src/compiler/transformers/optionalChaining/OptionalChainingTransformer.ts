@@ -2,7 +2,7 @@ import { ISchema } from '../../core/nodeSchema';
 import { createUndefinedVariable, createVariableDeclaration } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
-import { OptionalChainHelper, createOptionalChaningExpression } from './optionalChaningHelpers';
+import { OptionalChainHelper, createOptionalChaningExpression } from './optionalChainingHelpers';
 
 const VALID_NODES = {
   [ASTType.AwaitExpression]: 1,
@@ -81,7 +81,7 @@ function createPartialExpression(props: {
     // call expression
     if (item.callArguments) {
       if (index === 1) {
-        expression = createOptionalCall(flatExpression, item.callArguments);
+        expression = createOptionalCall(flatExpression, firstNode.expression, item.callArguments);
       } else {
         expression = {
           arguments: item.callArguments,
@@ -149,7 +149,7 @@ interface IFlatExpression {
   generate?: () => OptionalChainHelper;
 }
 
-function createOptionalCall(expression: IFlatExpression, callArguments: Array<ASTNode>): ASTNode {
+function createOptionalCall(expression: IFlatExpression, firstNode: ASTNode, callArguments: Array<ASTNode>): ASTNode {
   let args: Array<ASTNode> = [];
   if (expression.thisVariable) {
     args.push({
@@ -161,7 +161,7 @@ function createOptionalCall(expression: IFlatExpression, callArguments: Array<AS
       arguments: callArguments,
       callee: {
         computed: false,
-        name: expression.id,
+        name: expression.id || firstNode.name,
         type: 'Identifier',
       },
       type: 'CallExpression',
@@ -293,6 +293,7 @@ export function chainDrill(node: ASTNode, context: OptionalChainContext) {
 
   if (node.type === ASTType.ThisExpression) {
     context.steps.push({ computed: false, expression: { name: 'this', type: 'Identifier' }, optional });
+    return;
   }
   if (node.type === ASTType.ChainExpression) {
     return chainDrill(node.expression, context);
@@ -315,18 +316,16 @@ export function chainDrill(node: ASTNode, context: OptionalChainContext) {
       return chainDrill(node.callee, context);
     }
   }
-  if (node.type == ASTType.Identifier) {
-    context.steps.push({ computed: node.computed, expression: node });
-    return;
-  }
   if ((node.type === ASTType.AsExpression || node.type == ASTType.NonNullExpression) && node.expression) {
     return chainDrill(node.expression, context);
   }
+
+  context.steps.push({ computed: node.computed, expression: node });
 }
 
 export function OptionalChaningTransformer(): ITransformer {
   return {
-    commonVisitors: props => {
+    commonVisitors: (props) => {
       return {
         onEach: (schema: ISchema) => {
           const { node } = schema;
