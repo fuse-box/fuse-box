@@ -64,6 +64,13 @@ exports[`Common features test This typing should remove 3 1`] = `
 "
 `;
 
+exports[`Common features test This typing should transform export expression 1`] = `
+"module.exports = {
+  foo: \\"bar\\"
+};
+"
+`;
+
 exports[`Common features test Various should handle NotNullExpression 1`] = `
 "function hey(res) {
   return res;

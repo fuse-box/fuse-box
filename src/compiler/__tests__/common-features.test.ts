@@ -167,5 +167,14 @@ describe('Common features test', () => {
       });
       expect(result.code).toMatchSnapshot();
     });
+
+    it('should transform export expression', () => {
+      const result = testTranspile({
+        code: `
+          export = {foo : "bar"}
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
   });
 });

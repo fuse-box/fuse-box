@@ -127,6 +127,7 @@ export const ASTType = {
   Decorator: 'Decorator',
   DoWhileStatement: 'DoWhileStatement',
   EmptyStatement: 'EmptyStatement',
+  TSExportAssignment: 'TSExportAssignment',
   ExportAllDeclaration: 'ExportAllDeclaration',
   ExportDefaultDeclaration: 'ExportDefaultDeclaration',
   ExportNamedDeclaration: 'ExportNamedDeclaration',
