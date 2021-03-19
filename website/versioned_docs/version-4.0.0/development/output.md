@@ -13,7 +13,7 @@ If no configuration is specified FuseBox will preconfigure the output as follows
 ```ts
 fuse.runDev({
   bundles: {
-    rootDir: 'dist',
+    distRoot: 'dist',
     app: 'app.$hash.js',
     vendor: 'vendor.$hash.js',
     styles: 'styles/styles.$hash.css',
@@ -28,13 +28,13 @@ fuse.runDev({
 ```ts
 fuse.runDev({
   bundles: {
-    rootDir: 'dist',
+    distRoot: 'dist',
     app: 'app.js',
   },
 });
 ```
 
-`rootDir` is defaulted to to your `fuse.ts` file directory + "dist". It's important to specify and set relative paths to
+`distRoot` is defaulted to to your `fuse.ts` file directory + "dist". It's important to specify and set relative paths to
 your bundles
 
 Additionally you can add `vendor` to the output.
@@ -44,7 +44,7 @@ Additionally you can add `vendor` to the output.
 ```ts
 fuse.runDev({
   bundles: {
-    rootDir: 'dist',
+    distRoot: 'dist',
     app: 'app.js',
     vendor: 'vendor.js',
   },
