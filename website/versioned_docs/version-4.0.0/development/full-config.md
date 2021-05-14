@@ -237,10 +237,10 @@ resources?: IResourceConfig = {
 ### [**hmr**](./hmr) - Hot module reloading options
 
 ```ts
-hmr?: boolean | IHMRExternalProps = {
-	reloadEntryOnStylesheet?: boolean;
-	hardReloadScripts?: boolean;
-};
+hmr?: boolean | IHMRProps = {
+	enabled?: boolean;
+	plugin?: string;
+}
 ```
 
 <br>
