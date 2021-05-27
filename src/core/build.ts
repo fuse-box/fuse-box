@@ -44,6 +44,9 @@ export const createBuild = async (props: IBuildProps): Promise<IRunResponse> => 
   const manifest = await router.writeManifest(bundles);
 
   if (bundleContext.cache && ctx.config.isDevelopment) await bundleContext.cache.write();
+  if (bundleContext.moduleIdCacheWhenCacheDisabled) {
+    bundleContext.moduleIdCacheWhenCacheDisabled.write();
+  }
   ctx.isWorking = false;
 
   const onCompleteHandler: IRunOnCompleteHandler = {
