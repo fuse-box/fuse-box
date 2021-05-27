@@ -100,7 +100,7 @@ export function createWatcher(ctx: Context) {
   const awaitProps = { cancelled: false };
 
   function acceptEvents() {
-    ict.sync('watcher_reaction', { reactionStack });
+    ict.sync('watcher_reaction', { reactionStack: reactionStack.slice(0) });
     reactionStack = [];
   }
 
