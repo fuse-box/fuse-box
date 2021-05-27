@@ -141,9 +141,15 @@ export async function asyncModuleResolver(ctx: Context, entryFiles: Array<string
           statement: props.statement,
         });
         if (resolved.absPath) {
+          // keep module id order same with resolving order for right css module resolving
+          const idx = module.dependencies.length + 1;
+          module.dependencies.push(-idx);
           const target = await initModule({ absPath: resolved.absPath, pkg: resolved.pkg });
-          const parentDeps = module.dependencies;
-          if (!parentDeps.includes(target.id)) parentDeps.push(target.id);
+          if (!module.dependencies.includes(target.id)) {
+            module.dependencies = module.dependencies.map(d => d === -idx ? target.id : d);
+          } else {
+            module.dependencies = module.dependencies.filter(d => d !== -idx);
+          }
           return { module: target };
         }
         return resolved;
