@@ -106,15 +106,28 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
         }
       });
 
+      logger.info('webindex', '<dim>writing to $name</dim>', {
+        name: opts.distFileName,
+      });
+
+      const pluginResponse = await ctx.ict.send('before_webindex_write', {
+        filePath: opts.templatePath,
+        fileContents,
+        bundles,
+        cssTags,
+        scriptTags,
+      });
+
+      if (pluginResponse && pluginResponse.fileContents) {
+        fileContents = pluginResponse.fileContents;
+      }
+
       const scriptOpts = {
         bundles: scriptTags.join('\n'),
         css: cssTags.join('\n'),
       };
       fileContents = replaceWebIndexStrings(fileContents, scriptOpts);
 
-      logger.info('webindex', '<dim>writing to $name</dim>', {
-        name: opts.distFileName,
-      });
       await ctx.writer.write(opts.distFileName, fileContents);
     },
     resolve: (userPath: string) => {
