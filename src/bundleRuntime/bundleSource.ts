@@ -137,7 +137,8 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
     generateHash: () => {
       let str = '';
       for (const module of self.modules) {
-        str += getFileModificationTime(module.absPath).toString();
+        // add module id. when id changed, we can know the problem through hash
+        str += module.id + getFileModificationTime(module.absPath).toString();
       }
       return fastHash(str);
     },

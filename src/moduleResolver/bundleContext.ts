@@ -1,4 +1,4 @@
-import { createCache, ICache } from '../cache/cache';
+import { createCache, createModuleIdCache, ICache } from '../cache/cache';
 import { Context } from '../core/context';
 import { IPackageMeta } from '../resolver/resolver';
 import { IModule } from './module';
@@ -13,8 +13,10 @@ export function createBundleContext(ctx: Context) {
   const packages: Record<string, IPackage> = {};
 
   let cache: ICache;
+  let moduleIdCacheWhenCacheDisabled: ICache;
   const scope = {
     cache,
+    moduleIdCacheWhenCacheDisabled,
     currentId,
     injectedDependencies,
     modules,
@@ -22,6 +24,11 @@ export function createBundleContext(ctx: Context) {
     getIdFor: (absPath: string) => {
       if (scope.cache) {
         const meta = scope.cache.meta;
+        for (const id in meta.modules) {
+          if (meta.modules[id].absPath === absPath) return meta.modules[id].id;
+        }
+      } else if (scope.moduleIdCacheWhenCacheDisabled) {
+        const meta = scope.moduleIdCacheWhenCacheDisabled.meta;
         for (const id in meta.modules) {
           if (meta.modules[id].absPath === absPath) return meta.modules[id].id;
         }
@@ -52,6 +59,10 @@ export function createBundleContext(ctx: Context) {
   };
 
   if (ctx.config.cache.enabled) scope.cache = createCache(ctx, scope);
+  else {
+    // only created when cache disabled
+    scope.moduleIdCacheWhenCacheDisabled = createModuleIdCache(ctx, scope);
+  }
 
   return scope;
 }

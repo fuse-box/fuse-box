@@ -1,6 +1,7 @@
 import { existsSync } from 'fs';
 import * as path from 'path';
 import { Context } from '../core/context';
+import { env } from '../env';
 import { IBundleContext } from '../moduleResolver/bundleContext';
 import { createModule, IModule, IModuleMeta } from '../moduleResolver/module';
 import { createPackageFromCache, IPackage } from '../moduleResolver/package';
@@ -38,6 +39,42 @@ export interface ICacheMeta {
 const META_MODULES_CACHE: Record<string, any> = {};
 const META_JSON_CACHE: Record<string, ICacheMeta> = {};
 
+export function createModuleIdCache(ctx: Context, bundleContext: IBundleContext): ICache {
+  const prefix = fastHash(ctx.config.entries.toString()) + "_module_id";
+  const CACHE_ROOT = path.join(path.join(env.APP_ROOT, '.cache'), prefix);
+  const META_FILE = path.join(CACHE_ROOT, 'meta.json');
+  let meta: ICacheMeta;
+  if (META_JSON_CACHE[META_FILE]) meta = META_JSON_CACHE[META_FILE];
+  else if (existsSync(META_FILE)) {
+    try {
+      meta = readJSONFile(META_FILE);
+    } catch (e) { }
+  }
+  if (!meta) {
+    META_JSON_CACHE[META_FILE] = meta = { currentId: 0, modules: {}, packages: {} };
+  }
+
+  const self = {
+    meta,
+    write: () => {
+      let shouldWrite = false;
+      for (const absPath in bundleContext.modules) {
+        const module = bundleContext.modules[absPath];
+        if (!meta.modules[module.id]) {
+          shouldWrite = true;
+          meta.modules[module.id] = { absPath } as IModuleMeta;
+        }
+      }
+      if (shouldWrite) {
+        writeFile(META_FILE, JSON.stringify(meta, null, 2));
+      }
+    },
+    nuke: () => removeFolder(CACHE_ROOT),
+    restore: null,
+  };
+  return self;
+}
+
 export function createCache(ctx: Context, bundleContext: IBundleContext): ICache {
   const prefix = fastHash(ctx.config.entries.toString());
 
@@ -56,7 +93,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         else if (isFileStrategy && existsSync(META_FILE)) {
           try {
             meta = readJSONFile(META_FILE);
-          } catch (e) {}
+          } catch (e) { }
         }
         if (!meta) {
           META_JSON_CACHE[META_FILE] = meta = { currentId: 0, modules: {}, packages: {} };
