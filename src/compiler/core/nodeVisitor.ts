@@ -23,6 +23,7 @@ export interface IVisitNodeProps {
   scope?: INodeScope;
   skipPreact?: boolean;
   userFunc?: (schema: ISchema) => any;
+  parentSchema?: ISchema;
 }
 
 const IRNOGED_TYPES = {
@@ -72,13 +73,13 @@ export function nodeVisitor(rootProps: INodeVisitorProps) {
           const item = child[i];
 
           if (item && item.type && !IRNOGED_TYPES[item.type]) {
-            visitNode({ id: i, node: item, parent: node, property, scope: schema.nodeScope });
+            visitNode({ id: i, node: item, parent: node, parentSchema: schema, property, scope: schema.nodeScope });
           }
           i++;
         }
       } else {
         if (child && child.type && !IRNOGED_TYPES[child.type]) {
-          visitNode({ node: child, parent: node, property, scope: schema.nodeScope });
+          visitNode({ node: child, parent: node, property, parentSchema: schema, scope: schema.nodeScope });
         }
       }
     }

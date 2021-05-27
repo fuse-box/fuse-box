@@ -21,6 +21,7 @@ export interface ISchema {
   ignoreChildren?: boolean;
   node?: ASTNode;
   parent?: ASTNode;
+  parentSchema?: ISchema;
   property?: string;
   scope?: INodeScope;
 
@@ -69,13 +70,14 @@ export function createSchema(props: IVisitNodeProps, context: SharedContext): IS
       return self;
     },
     getLocal: (name: string) => {
+      // null means existance of var, undefined means no declaration
       if (!self.nodeScope || self.nodeScope.length === 0) return;
 
       const total = self.nodeScope.length - 1;
 
       for (let i = total; i >= 0; i--) {
         const bodyScope = self.nodeScope[i];
-        if (bodyScope[name] && bodyScope[name].node) return bodyScope[name];
+        if (bodyScope[name] === null || (bodyScope[name] && bodyScope[name].node)) return bodyScope[name];
       }
 
       return undefined;
