@@ -14,7 +14,7 @@ export interface ASTNode {
   alternate?: ASTNode;
   base?: ASTNode;
   chain?: ASTNode;
-  consequent?: ASTNode;
+  consequent?: ASTNode | Array<ASTNode>;
   decorators?: Array<ASTNode>;
   definite?: boolean;
   elementTypes?: Array<ASTNode>;

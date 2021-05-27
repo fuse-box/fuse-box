@@ -15,9 +15,23 @@ const _FunctionDecl = {
 //   [ASTType.Program]: 1,
 // };
 
-export function extractDefinedVariables(schema: ISchema, node: ASTNode, names: Record<string, ISchemaRecord>) {
+export function extractDefinedVariables(schema: ISchema, node: ASTNode, names: Record<string, ISchemaRecord>, isVar: boolean = false) {
   if (node.type === ASTType.Identifier) {
     names[node.name] = { node, schema };
+    // if definition with var keyword, lookup to function scope
+    if (isVar && schema.parentSchema) {
+      let currentParentSchema = schema.parentSchema;
+      while (currentParentSchema && currentParentSchema.node
+        && currentParentSchema.node.type !== 'FunctionDeclaration'
+        && currentParentSchema.node.type !== 'FunctionExpression'
+      ) {
+        currentParentSchema = currentParentSchema.parentSchema;
+      }
+      if (currentParentSchema && currentParentSchema.nodeScope.length > 0) {
+        // mark to null on function scope ( null means existance of var )
+        currentParentSchema.nodeScope[currentParentSchema.nodeScope.length - 1][node.name] = null;
+      }
+    }
     return;
   }
 
@@ -46,7 +60,7 @@ export function extractDefinedVariables(schema: ISchema, node: ASTNode, names: R
 function extractDeclarations(schema: ISchema, node: ASTNode, bodyScope: Record<string, ISchemaRecord>) {
   if (!node.declarations) return;
   for (const decl of node.declarations) {
-    if (decl.type === ASTType.VariableDeclarator && decl.id) extractDefinedVariables(schema, decl.id, bodyScope);
+    if (decl.type === ASTType.VariableDeclarator && decl.id) extractDefinedVariables(schema, decl.id, bodyScope, node.kind === 'var');
   }
 }
 
@@ -57,8 +71,27 @@ export type IBodyScope = Record<string, ISchemaRecord>;
 export function scopeTracker(schema: ISchema): IBodyScope {
   const { node, parent } = schema;
 
-  if (node.body) {
-    let body = node.body as Array<ASTNode>;
+  // add consequent as target for calculatation of scope
+  if (node.body || node.consequent) {
+    let body: Array<ASTNode> = Array.from([]);
+    if (node.body) {
+      if (Array.isArray(node.body)) {
+        for (const n of (node.body as Array<ASTNode>)) {
+          body.push(n);
+        }
+      } else {
+        body.push(node.body as ASTNode);
+      }
+    }
+    if (node.consequent) {
+      if (Array.isArray(node.consequent)) {
+        for (const n of (node.consequent as Array<ASTNode>)) {
+          body.push(n)
+        }
+      } else {
+        body.push(node.consequent as ASTNode);
+      }
+    }
 
     const bodyScope: IBodyScope = {};
     const bodyNodesLength = body.length;

@@ -32,7 +32,7 @@ export class SharedContext {
   private localRefListeners = new Map<string, Array<IRefInterceptor>>();
   private onCompleteCallbacks = [];
   private variableCounter = 0;
-  constructor(public props: ISharedContextProps) {}
+  constructor(public props: ISharedContextProps) { }
 
   esModuleStatementInjected = false;
 
@@ -73,7 +73,8 @@ export class SharedContext {
       if (traced && traced.first) {
         const origin = schema.getLocal(localIdentifier.name);
 
-        if (!origin || (origin && REF_ALLOWED[origin.node.type])) {
+        // null means existance of var, so check undefined
+        if (origin === undefined || (origin && REF_ALLOWED[origin.node.type])) {
           traced.inUse = true;
 
           if (traced.first === localIdentifier.name) {
