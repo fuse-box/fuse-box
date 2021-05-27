@@ -21,6 +21,7 @@ export type BundleSource = {
   entries: Array<IModule>;
   exported?: boolean;
   injection?: Array<string>;
+  injectionBeforeBundleExec?: Array<string>;
   modules: Array<IModule>;
   generate: (opts: IBundleGenerateProps) => Concat;
   generateHash: () => string;
@@ -54,6 +55,7 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
     containsMaps: false,
     entries: [],
     injection: [],
+    injectionBeforeBundleExec: [],
     // user injection
     // for example inject some code after the bundle is ready
 
@@ -89,6 +91,12 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
       }
 
       let injectionCode = [];
+
+      // injectionBeforeBundleExec
+      if (self.injectionBeforeBundleExec) {
+        for (const userInjectionLine of self.injectionBeforeBundleExec) injectionCode.push(userInjectionLine);
+      }
+
       // add entries
       // e.g __fuse.r(1)
       if (self.entries) {
