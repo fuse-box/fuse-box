@@ -31,12 +31,38 @@ const BundleFN = FuseName + '.' + BUNDLE_RUNTIME_NAMES.BUNDLE_FUNCTION;
 const ReqFn = FuseName + '.' + BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
 
 export function createBundleSource(props: IBundleSourceProps): BundleSource {
+  function getDepOrderNo(curr: IModule, depNos: number[]) {
+    if (curr.moduleTree.dependants.length > 0) {
+      const firstDep = curr.moduleTree.dependants[0].module;
+      const currDepNo = firstDep.dependencies.indexOf(curr.id);
+      depNos.push(currDepNo);
+      getDepOrderNo(firstDep, depNos);
+    }
+  }
+  function reorderCSSModules(modules: Array<IModule>): Array<IModule> {
+    return modules.map((module) => {
+      let depNos = [];
+      getDepOrderNo(module, depNos);
+      return { module, depNos }
+    }).sort((a, b) => {
+      const aDepNos = a.depNos.reverse();
+      const bDepNos = b.depNos.reverse();
+
+      for (let i = 0; i < Math.min(aDepNos.length, bDepNos.length); i++) {
+        const diff = aDepNos[i] - bDepNos[i];
+        if (diff != 0) return diff;
+      }
+      return 0;
+    }).map(d => d.module);
+  }
   function generateCSS(self: BundleSource, opts: IBundleGenerateProps): Concat {
     const concat = new Concat(true, '', '\n');
-    const totalAmount = self.modules.length;
+    // css module reordering by resolving order(module id)
+    const modules = reorderCSSModules(self.modules);
+    const totalAmount = modules.length;
     let index = 0;
     while (index < totalAmount) {
-      const module = self.modules[index];
+      const module = modules[index];
       const cssData = module.css;
 
       if (cssData) {
