@@ -14,7 +14,9 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
   if (!options.jsxFactory) options.jsxFactory = 'React.createElement';
   if (options.esModuleInterop === undefined) options.esModuleInterop = true;
   if (options.esModuleStatement === undefined) options.esModuleStatement = true;
-  options.processEnv = ctx.config.env;
+  if (!options.processEnv) {
+    options.processEnv = ctx.config.env;
+  }
   options.buildTarget = ctx.config.target;
 
   if (!options.jsParser) options.jsParser = {};
