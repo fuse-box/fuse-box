@@ -68,7 +68,11 @@ export const createBuild = async (props: IBuildProps): Promise<IRunResponse> => 
     },
   };
 
-  ctx.ict.sync(rebundle ? 'rebundle' : 'complete', response);
+  if (rebundle) {
+    ctx.ict.sync('rebundle', response);
+  } else {
+    await ctx.ict.send('complete', response);
+  }
 
   return response;
 };
