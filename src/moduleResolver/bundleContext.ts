@@ -30,7 +30,7 @@ export function createBundleContext(ctx: Context) {
       } else if (scope.moduleIdCacheWhenCacheDisabled) {
         const meta = scope.moduleIdCacheWhenCacheDisabled.meta;
         for (const id in meta.modules) {
-          if (meta.modules[id].absPath === absPath) return meta.modules[id].id;
+          if (meta.modules[id].absPath === absPath) return parseInt(id);
         }
       }
       return ++scope.currentId;

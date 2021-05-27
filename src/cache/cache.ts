@@ -52,6 +52,8 @@ export function createModuleIdCache(ctx: Context, bundleContext: IBundleContext)
   }
   if (!meta) {
     META_JSON_CACHE[META_FILE] = meta = { currentId: 0, modules: {}, packages: {} };
+  } else {
+    bundleContext.currentId = meta.currentId;
   }
 
   const self = {
@@ -66,6 +68,7 @@ export function createModuleIdCache(ctx: Context, bundleContext: IBundleContext)
         }
       }
       if (shouldWrite) {
+        meta.currentId = bundleContext.currentId;
         writeFile(META_FILE, JSON.stringify(meta, null, 2));
       }
     },
