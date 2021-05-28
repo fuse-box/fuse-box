@@ -3,7 +3,6 @@ import { Context } from 'fuse-box/core/context';
 import { IModule } from 'fuse-box/moduleResolver/module';
 import { createGlobalModuleCall } from 'fuse-box/bundleRuntime/bundleRuntimeCore';
 export interface IPluginProps {
-    entryFile: string,
 }
 export function pluginReactRefresh(a: string | RegExp | IPluginProps, b?: IPluginProps) {
     let [opts, matcher] = parsePluginOptions<IPluginProps>(a, b, {});
