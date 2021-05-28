@@ -204,4 +204,65 @@ describe('Bundle router test', () => {
       });
     });
   });
+
+  describe('When css bundle created', () => {
+    let test;
+    beforeAll(() => {
+      test = async (workspace, runProps): Promise<ITestBrowserResponse> => {
+        const test = createIntegrationTest({
+          config: {
+            cache: { enabled: true, strategy: 'fs' },
+            entry: path.join(workspace.sourceDir, 'index.ts'),
+            target: 'browser',
+          },
+          envType: EnvironmentType.PRODUCTION,
+          workspace,
+          runProps,
+        });
+
+        const response = await test.runProd();
+        return await response.runBrowser();
+      };
+    });
+    afterAll(() => {
+      test = null;
+    });
+    it('css bundle should be resolved in the order in which they were called', async done => {
+      const workspace = createTestWorkspace({
+        files: {
+          'foo.ts': `
+            import "./a.css";
+            import "./b.css";
+            import "./c.css";
+          `,
+          'index.ts': `
+            import "./foo.ts"
+            import "./d.css"
+          `,
+          'a.css': `
+            body {font-size: 1px;}
+          `,
+          'b.css': `
+            body {font-size: 2px;}
+          `,
+          'c.css': `
+            body {font-size: 3px;}
+          `,
+          'd.css': `
+            body {font-size: 4px;}
+          `,
+        },
+      });
+      const result = await test(workspace, {
+        bundles: {
+          app: './app.js',
+        },
+      });
+
+      const cssBundle = result.runResponse.bundles.find(b => /\.css$/.test(b.relativePath));
+      expect(cssBundle).toBeDefined();
+      expect(cssBundle.bundle.contents).toEqual("body{font-size:1px}body{font-size:2px}body{font-size:3px}body{font-size:4px}");
+      done();
+    });
+  });
 });
