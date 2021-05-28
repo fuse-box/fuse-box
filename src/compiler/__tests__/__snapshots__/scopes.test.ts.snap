@@ -85,6 +85,18 @@ console.log(foo);
 "
 `;
 
+exports[`scope test Import qualifiers var scope has function level scope 1`] = `
+"var bar_1 = require(\\"bar\\");
+function a() {
+  for (var t = []; t.length < 3; ) {
+    t.push(1);
+  }
+  console.log(t);
+}
+bar_1.default(a);
+"
+`;
+
 exports[`scope test Iterator scope Export spread 1 1`] = `
 "for (var i = 0; i <= 0; i++) {
   console.log(i);
