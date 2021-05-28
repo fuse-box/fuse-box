@@ -44,13 +44,10 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
     return modules.map((module) => {
       let depNos = [];
       getDepOrderNo(module, depNos);
-      return { module, depNos }
+      return { module, depNos: depNos.reverse() }
     }).sort((a, b) => {
-      const aDepNos = a.depNos.reverse();
-      const bDepNos = b.depNos.reverse();
-
-      for (let i = 0; i < Math.min(aDepNos.length, bDepNos.length); i++) {
-        const diff = aDepNos[i] - bDepNos[i];
+      for (let i = 0; i < Math.min(a.depNos.length, b.depNos.length); i++) {
+        const diff = a.depNos[i] - b.depNos[i];
         if (diff != 0) return diff;
       }
       return 0;
