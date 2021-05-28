@@ -821,5 +821,24 @@ describe('scope test', () => {
       });
       expect(result.code).toMatchSnapshot();
     });
+
+
+    it('var scope has function level scope', () => {
+      const result = testTranspile({
+        code: `
+        import t from 'bar';
+        function a() {
+          for (var t = []; t.length < 3;) {
+            t.push(1);
+          }
+          console.log(t);
+        }
+        t(a);
+      `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+
   });
 });
