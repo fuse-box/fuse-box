@@ -1,12 +1,12 @@
 ---
-id: version-4.0.0-pluginRefresh
-title: pluginRefresh
-original_id: pluginRefresh
+id: version-4.0.0-pluginReactRefresh
+title: pluginReactRefresh
+original_id: pluginReactRefresh
 ---
 
 ## Usage
 
-`pluginRefresh` will do enable 'react-refresh' feature that is fully supported hot reloading by react.
+`pluginReactRefresh` will do enable 'react-refresh' feature that is fully supported hot reloading by react.
 
 ```ts
 pluginReactRefresh(path: string | RegExp);
@@ -14,7 +14,7 @@ pluginReactRefresh(path: string | RegExp);
 
 ### Example
 
-To use `pluginRefresh`, you have to do three steps. 
+To use `pluginReactRefresh`, you have to do three steps. 
 
 First, install `react-refresh` package that is used for wiring necessary to integrate Fast Refresh into bundlers.
 
