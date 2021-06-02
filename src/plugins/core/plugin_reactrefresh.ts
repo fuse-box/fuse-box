@@ -1,7 +1,7 @@
-import { parsePluginOptions } from 'fuse-box/plugins/pluginUtils';
-import { Context } from 'fuse-box/core/context';
-import { IModule } from 'fuse-box/moduleResolver/module';
-import { createGlobalModuleCall } from 'fuse-box/bundleRuntime/bundleRuntimeCore';
+import { parsePluginOptions } from '../../plugins/pluginUtils';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
+import { createGlobalModuleCall } from '../../bundleRuntime/bundleRuntimeCore';
 export interface IPluginProps {
 }
 export function pluginReactRefresh(a: string | RegExp | IPluginProps, b?: IPluginProps) {
