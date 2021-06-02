@@ -12,17 +12,17 @@ export function pluginSass(a?: IPluginCommon | RegExp | string, b?: IPluginCommo
   return (ctx: Context) => {
     opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
     if (!matcher) matcher = /\.(scss|sass)$/;
-    ctx.ict.on('bundle_resolve_module', (props) => {
+    ctx.ict.on('bundle_resolve_module', props => {
       const { module } = props;
 
       if (props.module.captured || !matcher.test(module.absPath)) {
         return;
       }
 
-      if (!isNodeModuleInstalled('sass')) {
+      if (!isNodeModuleInstalled('node-sass')) {
         ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
           'Module "sass" is required, Please install it using the following command',
-          `${getPackageManagerData().installDevCmd} sass`,
+          `${getPackageManagerData().installDevCmd} node-sass`,
         ]);
 
         return;
