@@ -13,7 +13,7 @@
       "path": "cz-conventional-changelog"
     },
     "validate-commit-msg": {
-      "helpMessage": "Valid commit message formats are: \n - <type>(<scope>): <subject> \n - <type>: <subject> ",
+      "helpMessage": "Valid commit message formats are: \n - <type>(<scope>): <subject> \n - <type>: <subject>",
       "scope": {
         "allowed": [
           "*"
