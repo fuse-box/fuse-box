@@ -55,20 +55,20 @@ export function BundleFastConditionUnwrapper(): ITransformer {
                 if (rightValue && operator) {
                   shouldTranspile = true;
                   result = computeBoolean(env[target.property.name], operator, rightValue);
-                  if (result) replacement = node.consequent;
+                  if (result) replacement = node.consequent as ASTNode;
                   else replacement = node.alternate;
                 }
               }
               if (target.object.name === 'FuseBox') {
                 if (target.property.name === 'isBrowser') {
                   shouldTranspile = true;
-                  if (isBrowser) replacement = node.consequent;
+                  if (isBrowser) replacement = node.consequent as ASTNode;
                   else replacement = node.alternate;
                 }
 
                 if (target.property.name === 'isServer') {
                   shouldTranspile = true;
-                  if (isServer) replacement = node.consequent;
+                  if (isServer) replacement = node.consequent as ASTNode;
                   else replacement = node.alternate;
                 }
               }
