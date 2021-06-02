@@ -199,6 +199,18 @@ function resolveSubmodule(
         }
       }
 
+      if (packageJSON['exports']) {
+        const exports = path.join(target, packageJSON['exports']);
+        const subresolution = resolveSubmodule(base, exports, resolveSubpath, false, jsFirst, isBrowserBuild);
+        if (subresolution.fileExists) {
+          return {
+            ...subresolution,
+            customIndex: true,
+            isDirectoryIndex: true,
+          };
+        }
+      }
+
       // We do not look for index.js (etc.) here
       // Because we always look for those whether we are checking package.json or not
       // So that's done outside the if.
