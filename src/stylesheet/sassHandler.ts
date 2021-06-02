@@ -80,8 +80,8 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
     includePaths: [path.dirname(module.absPath)],
     outFile: module.absPath,
     sourceMapContents: requireSourceMap,
-    indentedSyntax: module.extension === ".sass",
-    importer: function(url, prev) {
+    indentedSyntax: module.extension === '.sass',
+    importer: function (url, prev) {
       // gathering imported dependencies in order to let the watcher pickup the right module
 
       const result = sassImporter({ options: props.options, ctx, module, url, fileRoot: prev });
@@ -102,7 +102,7 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
 
 export function sassHandler(props: ISassHandlerProps): IStyleSheetProcessor {
   const { ctx, module } = props;
-  const nodeSass = require('node-sass');
+  const nodeSass = require('sass');
   if (!nodeSass) {
     return;
   }
