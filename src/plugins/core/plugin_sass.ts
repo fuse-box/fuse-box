@@ -19,10 +19,10 @@ export function pluginSass(a?: IPluginCommon | RegExp | string, b?: IPluginCommo
         return;
       }
 
-      if (!isNodeModuleInstalled('node-sass')) {
+      if (!isNodeModuleInstalled('sass')) {
         ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
           'Module "sass" is required, Please install it using the following command',
-          `${getPackageManagerData().installDevCmd} node-sass`,
+          `${getPackageManagerData().installDevCmd} sass`,
         ]);
 
         return;
