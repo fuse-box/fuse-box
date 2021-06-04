@@ -103,7 +103,7 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
 export function sassHandler(props: ISassHandlerProps): IStyleSheetProcessor {
   const { ctx, module } = props;
 
-  let nodeSass = require('node-sass');
+  let nodeSass = require('sass');
 
   if (!nodeSass) {
     // fallback on node-sass
