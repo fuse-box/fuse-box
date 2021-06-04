@@ -166,7 +166,6 @@ export function scopeTracker(schema: ISchema): IBodyScope {
         if (item.id && item.id.name) bodyScope[item.id.name] = { node: item, schema };
         if (node.params) {
           for (const param of node.params) {
-            console.log('extract', param);
             extractDefinedVariables(schema, param, bodyScope);
           }
         }
