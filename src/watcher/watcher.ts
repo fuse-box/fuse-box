@@ -155,7 +155,8 @@ export function createWatcher(ctx: Context) {
       // if no user-roots are specified, use APP_ROOT
       // ensure that SCRIPT_PATH gets watched
       // and remove any redundant paths
-      const watchRoots = excludeRedundantFolders([...(absRoots || [env.APP_ROOT]), env.SCRIPT_PATH]);
+      const rootsToWatch = absRoots.length ? absRoots : [env.APP_ROOT, env.SCRIPT_PATH];
+      const watchRoots = excludeRedundantFolders(rootsToWatch);
       const watcher = chokidarWatch(watchRoots, finalOptions);
       watcher.on('all', dispatchEvent);
     },
