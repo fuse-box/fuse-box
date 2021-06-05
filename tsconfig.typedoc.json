@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig",
+  "exclude": [
+    "node_modules",
+    "src/**/__tests__",
+    "src/compiler/playground",
+    "playground",
+    "dist"
+  ],
+  "typedocOptions": {
+    "entryPoints": [
+      "src/index.ts",
+      "src/config/IConfig.ts",
+      "src/config/config.ts",
+      "src/core/fusebox.ts"
+    ],
+    "externalPattern": [
+      "modules/**/*.ts"
+    ],
+    "out": "docs/api"
+  }
+}
