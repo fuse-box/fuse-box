@@ -130,7 +130,7 @@
     "coverage-ci": "jest --verbose --coverage --runInBand",
     "devDeps": "gulp installDevDeps",
     "dist": "ts-node -T fuse dist",
-    "document": "ts-node -T fuse document",
+    "document": "typedoc --readme none --tsconfig ./tsconfig.typedoc.json",
     "format": "prettier --list-different \"src/**/*.{js,json,md,ts,yml}\"",
     "format:fix": "prettier --write \"src/**/*.{js,json,md,ts,yml}\"",
     "next": "ts-node -T fuse publish-next",

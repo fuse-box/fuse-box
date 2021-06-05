@@ -8,7 +8,15 @@
     "dist"
   ],
   "typedocOptions": {
-    "entryPoints": ["src/core/fusebox.ts"],
+    "entryPoints": [
+      "src/index.ts",
+      "src/config/IConfig.ts",
+      "src/config/config.ts",
+      "src/core/fusebox.ts"
+    ],
+    "externalPattern": [
+      "modules/**/*.ts"
+    ],
     "out": "docs/api"
   }
 }
