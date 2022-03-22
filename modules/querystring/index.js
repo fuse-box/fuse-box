@@ -63,8 +63,8 @@ function decode(qs, sep, eq, options) {
       v;
 
     if (idx >= 0) {
-      kstr = x.substr(0, idx);
-      vstr = x.substr(idx + 1);
+      kstr = x.slice(0, idx);
+      vstr = x.slice(idx + 1);
     } else {
       kstr = x;
       vstr = '';

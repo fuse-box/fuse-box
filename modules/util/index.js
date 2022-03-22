@@ -393,7 +393,7 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
 							return "  " + line;
 						})
 						.join("\n")
-						.substr(2);
+						.slice(2);
 				} else {
 					str =
 						"\n" +
@@ -415,7 +415,7 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
 		}
 		name = JSON.stringify("" + key);
 		if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
-			name = name.substr(1, name.length - 2);
+			name = name.slice(1, -1);
 			name = ctx.stylize(name, "name");
 		} else {
 			name = name

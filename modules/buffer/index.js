@@ -765,7 +765,7 @@ function hexWrite(buf, string, offset, length) {
     length = strLen / 2;
   }
   for (var i = 0; i < length; ++i) {
-    var parsed = parseInt(string.substr(2 * i, 2), 16);
+    var parsed = parseInt(string.slice(2 * i, 2 * i + 2), 16);
     if (isNaN(parsed)) return i;
     buf[offset + i] = parsed;
   }

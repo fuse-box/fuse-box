@@ -69,7 +69,7 @@ exports.resolve = function() {
 // posix version
 exports.normalize = function(path) {
   var isAbsolute = exports.isAbsolute(path),
-    trailingSlash = substr(path, -1) === '/';
+    trailingSlash = path.slice(-1) === '/';
 
   // Normalize the path
   path = normalizeArray(
@@ -110,8 +110,8 @@ exports.join = function() {
 // path.relative(from, to)
 // posix version
 exports.relative = function(from, to) {
-  from = exports.resolve(from).substr(1);
-  to = exports.resolve(to).substr(1);
+  from = exports.resolve(from).slice(1);
+  to = exports.resolve(to).slice(1);
 
   function trim(arr) {
     var start = 0;
@@ -165,7 +165,7 @@ exports.dirname = function(path) {
 
   if (dir) {
     // It has a dirname, strip trailing slash
-    dir = dir.substr(0, dir.length - 1);
+    dir = dir.slice(0, -1);
   }
 
   return root + dir;
@@ -174,8 +174,8 @@ exports.dirname = function(path) {
 exports.basename = function(path, ext) {
   var f = splitPath(path)[2];
   // TODO: make this comparison case-insensitive on windows?
-  if (ext && f.substr(-1 * ext.length) === ext) {
-    f = f.substr(0, f.length - ext.length);
+  if (ext && f.slice(-ext.length) === ext) {
+    f = f.slice(0, -ext.length);
   }
   return f;
 };
@@ -192,14 +192,3 @@ function filter(xs, f) {
   }
   return res;
 }
-
-// String.prototype.substr - negative index don't work in IE8
-var substr =
-  'ab'.substr(-1) === 'b'
-    ? function(str, start, len) {
-        return str.substr(start, len);
-      }
-    : function(str, start, len) {
-        if (start < 0) start = str.length + start;
-        return str.substr(start, len);
-      };

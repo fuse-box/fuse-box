@@ -413,7 +413,7 @@ function formatError(text, obj, injectorErrorName, source) {
   if (source === void 0) {
     source = null;
   }
-  text = text && text.charAt(0) === "\n" && text.charAt(1) == NO_NEW_LINE ? text.substr(2) : text;
+  text = text && text.charAt(0) === "\n" && text.charAt(1) == NO_NEW_LINE ? text.slice(2) : text;
   var context = stringify(obj);
   if (obj instanceof Array) {
     context = obj.map(stringify).join(" -> ");
@@ -12763,12 +12763,12 @@ function i18nStartFirstPass(tView, index, message, subTemplateIndex) {
     if (i & 1) {
       if (value.charAt(0) === "/") {
         if (value.charAt(1) === "#") {
-          var phIndex = parseInt(value.substr(2), 10);
+          var phIndex = parseInt(value.slice(2), 10);
           parentIndex = parentIndexStack[--parentIndexPointer];
           createOpCodes.push(phIndex << 3 | 5);
         }
       } else {
-        var phIndex = parseInt(value.substr(1), 10);
+        var phIndex = parseInt(value.slice(1), 10);
         createOpCodes.push(phIndex << 3 | 0, parentIndex << 17 | 1);
         if (value.charAt(0) === "#") {
           parentIndexStack[++parentIndexPointer] = parentIndex = phIndex;

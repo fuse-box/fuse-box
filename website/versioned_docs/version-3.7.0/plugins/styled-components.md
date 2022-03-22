@@ -73,7 +73,7 @@ StyledComponentsPlugin({
       .replace(/^.*[\\\/]/, "")
       .match(/[a-z]+/gi)
       .map(function(word) {
-        return word.charAt(0).toUpperCase() + word.substr(1).toLowerCase();
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
       })
       .join("")
       .replace("Tsx", "")
