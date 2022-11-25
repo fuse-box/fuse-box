@@ -129,7 +129,7 @@ QuantumPlugin({ css: { clean: { compatibility: {} } } });
 ```
 
 Additionally it's possible to provide masks to group CSS files into multiple by
-definding `cssFiles` option
+defining `cssFiles` option
 
 ```ts
 QuantumPlugin({

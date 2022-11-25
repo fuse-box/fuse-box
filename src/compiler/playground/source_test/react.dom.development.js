@@ -23500,7 +23500,7 @@ if (process.env.NODE_ENV !== 'production') {
             // TODO: Only schedule updates if not prevDidTimeout.
             if (nextDidTimeout) {
               // If this boundary just timed out, schedule an effect to attach a
-              // retry listener to the proimse. This flag is also used to hide the
+              // retry listener to the promise. This flag is also used to hide the
               // primary children.
               workInProgress.effectTag |= Update;
             }
@@ -23510,7 +23510,7 @@ if (process.env.NODE_ENV !== 'production') {
             // TODO: Only schedule updates if these values are non equal, i.e. it changed.
             if (nextDidTimeout || prevDidTimeout) {
               // If this boundary just timed out, schedule an effect to attach a
-              // retry listener to the proimse. This flag is also used to hide the
+              // retry listener to the promise. This flag is also used to hide the
               // primary children. In mutation mode, we also need the flag to
               // *unhide* children that were previously hidden, so check if the
               // is currently timed out, too.
