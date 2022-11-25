@@ -11,7 +11,7 @@ _A new FuseBox v4 feature_
 Workers are a means of multi-threading in javascript. Because javascript is single-threaded, workers must act as a
 _totally separate context_. The following is the problem set which FuseBox works through:
 
-1. Workers never have acess to the `window` object
+1. Workers never have access to the `window` object
 2. Each worker must have its own bundle
 3. All paths to workers must be overwritten to instead point to the workers' bundle.
 
