@@ -223,7 +223,7 @@ function calculateInOutMap(rootDir: string, outDir: string, input: string): unde
     );
   }
   // strip the root part to get the relative part
-  const relInput = ninput.substr(nroot.length);
+  const relInput = ninput.slice(nroot.length);
   const { ext, stem } = parseTsExtension(relInput);
   const outExt = tsOutExts[ext] || ext;
   return (

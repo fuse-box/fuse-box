@@ -146,9 +146,9 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
       if (simplePath[2]) {
         this.search = simplePath[2];
         if (parseQueryString) {
-          this.query = querystring.parse(this.search.substr(1));
+          this.query = querystring.parse(this.search.slice(1));
         } else {
-          this.query = this.search.substr(1);
+          this.query = this.search.slice(1);
         }
       } else if (parseQueryString) {
         this.search = '';
@@ -163,7 +163,7 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
     proto = proto[0];
     var lowerProto = proto.toLowerCase();
     this.protocol = lowerProto;
-    rest = rest.substr(proto.length);
+    rest = rest.slice(proto.length);
   }
 
   // figure out if it's got a host
@@ -171,9 +171,9 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
   // resolution will treat //foo/bar as host=foo,path=bar because that's
   // how the browser resolves relative URLs.
   if (slashesDenoteHost || proto || rest.match(/^\/\/[^@\/]+@[^@\/]+/)) {
-    var slashes = rest.substr(0, 2) === '//';
+    var slashes = rest.slice(0, 2) === '//';
     if (slashes && !(proto && hostlessProtocol[proto])) {
-      rest = rest.substr(2);
+      rest = rest.slice(2);
       this.slashes = true;
     }
   }
@@ -304,7 +304,7 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
     // strip [ and ] from the hostname
     // the host field still retains them, though
     if (ipv6Hostname) {
-      this.hostname = this.hostname.substr(1, this.hostname.length - 2);
+      this.hostname = this.hostname.slice(1, -1);
       if (rest[0] !== '/') {
         rest = '/' + rest;
       }
@@ -332,13 +332,13 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
   var hash = rest.indexOf('#');
   if (hash !== -1) {
     // got a fragment string.
-    this.hash = rest.substr(hash);
+    this.hash = rest.slice(hash);
     rest = rest.slice(0, hash);
   }
   var qm = rest.indexOf('?');
   if (qm !== -1) {
-    this.search = rest.substr(qm);
-    this.query = rest.substr(qm + 1);
+    this.search = rest.slice(qm);
+    this.query = rest.slice(qm + 1);
     if (parseQueryString) {
       this.query = querystring.parse(this.query);
     }
@@ -405,7 +405,7 @@ Url.prototype.format = function() {
 
   var search = this.search || (query && '?' + query) || '';
 
-  if (protocol && protocol.substr(-1) !== ':') protocol += ':';
+  if (protocol && protocol.slice(-1) !== ':') protocol += ':';
 
   // only the slashedProtocols get the //.  Not mailto:, xmpp:, etc.
   // unless they had them to begin with.
@@ -652,7 +652,7 @@ Url.prototype.resolveObject = function(relative) {
     srcPath.unshift('');
   }
 
-  if (hasTrailingSlash && srcPath.join('/').substr(-1) !== '/') {
+  if (hasTrailingSlash && srcPath.join('/').slice(-1) !== '/') {
     srcPath.push('');
   }
 
@@ -700,9 +700,9 @@ Url.prototype.parseHost = function() {
   if (port) {
     port = port[0];
     if (port !== ':') {
-      this.port = port.substr(1);
+      this.port = port.slice(1);
     }
-    host = host.substr(0, host.length - port.length);
+    host = host.slice(0, -port.length);
   }
   if (host) this.hostname = host;
 };
